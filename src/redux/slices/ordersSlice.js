@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   orders: [],
@@ -10,7 +10,7 @@ const initialState = {
 };
 
 const ordersSlice = createSlice({
-  name: "orders",
+  name: 'orders',
   initialState,
   reducers: {
     // Fetch all orders
@@ -92,7 +92,7 @@ const ordersSlice = createSlice({
         (order) => order.id === action.payload
       );
       if (index !== -1) {
-        state.orders[index].status = "cancelled";
+        state.orders[index].status = 'cancelled';
       }
       state.error = null;
     },

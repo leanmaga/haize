@@ -1,18 +1,18 @@
-import { configureStore } from "@reduxjs/toolkit";
-import createSagaMiddleware from "redux-saga";
+import { configureStore } from '@reduxjs/toolkit';
+import createSagaMiddleware from 'redux-saga';
 
 // Reducers
-import authReducer from "./slices/authSlice";
-import cartReducer from "./slices/cartSlice";
-import productsReducer from "./slices/productsSlice";
-import ordersReducer from "./slices/ordersSlice"; // ← AGREGAR
-import uiReducer from "./slices/uiSlice";
+import authReducer from './slices/authSlice';
+import cartReducer from './slices/cartSlice';
+import productsReducer from './slices/productsSlice';
+import ordersReducer from './slices/ordersSlice'; // ← AGREGAR
+import uiReducer from './slices/uiSlice';
 
 // Sagas
-import rootSaga from "./sagas";
+import rootSaga from './sagas';
 
 // Middleware personalizado
-import { logger } from "./middleware/logger";
+import { logger } from './middleware/logger';
 
 // Crear el middleware de saga
 const sagaMiddleware = createSagaMiddleware();
@@ -32,10 +32,10 @@ export const store = configureStore({
     })
       .concat(
         sagaMiddleware,
-        process.env.NODE_ENV === "development" ? logger : null
+        process.env.NODE_ENV === 'development' ? logger : null
       )
       .filter(Boolean),
-  devTools: process.env.NODE_ENV !== "production",
+  devTools: process.env.NODE_ENV !== 'production',
 });
 
 // Ejecutar el root saga

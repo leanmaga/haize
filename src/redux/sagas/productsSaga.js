@@ -1,4 +1,4 @@
-import { call, put, takeLatest } from "redux-saga/effects";
+import { call, put, takeLatest } from 'redux-saga/effects';
 import {
   fetchProductsRequest,
   fetchProductsSuccess,
@@ -6,12 +6,12 @@ import {
   fetchProductByIdRequest,
   fetchProductByIdSuccess,
   fetchProductByIdFailure,
-} from "../slices/productsSlice";
+} from '../slices/productsSlice';
 
 // Fetch all products
 function* fetchProductsSaga() {
   try {
-    const response = yield call(fetch, "/api/products");
+    const response = yield call(fetch, '/api/products');
     const data = yield response.json();
 
     if (response.ok) {

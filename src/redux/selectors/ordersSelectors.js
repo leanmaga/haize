@@ -1,4 +1,4 @@
-import { createSelector } from "reselect";
+import { createSelector } from 'reselect';
 
 // Selector básico
 const selectOrdersState = (state) => state.orders;
@@ -50,19 +50,19 @@ export const selectOrdersByStatus = (status) =>
 
 // Órdenes pendientes
 export const selectPendingOrders = createSelector([selectAllOrders], (orders) =>
-  orders.filter((order) => order.status === "pending")
+  orders.filter((order) => order.status === 'pending')
 );
 
 // Órdenes completadas
 export const selectCompletedOrders = createSelector(
   [selectAllOrders],
-  (orders) => orders.filter((order) => order.status === "completed")
+  (orders) => orders.filter((order) => order.status === 'completed')
 );
 
 // Órdenes canceladas
 export const selectCancelledOrders = createSelector(
   [selectAllOrders],
-  (orders) => orders.filter((order) => order.status === "cancelled")
+  (orders) => orders.filter((order) => order.status === 'cancelled')
 );
 
 // Total gastado en todas las órdenes
@@ -114,7 +114,7 @@ export const selectOrdersStats = createSelector([selectAllOrders], (orders) => {
     if (stats[order.status] !== undefined) {
       stats[order.status]++;
     }
-    if (order.status !== "cancelled") {
+    if (order.status !== 'cancelled') {
       stats.totalRevenue += order.total || 0;
     }
   });

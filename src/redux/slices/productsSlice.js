@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   items: [],
@@ -8,12 +8,12 @@ const initialState = {
   filters: {
     category: null,
     priceRange: { min: 0, max: 10000 },
-    search: "",
+    search: '',
   },
 };
 
 const productsSlice = createSlice({
-  name: "products",
+  name: 'products',
   initialState,
   reducers: {
     // Fetch products

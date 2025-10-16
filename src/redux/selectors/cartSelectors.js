@@ -1,4 +1,4 @@
-import { createSelector } from "reselect";
+import { createSelector } from 'reselect';
 
 // Selector básico
 const selectCartState = (state) => state.cart;
@@ -30,7 +30,7 @@ export const selectCartItemsByCategory = createSelector(
   [selectCartItems],
   (items) => {
     return items.reduce((acc, item) => {
-      const category = item.category || "uncategorized";
+      const category = item.category || 'uncategorized';
       if (!acc[category]) {
         acc[category] = [];
       }
