@@ -1,8 +1,14 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+}
+
+@theme {
+  --font-primary: sans-serif;
+  --font-secondary: monospace;
+  --font-tertiary: '';
 }
 
 @theme inline {
