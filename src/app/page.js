@@ -1,9 +1,9 @@
-import ComingSoon from '@/components/layout/ComingSoon';
+import HomePage from './Home/page';
 
 export default function Home() {
   return (
     <div>
-      <ComingSoon />
+      <HomePage />
     </div>
   );
 }
