@@ -1,9 +1,9 @@
-import HomePage from '@/app/HomePage/page';
+import ComingSoon from '@/components/layout/ComingSoon';
 
 export default function Home() {
   return (
     <div>
-      <HomePage />
+      <ComingSoon />
     </div>
   );
 }
