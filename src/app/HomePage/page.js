@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Navbar from '@/shared/components/Navbar';
 import CustomLink from '@/shared/components/CustomLink';
 
-export default function Home() {
+export default function HomePage() {
   return (
     <div>
       <Navbar />
