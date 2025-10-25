@@ -17,7 +17,7 @@ export default function Home() {
         />
 
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-10 text-white text-center font-primary">
-          <h3 className="text-4xl font-bold">&quot;Bienvenido a Haize&quot;</h3>
+          <h3 className="text-4xl font-bold">PRIMAVERA VERANO 2026</h3>
 
           <p className="m-5 text-lg">Moda que inspira tu estilo</p>
 
