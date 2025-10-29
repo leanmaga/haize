@@ -1,7 +1,7 @@
 import { Geist, Geist_Mono } from 'next/font/google';
-import { ClerkProvider } from '@clerk/nextjs';
 import './globals.css';
 import ReduxProvider from '@/redux/ReduxProvider';
+import { ClerkProvider } from '@clerk/nextjs';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -14,13 +14,24 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: 'Haize - Fashion Store',
-  description: 'Moda que inspira tu estilo',
+  title: 'Haize - Moda que inspira tu estilo',
+  description: 'Tienda de moda online',
 };
 
 export default function RootLayout({ children }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      appearance={{
+        variables: {
+          colorPrimary: '#000000',
+          colorBackground: '#ffffff',
+        },
+        elements: {
+          formButtonPrimary: 'bg-black hover:bg-gray-800',
+          card: 'shadow-lg',
+        },
+      }}
+    >
       <html lang="es">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}

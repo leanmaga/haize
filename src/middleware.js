@@ -1,11 +1,57 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { NextResponse } from 'next/server';
 
-const isProtectedRoute = createRouteMatcher(['/dashboard(.*)', '/profile(.*)']);
+// Rutas públicas (accesibles sin autenticación)
+const isPublicRoute = createRouteMatcher([
+  '/',
+  '/sign-in(.*)',
+  '/sign-up(.*)',
+  '/sso-callback(.*)',
+  '/api/webhooks(.*)',
+  '/shop(.*)',
+  '/about(.*)',
+  '/api/products(.*)',
+]);
+
+// Rutas solo para administradores
+const isAdminRoute = createRouteMatcher(['/dashboard(.*)', '/api/admin(.*)']);
 
 export default clerkMiddleware(async (auth, req) => {
-  if (isProtectedRoute(req)) {
-    await auth.protect();
+  const { userId, sessionClaims } = await auth();
+
+  const isAdmin = sessionClaims?.metadata?.role === 'admin';
+
+  if (isAdminRoute(req)) {
+    if (!userId) {
+      const signInUrl = new URL('/sign-in', req.url);
+      signInUrl.searchParams.set('redirect_url', req.url);
+      return NextResponse.redirect(signInUrl);
+    }
+
+    if (!isAdmin) {
+      return NextResponse.redirect(new URL('/profile', req.url));
+    }
   }
+
+  if (!isPublicRoute(req) && !userId) {
+    const signInUrl = new URL('/sign-in', req.url);
+    signInUrl.searchParams.set('redirect_url', req.url);
+    return NextResponse.redirect(signInUrl);
+  }
+
+  if (
+    userId &&
+    (req.nextUrl.pathname.startsWith('/sign-in') ||
+      req.nextUrl.pathname.startsWith('/sign-up'))
+  ) {
+    if (isAdmin) {
+      return NextResponse.redirect(new URL('/dashboard', req.url));
+    } else {
+      return NextResponse.redirect(new URL('/profile', req.url));
+    }
+  }
+
+  return NextResponse.next();
 });
 
 export const config = {
