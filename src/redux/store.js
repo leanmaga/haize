@@ -4,9 +4,10 @@ import createSagaMiddleware from 'redux-saga';
 // Reducers
 import authReducer from './slices/authSlice';
 import cartReducer from './slices/cartSlice';
-import productsReducer from './slices/productsSlice';
-import ordersReducer from './slices/ordersSlice'; // ← AGREGAR
+import productsReducer from './slices/adminProductsSlice';
+import ordersReducer from './slices/ordersSlice';
 import uiReducer from './slices/uiSlice';
+import adminProductsReducer from './slices/adminProductsSlice';
 
 // Sagas
 import rootSaga from './sagas';
@@ -22,8 +23,9 @@ export const store = configureStore({
     auth: authReducer,
     cart: cartReducer,
     products: productsReducer,
-    orders: ordersReducer, // ← AGREGAR
+    orders: ordersReducer,
     ui: uiReducer,
+    adminProducts: adminProductsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

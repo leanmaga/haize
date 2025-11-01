@@ -49,6 +49,9 @@ export default clerkMiddleware(async (auth, req) => {
     } else {
       return NextResponse.redirect(new URL('/profile', req.url));
     }
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.next();
+    }
   }
 
   return NextResponse.next();

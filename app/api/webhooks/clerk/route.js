@@ -4,8 +4,6 @@ import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 
 export async function POST(req) {
-  console.log('🔔 Webhook recibido en /api/webhooks/clerk');
-
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
 
   if (!WEBHOOK_SECRET) {
@@ -37,7 +35,6 @@ export async function POST(req) {
       'svix-timestamp': svix_timestamp,
       'svix-signature': svix_signature,
     });
-    console.log('✅ Firma del webhook verificada');
   } catch (err) {
     console.error('❌ Error verificando webhook:', err.message);
     return new Response('Error: Verification failed', { status: 400 });
@@ -48,9 +45,6 @@ export async function POST(req) {
   const eventType = evt.type;
   const { id, email_addresses, username, first_name, last_name, image_url } =
     evt.data;
-
-  console.log(`📥 Evento recibido: ${eventType}`);
-  console.log(`👤 Usuario ID: ${id}`);
 
   try {
     switch (eventType) {
@@ -64,7 +58,6 @@ export async function POST(req) {
           imageUrl: image_url || '',
           role: 'user',
         });
-        console.log('✅ Usuario creado en MongoDB:', newUser._id);
         break;
 
       case 'user.updated':
@@ -80,16 +73,7 @@ export async function POST(req) {
           },
           { new: true }
         );
-        console.log('✅ Usuario actualizado en MongoDB:', updatedUser?._id);
         break;
-
-      case 'user.deleted':
-        const deletedUser = await User.findOneAndDelete({ clerkId: id });
-        console.log('✅ Usuario eliminado de MongoDB:', deletedUser?._id);
-        break;
-
-      default:
-        console.log(`⚠️ Evento no manejado: ${eventType}`);
     }
 
     return new Response('Webhook procesado exitosamente', { status: 200 });
