@@ -1,5 +1,6 @@
 import { Webhook } from 'svix';
 import { headers } from 'next/headers';
+import { clerkClient } from '@clerk/nextjs/server';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 
@@ -58,6 +59,16 @@ export async function POST(req) {
           imageUrl: image_url || '',
           role: 'user',
         });
+
+        // 🔥 Sincronizar publicMetadata si es admin
+        if (newUser.role === 'admin') {
+          await clerkClient.users.updateUserMetadata(id, {
+            publicMetadata: {
+              role: 'admin',
+            },
+          });
+          console.log(`✅ Usuario ${id} sincronizado como admin en Clerk`);
+        }
         break;
 
       case 'user.updated':
@@ -73,6 +84,29 @@ export async function POST(req) {
           },
           { new: true }
         );
+
+        // 🔥 Sincronizar publicMetadata cuando se actualiza
+        if (updatedUser) {
+          const currentMetadata =
+            (await clerkClient.users.getUser(id)).publicMetadata || {};
+
+          // Solo actualizar si el rol ha cambiado
+          if (currentMetadata.role !== updatedUser.role) {
+            await clerkClient.users.updateUserMetadata(id, {
+              publicMetadata: {
+                role: updatedUser.role,
+              },
+            });
+            console.log(
+              `✅ Usuario ${id} sincronizado con rol: ${updatedUser.role}`
+            );
+          }
+        }
+        break;
+
+      case 'user.deleted':
+        await User.deleteOne({ clerkId: id });
+        console.log(`✅ Usuario ${id} eliminado de MongoDB`);
         break;
     }
 
