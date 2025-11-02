@@ -10,6 +10,7 @@ export default function ProfilePage() {
             card: 'shadow-xl',
           },
         }}
+        routing="path"
       />
     </div>
   );
