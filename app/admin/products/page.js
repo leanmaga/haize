@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import AdminLayout from '@/components/admin/AdminLayout';
 import {
   fetchAdminProductsRequest,
   deleteProductRequest,
@@ -47,15 +48,13 @@ export default function AdminProductsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto">
+    <AdminLayout>
+      <div className="space-y-6">
         {/* Header */}
-        <div className="mb-8 flex justify-between items-center">
+        <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              Gestión de Productos
-            </h1>
-            <p className="text-gray-600 mt-2">
+            <h2 className="text-2xl font-bold text-gray-900">Productos</h2>
+            <p className="text-gray-600 mt-1">
               Administra tu catálogo de productos
             </p>
           </div>
@@ -108,6 +107,6 @@ export default function AdminProductsPage() {
           />
         )}
       </div>
-    </div>
+    </AdminLayout>
   );
 }
