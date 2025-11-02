@@ -1,4 +1,4 @@
-import { call, put, takeLatest, select } from 'redux-saga/effects';
+import { call, put, takeLatest } from 'redux-saga/effects';
 import {
   fetchOrdersRequest,
   fetchOrdersSuccess,
@@ -18,30 +18,31 @@ import {
 } from '../slices/ordersSlice';
 import { clearCart } from '../slices/cartSlice';
 
-// Selector para obtener el token de autenticación
-const selectToken = (state) => state.auth.token;
-
 // Fetch all orders
 function* fetchOrdersSaga() {
   try {
-    const token = yield select(selectToken);
-
     const response = yield call(fetch, '/api/orders', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
     });
 
     const data = yield response.json();
 
     if (response.ok) {
-      yield put(fetchOrdersSuccess(data));
+      // Transformar las órdenes para que tengan el formato correcto
+      const transformedOrders = data.map((order) => ({
+        ...order,
+        id: order._id, // Agregar id para compatibilidad
+      }));
+
+      yield put(fetchOrdersSuccess(transformedOrders));
     } else {
       yield put(fetchOrdersFailure(data.message || 'Failed to fetch orders'));
     }
   } catch (error) {
+    console.error('❌ Error in fetchOrdersSaga:', error);
     yield put(fetchOrdersFailure(error.message));
   }
 }
@@ -49,24 +50,27 @@ function* fetchOrdersSaga() {
 // Fetch single order by ID
 function* fetchOrderByIdSaga(action) {
   try {
-    const token = yield select(selectToken);
-
     const response = yield call(fetch, `/api/orders/${action.payload}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
     });
 
     const data = yield response.json();
 
     if (response.ok) {
-      yield put(fetchOrderByIdSuccess(data));
+      const transformedOrder = {
+        ...data,
+        id: data._id,
+      };
+
+      yield put(fetchOrderByIdSuccess(transformedOrder));
     } else {
       yield put(fetchOrderByIdFailure(data.message || 'Failed to fetch order'));
     }
   } catch (error) {
+    console.error('❌ Error in fetchOrderByIdSaga:', error);
     yield put(fetchOrderByIdFailure(error.message));
   }
 }
@@ -74,13 +78,10 @@ function* fetchOrderByIdSaga(action) {
 // Create new order
 function* createOrderSaga(action) {
   try {
-    const token = yield select(selectToken);
-
     const response = yield call(fetch, '/api/orders', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(action.payload),
     });
@@ -88,28 +89,32 @@ function* createOrderSaga(action) {
     const data = yield response.json();
 
     if (response.ok) {
-      yield put(createOrderSuccess(data));
+      const transformedOrder = {
+        ...data,
+        id: data._id,
+      };
+
+      yield put(createOrderSuccess(transformedOrder));
       // Limpiar el carrito después de crear la orden
       yield put(clearCart());
     } else {
       yield put(createOrderFailure(data.message || 'Failed to create order'));
     }
   } catch (error) {
+    console.error('❌ Error in createOrderSaga:', error);
     yield put(createOrderFailure(error.message));
   }
 }
 
-// Update order status
+// Update order status (solo admin)
 function* updateOrderStatusSaga(action) {
   try {
-    const token = yield select(selectToken);
     const { orderId, status } = action.payload;
 
     const response = yield call(fetch, `/api/orders/${orderId}/status`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ status }),
     });
@@ -117,7 +122,12 @@ function* updateOrderStatusSaga(action) {
     const data = yield response.json();
 
     if (response.ok) {
-      yield put(updateOrderStatusSuccess(data));
+      const transformedOrder = {
+        ...data,
+        id: data._id,
+      };
+
+      yield put(updateOrderStatusSuccess(transformedOrder));
     } else {
       yield put(
         updateOrderStatusFailure(
@@ -126,6 +136,7 @@ function* updateOrderStatusSaga(action) {
       );
     }
   } catch (error) {
+    console.error('❌ Error in updateOrderStatusSaga:', error);
     yield put(updateOrderStatusFailure(error.message));
   }
 }
@@ -133,13 +144,10 @@ function* updateOrderStatusSaga(action) {
 // Cancel order
 function* cancelOrderSaga(action) {
   try {
-    const token = yield select(selectToken);
-
-    const response = yield call(fetch, `/api/orders/${action.payload}/cancel`, {
-      method: 'POST',
+    const response = yield call(fetch, `/api/orders/${action.payload}`, {
+      method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -151,6 +159,7 @@ function* cancelOrderSaga(action) {
       yield put(cancelOrderFailure(data.message || 'Failed to cancel order'));
     }
   } catch (error) {
+    console.error('❌ Error in cancelOrderSaga:', error);
     yield put(cancelOrderFailure(error.message));
   }
 }
