@@ -1,0 +1,953 @@
+// app/admin/reviews/page (Con color #F6C343 y accesibilidad mejorada)
+"use client";
+
+import React, { useState, useEffect, useCallback } from "react";
+import { useSession } from "next-auth/react";
+import { toast } from "react-hot-toast";
+import Image from "next/image";
+import Link from "next/link";
+import PropTypes from "prop-types";
+import StarRating from "@/components/ui/StarRating";
+import {
+  StarIcon,
+  ChatBubbleLeftRightIcon,
+  TrashIcon,
+  EyeIcon,
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+  MagnifyingGlassIcon,
+  UserIcon,
+  CalendarIcon,
+} from "@heroicons/react/24/outline";
+
+const AdminReviewsPage = () => {
+  const { data: session } = useSession();
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("ratings");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [ratingFilter, setRatingFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(20);
+  const [selectedReviews, setSelectedReviews] = useState(new Set());
+  const [bulkAction, setBulkAction] = useState("");
+
+  // Estados para estadísticas
+  const [stats, setStats] = useState({
+    totalReviews: 0,
+    totalRatings: 0,
+    totalQuestions: 0,
+    averageRating: 0,
+    reportedCount: 0,
+    verifiedCount: 0,
+    ratingDistribution: [0, 0, 0, 0, 0],
+  });
+
+  // ✅ SOLUCIÓN: Mover fetchReviews antes del useEffect
+  const fetchReviews = useCallback(async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams({
+        type:
+          activeTab === "all"
+            ? ""
+            : activeTab === "ratings"
+            ? "rating"
+            : "question",
+        rating: ratingFilter === "all" ? "" : ratingFilter,
+        status: statusFilter,
+        sort: sortBy,
+        page: currentPage.toString(),
+        limit: itemsPerPage.toString(),
+      });
+
+      const response = await fetch(`/api/admin/reviews?${params}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setReviews(data.reviews || []);
+        setStats(data.stats || {});
+      } else {
+        toast.error("Error al cargar reviews");
+      }
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+      toast.error("Error al cargar reviews");
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    activeTab,
+    ratingFilter,
+    statusFilter,
+    sortBy,
+    currentPage,
+    itemsPerPage,
+  ]);
+
+  // ✅ Ahora el useEffect puede usar fetchReviews sin problemas
+  useEffect(() => {
+    if (session?.user?.role === "admin") {
+      fetchReviews();
+    }
+  }, [session?.user?.role, fetchReviews]);
+
+  const handleDeleteReview = async (reviewId) => {
+    if (!confirm("¿Estás seguro de que quieres eliminar esta review?")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/reviews/${reviewId}`, {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("Review eliminada correctamente");
+        fetchReviews();
+      } else {
+        toast.error(data.error || "Error al eliminar review");
+      }
+    } catch (error) {
+      console.error("Error deleting review:", error);
+      toast.error("Error al eliminar review");
+    }
+  };
+
+  const handleBulkAction = async () => {
+    if (selectedReviews.size === 0) {
+      toast.error("Selecciona al menos una review");
+      return;
+    }
+
+    if (!bulkAction) {
+      toast.error("Selecciona una acción");
+      return;
+    }
+
+    if (
+      !confirm(`¿Confirmas ${bulkAction} para ${selectedReviews.size} reviews?`)
+    ) {
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/admin/reviews/bulk", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: bulkAction,
+          reviewIds: Array.from(selectedReviews),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success(`Acción completada: ${data.affected} reviews afectadas`);
+        setSelectedReviews(new Set());
+        setBulkAction("");
+        fetchReviews();
+      } else {
+        toast.error(data.error || "Error en la acción masiva");
+      }
+    } catch (error) {
+      console.error("Error in bulk action:", error);
+      toast.error("Error en la acción masiva");
+    }
+  };
+
+  const toggleSelectReview = (reviewId) => {
+    const newSelected = new Set(selectedReviews);
+    if (newSelected.has(reviewId)) {
+      newSelected.delete(reviewId);
+    } else {
+      newSelected.add(reviewId);
+    }
+    setSelectedReviews(newSelected);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedReviews.size === filteredReviews.length) {
+      setSelectedReviews(new Set());
+    } else {
+      setSelectedReviews(new Set(filteredReviews.map((r) => r._id)));
+    }
+  };
+
+  // Filtrar reviews según búsqueda
+  const filteredReviews = reviews.filter((review) => {
+    const matchesSearch =
+      searchTerm === "" ||
+      review.comment.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      review.user?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      review.product?.title.toLowerCase().includes(searchTerm.toLowerCase());
+
+    return matchesSearch;
+  });
+
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const getStatusBadge = (review) => {
+    const badges = [];
+
+    if (review.verified) {
+      badges.push(
+        <span
+          key="verified"
+          className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"
+        >
+          <CheckCircleIcon className="h-3 w-3 mr-1" />
+          Verificado
+        </span>
+      );
+    }
+
+    if (review.reported) {
+      badges.push(
+        <span
+          key="reported"
+          className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800"
+        >
+          <ExclamationTriangleIcon className="h-3 w-3 mr-1" />
+          Reportado
+        </span>
+      );
+    }
+
+    if (review.type === "question" && review.response) {
+      badges.push(
+        <span
+          key="answered"
+          className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+        >
+          <ChatBubbleLeftRightIcon className="h-3 w-3 mr-1" />
+          Respondida
+        </span>
+      );
+    }
+
+    return badges;
+  };
+
+  if (!session?.user || session.user.role !== "admin") {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <p className="text-red-800">
+          Acceso denegado. Solo administradores pueden ver esta página.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="bg-white rounded-lg shadow p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Gestión de Reviews y Calificaciones
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Administra las opiniones y preguntas de los productos
+            </p>
+          </div>
+        </div>
+
+        {/* Estadísticas Rápidas */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+          <div className="bg-blue-50 p-4 rounded-lg text-center">
+            <div className="text-2xl font-bold text-blue-600">
+              {stats.totalReviews || 0}
+            </div>
+            <div className="text-sm text-blue-800">Total Reviews</div>
+          </div>
+
+          <div
+            className="p-4 rounded-lg text-center"
+            style={{ backgroundColor: "rgba(246, 195, 67, 0.1)" }}
+          >
+            <div className="text-2xl font-bold" style={{ color: "#F6C343" }}>
+              {stats.totalRatings || 0}
+            </div>
+            <div className="text-sm" style={{ color: "#E5B63C" }}>
+              Calificaciones
+            </div>
+          </div>
+
+          <div className="bg-green-50 p-4 rounded-lg text-center">
+            <div className="text-2xl font-bold text-green-600">
+              {stats.totalQuestions || 0}
+            </div>
+            <div className="text-sm text-green-800">Preguntas</div>
+          </div>
+
+          <div className="bg-purple-50 p-4 rounded-lg text-center">
+            <div className="text-2xl font-bold text-purple-600">
+              {stats.averageRating ? stats.averageRating.toFixed(1) : "0.0"}
+            </div>
+            <div className="text-sm text-purple-800">Rating Promedio</div>
+          </div>
+
+          <div className="bg-emerald-50 p-4 rounded-lg text-center">
+            <div className="text-2xl font-bold text-emerald-600">
+              {stats.verifiedCount || 0}
+            </div>
+            <div className="text-sm text-emerald-800">Verificadas</div>
+          </div>
+
+          <div className="bg-red-50 p-4 rounded-lg text-center">
+            <div className="text-2xl font-bold text-red-600">
+              {stats.reportedCount || 0}
+            </div>
+            <div className="text-sm text-red-800">Reportadas</div>
+          </div>
+        </div>
+
+        {/* Distribución de Calificaciones */}
+        {stats.ratingDistribution &&
+          stats.ratingDistribution.some((count) => count > 0) && (
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h3 className="text-sm font-medium text-gray-900 mb-3">
+                Distribución de Calificaciones
+              </h3>
+              <div
+                className="space-y-2"
+                role="img"
+                aria-label="Gráfico de distribución de calificaciones"
+              >
+                {[5, 4, 3, 2, 1].map((stars) => (
+                  <div key={stars} className="flex items-center space-x-3">
+                    <span
+                      className="text-sm w-8"
+                      aria-label={`${stars} estrellas`}
+                    >
+                      {stars} ★
+                    </span>
+                    <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div
+                        className="h-full"
+                        style={{
+                          backgroundColor: "#F6C343",
+                          width:
+                            stats.totalRatings > 0
+                              ? `${
+                                  (stats.ratingDistribution[stars - 1] /
+                                    stats.totalRatings) *
+                                  100
+                                }%`
+                              : "0%",
+                        }}
+                        aria-label={`${
+                          stats.ratingDistribution[stars - 1]
+                        } reviews de ${stars} estrellas`}
+                      />
+                    </div>
+                    <span className="text-sm text-gray-600 w-12 text-right">
+                      {stats.ratingDistribution[stars - 1]}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+      </div>
+
+      {/* Filtros y Controles */}
+      <div className="bg-white rounded-lg shadow p-6">
+        {/* Pestañas */}
+        <div className="border-b border-gray-200 mb-6">
+          <nav
+            className="-mb-px flex space-x-8"
+            role="tablist"
+            aria-label="Filtros de contenido"
+          >
+            <button
+              onClick={() => {
+                setActiveTab("ratings");
+                setCurrentPage(1);
+              }}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === "ratings"
+                  ? "text-yellow-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
+              style={
+                activeTab === "ratings"
+                  ? { borderBottomColor: "#F6C343", color: "#F6C343" }
+                  : {}
+              }
+              role="tab"
+              aria-selected={activeTab === "ratings"}
+              aria-controls="ratings-panel"
+            >
+              <StarIcon className="h-4 w-4 inline mr-1" />
+              Calificaciones ({stats.totalRatings || 0})
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab("questions");
+                setCurrentPage(1);
+              }}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === "questions"
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
+              role="tab"
+              aria-selected={activeTab === "questions"}
+              aria-controls="questions-panel"
+            >
+              <ChatBubbleLeftRightIcon className="h-4 w-4 inline mr-1" />
+              Preguntas ({stats.totalQuestions || 0})
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab("all");
+                setCurrentPage(1);
+              }}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === "all"
+                  ? ""
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
+              style={
+                activeTab === "all"
+                  ? { borderBottomColor: "#F6C343", color: "#F6C343" }
+                  : {}
+              }
+              role="tab"
+              aria-selected={activeTab === "all"}
+              aria-controls="all-panel"
+            >
+              Todas ({stats.totalReviews || 0})
+            </button>
+          </nav>
+        </div>
+
+        {/* Controles de Filtro - CON ACCESIBILIDAD MEJORADA */}
+        <div className="flex flex-col lg:flex-row gap-4 mb-6">
+          {/* Búsqueda */}
+          <div className="flex-1 relative">
+            <label htmlFor="search-reviews" className="sr-only">
+              Buscar por contenido, usuario o producto
+            </label>
+            <MagnifyingGlassIcon className="h-5 w-5 absolute left-3 top-3 text-gray-400" />
+            <input
+              id="search-reviews"
+              type="text"
+              placeholder="Buscar por contenido, usuario o producto..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:border-transparent"
+              onFocus={(e) => {
+                e.target.style.borderColor = "#F6C343";
+                e.target.style.boxShadow = `0 0 0 3px rgba(246, 195, 67, 0.1)`;
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "#d1d5db";
+                e.target.style.boxShadow = "none";
+              }}
+              aria-describedby="search-help"
+            />
+            <div id="search-help" className="sr-only">
+              Busca por texto en reviews, nombres de usuario o títulos de
+              productos
+            </div>
+          </div>
+
+          {/* Filtros */}
+          <div className="flex gap-3">
+            {activeTab === "ratings" && (
+              <div>
+                <label htmlFor="rating-filter" className="sr-only">
+                  Filtrar por número de estrellas
+                </label>
+                <select
+                  id="rating-filter"
+                  value={ratingFilter}
+                  onChange={(e) => {
+                    setRatingFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2"
+                  onFocus={(e) => {
+                    e.target.style.borderColor = "#F6C343";
+                    e.target.style.boxShadow = `0 0 0 3px rgba(246, 195, 67, 0.1)`;
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "#d1d5db";
+                    e.target.style.boxShadow = "none";
+                  }}
+                  aria-describedby="rating-filter-help"
+                >
+                  <option value="all">Todas las estrellas</option>
+                  <option value="5">5 estrellas</option>
+                  <option value="4">4 estrellas</option>
+                  <option value="3">3 estrellas</option>
+                  <option value="2">2 estrellas</option>
+                  <option value="1">1 estrella</option>
+                </select>
+                <div id="rating-filter-help" className="sr-only">
+                  Filtra las reviews por número de estrellas
+                </div>
+              </div>
+            )}
+
+            <div>
+              <label htmlFor="status-filter" className="sr-only">
+                Filtrar por estado de la review
+              </label>
+              <select
+                id="status-filter"
+                value={statusFilter}
+                onChange={(e) => {
+                  setStatusFilter(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2"
+                onFocus={(e) => {
+                  e.target.style.borderColor = "#F6C343";
+                  e.target.style.boxShadow = `0 0 0 3px rgba(246, 195, 67, 0.1)`;
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = "#d1d5db";
+                  e.target.style.boxShadow = "none";
+                }}
+                aria-describedby="status-filter-help"
+              >
+                <option value="all">Todos los estados</option>
+                <option value="verified">Solo verificadas</option>
+                <option value="reported">Reportadas</option>
+                <option value="pending">Pendientes respuesta</option>
+              </select>
+              <div id="status-filter-help" className="sr-only">
+                Filtra las reviews por su estado de verificación
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="sort-filter" className="sr-only">
+                Ordenar reviews
+              </label>
+              <select
+                id="sort-filter"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2"
+                onFocus={(e) => {
+                  e.target.style.borderColor = "#F6C343";
+                  e.target.style.boxShadow = `0 0 0 3px rgba(246, 195, 67, 0.1)`;
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = "#d1d5db";
+                  e.target.style.boxShadow = "none";
+                }}
+                aria-describedby="sort-filter-help"
+              >
+                <option value="newest">Más recientes</option>
+                <option value="oldest">Más antiguas</option>
+                {activeTab === "ratings" && (
+                  <>
+                    <option value="highest">Mejor calificadas</option>
+                    <option value="lowest">Peor calificadas</option>
+                  </>
+                )}
+                <option value="helpful">Más útiles</option>
+              </select>
+              <div id="sort-filter-help" className="sr-only">
+                Cambia el orden de las reviews mostradas
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Acciones Masivas */}
+        {selectedReviews.size > 0 && (
+          <div
+            className="rounded-lg p-4 mb-6"
+            style={{
+              backgroundColor: "rgba(246, 195, 67, 0.1)",
+              borderColor: "rgba(246, 195, 67, 0.3)",
+              borderWidth: "1px",
+            }}
+            role="region"
+            aria-label="Acciones masivas"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-sm" style={{ color: "#E5B63C" }}>
+                {selectedReviews.size} reviews seleccionadas
+              </span>
+              <div className="flex items-center space-x-3">
+                <label htmlFor="bulk-action" className="sr-only">
+                  Seleccionar acción masiva
+                </label>
+                <select
+                  id="bulk-action"
+                  value={bulkAction}
+                  onChange={(e) => setBulkAction(e.target.value)}
+                  className="px-3 py-1 border rounded text-sm"
+                  style={{ borderColor: "rgba(246, 195, 67, 0.5)" }}
+                  aria-describedby="bulk-action-help"
+                >
+                  <option value="">Seleccionar acción...</option>
+                  <option value="delete">Eliminar</option>
+                  <option value="mark_verified">Marcar como verificadas</option>
+                  <option value="mark_reported">Marcar como reportadas</option>
+                  <option value="remove_reports">Quitar reportes</option>
+                </select>
+                <div id="bulk-action-help" className="sr-only">
+                  Selecciona una acción para aplicar a todas las reviews
+                  seleccionadas
+                </div>
+                <button
+                  onClick={handleBulkAction}
+                  disabled={!bulkAction}
+                  className="px-3 py-1 text-white text-sm rounded transition-colors disabled:bg-gray-400"
+                  style={{
+                    backgroundColor: !bulkAction ? "#9ca3af" : "#F6C343",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (bulkAction) {
+                      e.target.style.backgroundColor = "#E5B63C";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (bulkAction) {
+                      e.target.style.backgroundColor = "#F6C343";
+                    }
+                  }}
+                  aria-describedby="apply-action-help"
+                >
+                  Aplicar
+                </button>
+                <div id="apply-action-help" className="sr-only">
+                  {bulkAction
+                    ? `Aplicar la acción ${bulkAction} a ${selectedReviews.size} reviews seleccionadas`
+                    : "Selecciona una acción primero"}
+                </div>
+                <button
+                  onClick={() => setSelectedReviews(new Set())}
+                  className="px-3 py-1 border border-gray-300 text-gray-700 text-sm rounded hover:bg-gray-50"
+                  aria-label="Cancelar selección de reviews"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Lista de Reviews */}
+      <div className="bg-white rounded-lg shadow">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Reviews ({filteredReviews.length})
+            </h2>
+
+            {filteredReviews.length > 0 && (
+              <div className="flex items-center space-x-2">
+                <input
+                  id="select-all-reviews"
+                  type="checkbox"
+                  checked={selectedReviews.size === filteredReviews.length}
+                  onChange={toggleSelectAll}
+                  className="h-4 w-4 border-gray-300 rounded focus:ring-2"
+                  style={{
+                    accentColor: "#F6C343",
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.boxShadow = `0 0 0 3px rgba(246, 195, 67, 0.1)`;
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.boxShadow = "none";
+                  }}
+                  aria-describedby="select-all-help"
+                />
+                <label
+                  htmlFor="select-all-reviews"
+                  className="text-sm text-gray-700"
+                >
+                  Seleccionar todas
+                </label>
+                <div id="select-all-help" className="sr-only">
+                  Selecciona o deselecciona todas las reviews visibles
+                </div>
+              </div>
+            )}
+          </div>
+
+          {loading ? (
+            <div className="text-center py-8">
+              <div
+                className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-t-transparent"
+                style={{
+                  borderColor: "#F6C343",
+                  borderTopColor: "transparent",
+                }}
+                role="status"
+                aria-label="Cargando reviews"
+              ></div>
+              <p className="mt-2 text-gray-600">Cargando reviews...</p>
+            </div>
+          ) : filteredReviews.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <StarIcon className="h-12 w-12 mx-auto text-gray-300 mb-3" />
+              <p>No se encontraron reviews con los filtros aplicados</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredReviews
+                .slice(
+                  (currentPage - 1) * itemsPerPage,
+                  currentPage * itemsPerPage
+                )
+                .map((review) => (
+                  <div
+                    key={review._id}
+                    className={`border rounded-lg p-4 hover:border-gray-300 transition-colors ${
+                      selectedReviews.has(review._id) ? "" : "border-gray-200"
+                    }`}
+                    style={
+                      selectedReviews.has(review._id)
+                        ? {
+                            borderColor: "#F6C343",
+                            backgroundColor: "rgba(246, 195, 67, 0.05)",
+                          }
+                        : {}
+                    }
+                  >
+                    {/* Header de la review */}
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-start space-x-3">
+                        <input
+                          id={`select-review-${review._id}`}
+                          type="checkbox"
+                          checked={selectedReviews.has(review._id)}
+                          onChange={() => toggleSelectReview(review._id)}
+                          className="mt-1 h-4 w-4 border-gray-300 rounded focus:ring-2"
+                          style={{
+                            accentColor: "#F6C343",
+                          }}
+                          onFocus={(e) => {
+                            e.target.style.boxShadow = `0 0 0 3px rgba(246, 195, 67, 0.1)`;
+                          }}
+                          onBlur={(e) => {
+                            e.target.style.boxShadow = "none";
+                          }}
+                          aria-label={`Seleccionar review de ${
+                            review.user?.name || "usuario"
+                          }`}
+                        />
+
+                        <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                          <UserIcon className="h-5 w-5 text-gray-600" />
+                        </div>
+
+                        <div>
+                          <div className="flex items-center space-x-2">
+                            <span className="font-medium text-gray-900">
+                              {review.user?.name || "Usuario eliminado"}
+                            </span>
+                            {review.type === "rating" && (
+                              <StarRating rating={review.rating} size="sm" />
+                            )}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {review.user?.email}
+                          </div>
+                          <div className="flex items-center space-x-2 mt-1">
+                            {getStatusBadge(review)}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-gray-500">
+                          {formatDate(review.createdAt)}
+                        </span>
+
+                        <div className="flex space-x-1">
+                          <Link
+                            href={`/products/${review.product?._id}#reviews-section`}
+                            target="_blank"
+                            className="p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded"
+                            title="Ver en producto"
+                            aria-label={`Ver review en la página del producto ${review.product?.title}`}
+                          >
+                            <EyeIcon className="h-4 w-4" />
+                          </Link>
+
+                          <button
+                            onClick={() => handleDeleteReview(review._id)}
+                            className="p-1 text-red-600 hover:text-red-800 hover:bg-red-50 rounded"
+                            title="Eliminar"
+                            aria-label={`Eliminar review de ${
+                              review.user?.name || "usuario"
+                            }`}
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Información del producto */}
+                    <div className="flex items-center space-x-3 mb-3 p-3 bg-gray-50 rounded-lg">
+                      <div className="w-12 h-12 relative flex-shrink-0">
+                        <Image
+                          src={review.product?.imageUrl || "/placeholder.jpg"}
+                          alt={review.product?.title || "Producto"}
+                          fill
+                          sizes="48px"
+                          className="object-cover rounded-md"
+                        />
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900">
+                          {review.product?.title || "Producto eliminado"}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {review.type === "rating"
+                            ? "Calificación del producto"
+                            : "Pregunta sobre el producto"}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Contenido de la review */}
+                    <div className="mb-4">
+                      <h4 className="text-sm font-medium text-gray-700 mb-2">
+                        {review.type === "rating" ? "Comentario:" : "Pregunta:"}
+                      </h4>
+                      <p
+                        className={`${
+                          review.type === "rating"
+                            ? "bg-yellow-50"
+                            : "bg-blue-50"
+                        } p-3 rounded-lg text-gray-900`}
+                      >
+                        {review.comment}
+                      </p>
+                    </div>
+
+                    {/* Respuesta si es pregunta */}
+                    {review.type === "question" && review.response && (
+                      <div className="bg-green-50 border-l-4 border-green-400 p-3">
+                        <div className="flex items-center mb-1">
+                          <CheckCircleIcon className="h-4 w-4 text-green-600 mr-2" />
+                          <span className="text-sm font-medium text-green-900">
+                            Respuesta del vendedor:
+                          </span>
+                        </div>
+                        <p className="text-green-800">{review.response}</p>
+                        {review.responseDate && (
+                          <p className="text-xs text-green-600 mt-1">
+                            Respondido el {formatDate(review.responseDate)}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Información adicional */}
+                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500">
+                      <div className="flex items-center space-x-4">
+                        <span>👍 {review.helpful || 0} votos útiles</span>
+                        <span>ID: {review._id.slice(-6)}</span>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <CalendarIcon className="h-3 w-3" />
+                        <span>{formatDate(review.createdAt)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          )}
+
+          {/* Paginación - CON ACCESIBILIDAD MEJORADA */}
+          {filteredReviews.length > itemsPerPage && (
+            <nav
+              className="flex justify-center items-center space-x-2 mt-6"
+              aria-label="Paginación de reviews"
+            >
+              <button
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 border rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Ir a página anterior"
+              >
+                Anterior
+              </button>
+
+              {[...Array(Math.ceil(filteredReviews.length / itemsPerPage))].map(
+                (_, i) => (
+                  <button
+                    key={i + 1}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={`px-3 py-1 border rounded ${
+                      currentPage === i + 1
+                        ? "text-white"
+                        : "bg-white text-gray-700 hover:bg-gray-50"
+                    }`}
+                    style={
+                      currentPage === i + 1
+                        ? { backgroundColor: "#F6C343" }
+                        : {}
+                    }
+                    aria-label={`Ir a página ${i + 1}`}
+                    aria-current={currentPage === i + 1 ? "page" : undefined}
+                  >
+                    {i + 1}
+                  </button>
+                )
+              )}
+
+              <button
+                onClick={() =>
+                  setCurrentPage(
+                    Math.min(
+                      Math.ceil(filteredReviews.length / itemsPerPage),
+                      currentPage + 1
+                    )
+                  )
+                }
+                disabled={
+                  currentPage ===
+                  Math.ceil(filteredReviews.length / itemsPerPage)
+                }
+                className="px-3 py-1 border rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Ir a página siguiente"
+              >
+                Siguiente
+              </button>
+            </nav>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Agregar PropTypes para validación
+AdminReviewsPage.propTypes = {
+  // Este componente no recibe props, pero agregamos la definición por consistencia
+};
+
+export default AdminReviewsPage;

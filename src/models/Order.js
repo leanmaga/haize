@@ -1,63 +1,68 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const OrderSchema = new mongoose.Schema(
+const orderSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
       required: true,
-    },
-    orderNumber: {
-      type: String,
-      required: true,
-      unique: true,
     },
     items: [
       {
         product: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: 'Product',
+          ref: "Product",
           required: true,
         },
-        name: String,
-        image: String,
-        price: {
-          type: Number,
+        title: {
+          type: String,
           required: true,
         },
         quantity: {
           type: Number,
           required: true,
-          min: 1,
+          min: [1, "La cantidad debe ser al menos 1"],
         },
-        subtotal: {
+        price: {
           type: Number,
+          required: true,
+        },
+        imageUrl: {
+          type: String,
           required: true,
         },
       },
     ],
-    shippingAddress: {
-      fullName: {
-        type: String,
-        required: true,
-      },
-      street: {
-        type: String,
-        required: true,
-      },
-      city: {
-        type: String,
-        required: true,
-      },
-      state: {
-        type: String,
-        required: true,
-      },
-      zipCode: {
-        type: String,
-        required: true,
-      },
-      country: {
+    totalAmount: {
+      type: Number,
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: [
+        "pendiente",
+        "pagado",
+        "enviado",
+        "entregado",
+        "cancelado",
+        "whatsapp_pendiente",
+      ],
+      default: "pendiente",
+    },
+    paymentId: {
+      type: String,
+    },
+    paymentMethod: {
+      type: String,
+      required: true,
+      enum: ["mercadopago", "credit_card", "debit_card", "whatsapp"],
+    },
+    whatsappOrder: {
+      type: Boolean,
+      default: false,
+    },
+    shippingInfo: {
+      name: {
         type: String,
         required: true,
       },
@@ -65,64 +70,30 @@ const OrderSchema = new mongoose.Schema(
         type: String,
         required: true,
       },
+      email: {
+        type: String,
+        required: true,
+      },
+      address: {
+        type: String,
+        required: true,
+      },
+      city: {
+        type: String,
+        required: true,
+      },
+      postalCode: {
+        type: String,
+        required: true,
+      },
     },
-    paymentMethod: {
-      type: String,
-      required: true,
-      enum: ['mercadopago', 'cash', 'transfer'],
+    // Campo agregado para detalles del pago y/o errores
+    paymentDetails: {
+      type: Object,
+      default: {},
     },
-    paymentResult: {
-      id: String,
-      status: String,
-      update_time: String,
-      email_address: String,
-    },
-    subtotal: {
-      type: Number,
-      required: true,
-      default: 0.0,
-    },
-    shippingPrice: {
-      type: Number,
-      required: true,
-      default: 0.0,
-    },
-    taxPrice: {
-      type: Number,
-      required: true,
-      default: 0.0,
-    },
-    totalPrice: {
-      type: Number,
-      required: true,
-      default: 0.0,
-    },
-    isPaid: {
-      type: Boolean,
-      required: true,
-      default: false,
-    },
-    paidAt: {
-      type: Date,
-    },
-    isDelivered: {
-      type: Boolean,
-      required: true,
-      default: false,
-    },
-    deliveredAt: {
-      type: Date,
-    },
-    status: {
-      type: String,
-      required: true,
-      enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
-      default: 'pending',
-    },
-    trackingNumber: {
-      type: String,
-    },
-    notes: {
+    // Si usas idempotencyKey, asegúrate de incluirlo en el modelo
+    idempotencyKey: {
       type: String,
     },
   },
@@ -131,13 +102,7 @@ const OrderSchema = new mongoose.Schema(
   }
 );
 
-// Generar número de orden automáticamente
-OrderSchema.pre('save', async function (next) {
-  if (!this.orderNumber) {
-    const count = await mongoose.model('Order').countDocuments();
-    this.orderNumber = `ORD-${Date.now()}-${count + 1}`;
-  }
-  next();
-});
+// Prevenir que el modelo se sobrescriba durante el desarrollo debido al hot reloading
+const Order = mongoose.models.Order || mongoose.model("Order", orderSchema);
 
-export default mongoose.models.Order || mongoose.model('Order', OrderSchema);
+export default Order;
