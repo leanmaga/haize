@@ -1,0 +1,167 @@
+@import 'tailwindcss';
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 246, 248, 250;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Animaciones */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.product-card {
+  transition: all 0.3s ease;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Botones con animación drop personalizada */
+@layer components {
+  /* Botón original con amarillo */
+  .btn-drop {
+    background-color: #444;
+    @apply relative text-white py-3 font-medium overflow-hidden transition-all duration-300 inline-block;
+  }
+
+  .btn-drop:before {
+    content: '';
+    background-color: #ffd54f;
+    @apply absolute bottom-0 right-0 w-2 h-2 transition-all duration-500 ease-out;
+    z-index: 1;
+  }
+
+  .btn-drop:hover:before {
+    @apply w-full h-full transform origin-bottom-right;
+  }
+
+  .btn-drop span {
+    @apply relative z-10 transition-colors duration-300;
+  }
+
+  .btn-drop:hover span {
+    @apply text-black;
+  }
+
+  .btn-drop svg {
+    @apply relative z-10 transition-colors duration-300;
+  }
+
+  .btn-drop:hover svg {
+    @apply text-black;
+  }
+
+  /* Nuevo botón con color personalizado #F6C343 */
+  .btn-drop-yellow {
+    background-color: #444;
+    @apply relative text-white py-3 font-medium overflow-hidden transition-all duration-300 inline-block;
+  }
+
+  .btn-drop-yellow:before {
+    content: '';
+    background-color: #f6c343;
+    @apply absolute bottom-0 right-0 w-2 h-2 transition-all duration-500 ease-out;
+    z-index: 1;
+  }
+
+  .btn-drop-yellow:hover:before {
+    @apply w-full h-full transform origin-bottom-right;
+  }
+
+  .btn-drop-yellow span {
+    @apply relative z-10 transition-colors duration-300;
+  }
+
+  .btn-drop-yellow:hover span {
+    @apply text-black;
+  }
+
+  .btn-drop-yellow svg {
+    @apply relative z-10 transition-colors duration-300;
+  }
+
+  .btn-drop-yellow:hover svg {
+    @apply text-black;
+  }
+}
+.price-container {
+  position: relative;
+}
+
+.price-main {
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 800;
+  background: linear-gradient(135deg, #f6c343 0%, #e6b339 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+}
+
+.price-main::after {
+  content: '$';
+  position: absolute;
+  left: -16px;
+  top: 0;
+  font-size: 0.7em;
+  opacity: 0.6;
+}
