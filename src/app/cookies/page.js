@@ -15,8 +15,6 @@ export const metadata = {
   },
 };
 
-import React from 'react';
-
 const page = () => {
   return (
     <>
