@@ -1,0 +1,690 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';
+import { useForm } from 'react-hook-form';
+import {
+  ArrowLeftIcon,
+  ExclamationTriangleIcon,
+} from '@heroicons/react/24/outline';
+import MultipleImageUploader from '@/components/admin/MultipleImageUploader';
+import FormInputOptions from './FormInputOptions';
+
+const ProductForm = ({ product = null }) => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [autoCalculateMargin, setAutoCalculateMargin] = useState(true);
+  const [showFinancialInfo, setShowFinancialInfo] = useState(
+    // Mostrar abierto si el producto tiene info financiera
+    !!(product?.cost || product?.profitMargin || product?.promoPrice)
+  );
+  const [showNutritionalInfo, setShowNutritionalInfo] = useState(
+    // Mostrar si tiene info nutricional
+    !!(product?.nutritionalInfo?.calories || product?.nutritionalInfo?.protein)
+  );
+  const [validationErrors, setValidationErrors] = useState({});
+
+  // Estados para imágenes (solo URLs de Cloudinary)
+  const [mainImageUrl, setMainImageUrl] = useState(product?.imageUrl || '');
+  const [mainImageInfo, setMainImageInfo] = useState(null);
+  const [additionalImages, setAdditionalImages] = useState(
+    product?.additionalImages?.map((img) => ({
+      imageUrl: img.imageUrl,
+      description: img.description || '',
+      info: null, // Para imágenes existentes
+    })) || []
+  );
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      title: product?.title || '',
+      description: product?.description || '',
+      salePrice: product?.salePrice?.toString() || '',
+      promoPrice: product?.promoPrice?.toString() || '',
+      cost: product?.cost?.toString() || '',
+      profitMargin: product?.profitMargin?.toString() || '',
+      stock: product?.stock?.toString() || '',
+      category: product?.category || '',
+      featured: product?.featured || false,
+
+      sku: product?.sku || '',
+    },
+  });
+
+  // Observar solo los cambios necesarios
+  const watchSalePrice = watch('salePrice');
+  const watchCost = watch('cost');
+
+  // Calcular margen automáticamente
+  useEffect(() => {
+    if (autoCalculateMargin && watchSalePrice && watchCost) {
+      const salePrice = parseFloat(watchSalePrice);
+      const cost = parseFloat(watchCost);
+
+      if (salePrice > 0 && cost > 0) {
+        const margin = ((salePrice - cost) / salePrice) * 100;
+        setValue('profitMargin', Math.max(0, Math.min(100, margin)).toFixed(2));
+      }
+    }
+  }, [watchSalePrice, watchCost, autoCalculateMargin, setValue]);
+
+  // Funciones para manejar imágenes
+  const handleMainImageChange = (info, imageUrl) => {
+    setMainImageUrl(imageUrl);
+    setMainImageInfo(info);
+
+    if (validationErrors.image) {
+      setValidationErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.image;
+        return newErrors;
+      });
+    }
+  };
+
+  const handleAddImage = (info, imageUrl, color, description) => {
+    const newImage = {
+      imageUrl,
+      description: description || '',
+      info,
+    };
+    setAdditionalImages((prev) => [...prev, newImage]);
+  };
+
+  const handleRemoveImage = (index) => {
+    setAdditionalImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // Función de validación simplificada
+  const validateForm = (data) => {
+    const errors = {};
+
+    // Validar campos obligatorios
+    if (!data.title.trim()) {
+      errors.title = 'El nombre del producto es obligatorio';
+    }
+
+    if (!data.category) {
+      errors.category = 'Debes seleccionar una categoría';
+    }
+
+    if (!data.salePrice || parseFloat(data.salePrice) <= 0) {
+      errors.salePrice =
+        'El precio de venta es obligatorio y debe ser mayor a 0';
+    }
+
+    // Para productos nuevos, la imagen es obligatoria
+    if (!mainImageUrl && !product) {
+      errors.image = 'Debes subir una imagen principal del producto';
+    }
+
+    // Validaciones financieras
+    if (data.cost && parseFloat(data.cost) < 0) {
+      errors.cost = 'El costo no puede ser negativo';
+    }
+
+    if (
+      data.profitMargin &&
+      (parseFloat(data.profitMargin) < 0 || parseFloat(data.profitMargin) > 100)
+    ) {
+      errors.profitMargin = 'El margen debe estar entre 0 y 100%';
+    }
+
+    if (data.promoPrice && parseFloat(data.promoPrice) < 0) {
+      errors.promoPrice = 'El precio promocional no puede ser negativo';
+    }
+
+    if (data.stock && parseInt(data.stock) < 0) {
+      errors.stock = 'El stock no puede ser negativo';
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  // Función onSubmit simplificada
+  const onSubmit = async (data) => {
+    if (!validateForm(data)) {
+      toast.error('Por favor completa todos los campos obligatorios');
+      const firstErrorField = Object.keys(validationErrors)[0];
+      const errorElement = document.getElementById(firstErrorField);
+      if (errorElement) {
+        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Preparar datos básicos del producto
+      const productData = {
+        title: data.title.trim(),
+        description: data.description.trim(),
+        salePrice: parseFloat(data.salePrice),
+        category: data.category,
+        featured: data.featured,
+
+        // SKU si se proporciona
+        sku: data.sku || undefined,
+      };
+
+      // Campos financieros opcionales
+      if (data.promoPrice) {
+        productData.promoPrice = parseFloat(data.promoPrice);
+      }
+
+      if (data.cost) {
+        productData.cost = parseFloat(data.cost);
+      }
+
+      if (data.profitMargin) {
+        productData.profitMargin = parseFloat(data.profitMargin);
+      }
+
+      if (data.stock !== undefined && data.stock !== '') {
+        productData.stock = parseInt(data.stock) || 0;
+      }
+
+      // Imagen principal
+      if (mainImageUrl) {
+        productData.imageUrl = mainImageUrl;
+
+        if (mainImageInfo) {
+          productData.imageCloudinaryInfo = {
+            publicId: mainImageInfo.public_id,
+            format: mainImageInfo.format,
+            width: mainImageInfo.width,
+            height: mainImageInfo.height,
+            bytes: mainImageInfo.bytes,
+          };
+        }
+      }
+
+      // Imágenes adicionales
+      productData.additionalImages = additionalImages.map((img) => ({
+        imageUrl: img.imageUrl,
+        description: img.description || '',
+        ...(img.info && {
+          imageCloudinaryInfo: {
+            publicId: img.info.public_id,
+            format: img.info.format,
+            width: img.info.width,
+            height: img.info.height,
+            bytes: img.info.bytes,
+          },
+        }),
+      }));
+
+      // Enviar a API
+      const url = product ? `/api/products/${product._id}` : '/api/products';
+      const method = product ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(productData),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        console.error('❌ API Error:', error);
+        throw new Error(error.message || 'Error al guardar producto');
+      }
+
+      await response.json();
+
+      toast.success(
+        product
+          ? 'Producto actualizado correctamente'
+          : 'Producto creado correctamente'
+      );
+
+      router.push('/admin/products');
+      router.refresh();
+    } catch (error) {
+      console.error('❌ Error saving product:', error);
+      toast.error(error.message || 'Error al guardar el producto');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <button
+        type="button"
+        onClick={() => router.back()}
+        className="mb-6 inline-flex items-center text-indigo-600 hover:text-indigo-800"
+      >
+        <ArrowLeftIcon className="h-5 w-5 mr-1" />
+        Volver
+      </button>
+
+      <h1 className="text-2xl font-semibold mb-6">
+        {product ? 'Editar Producto' : 'Agregar Nuevo Producto'}
+      </h1>
+
+      {/* Mensaje de errores de validación */}
+      {Object.keys(validationErrors).length > 0 && (
+        <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex">
+            <ExclamationTriangleIcon className="h-5 w-5 text-red-600 mr-2" />
+            <div>
+              <h3 className="text-sm font-medium text-red-800">
+                Por favor completa los campos obligatorios:
+              </h3>
+              <ul className="mt-2 text-sm text-red-700 list-disc list-inside">
+                {Object.entries(validationErrors).map(([field, error]) => (
+                  <li key={field}>{error}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Columna izquierda */}
+          <div className="space-y-6">
+            {/* Información básica */}
+            <div>
+              <label
+                htmlFor="title"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Nombre del Producto <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="title"
+                type="text"
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                  validationErrors.title ? 'border-red-500' : 'border-gray-300'
+                }`}
+                placeholder="Ej: Bife Ancho Premium, Milanesa de Nalga con Panko..."
+                {...register('title')}
+              />
+              {validationErrors.title && (
+                <p className="mt-1 text-sm text-red-600">
+                  {validationErrors.title}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Descripción
+              </label>
+              <textarea
+                id="description"
+                rows="4"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 border-gray-300"
+                placeholder="Descripción detallada del producto..."
+                {...register('description')}
+              />
+            </div>
+
+            {/* Categoría */}
+            <FormInputOptions
+              id="category"
+              name="Categoria"
+              inputError={validationErrors.category}
+              register={register}
+              options={[
+                {
+                  value: 'sueter',
+                  name: 'Sueter',
+                },
+                {
+                  value: 'pantalon',
+                  name: 'Pantalon',
+                },
+                {
+                  value: 'camisa',
+                  name: 'Camisa',
+                },
+              ]}
+            />
+
+            {/* Precio de venta */}
+            <div>
+              <label
+                htmlFor="salePrice"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Precio de venta (ARS) <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                  $
+                </span>
+                <input
+                  id="salePrice"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  className={`w-full pl-7 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                    validationErrors.salePrice
+                      ? 'border-red-500'
+                      : 'border-gray-300'
+                  }`}
+                  {...register('salePrice')}
+                />
+              </div>
+              {validationErrors.salePrice && (
+                <p className="mt-1 text-sm text-red-600">
+                  {validationErrors.salePrice}
+                </p>
+              )}
+            </div>
+
+            {/* Stock */}
+            <div>
+              <label
+                htmlFor="stock"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Stock
+              </label>
+              <input
+                type="number"
+                id="stock"
+                min="0"
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                  validationErrors.stock ? 'border-red-500' : 'border-gray-300'
+                }`}
+                {...register('stock')}
+              />
+              {validationErrors.stock && (
+                <p className="mt-1 text-sm text-red-600">
+                  {validationErrors.stock}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Columna derecha */}
+          <div className="space-y-6">
+            {/* Gestión de imágenes */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Imágenes del producto{' '}
+                {!product && <span className="text-red-500">*</span>}
+              </label>
+              <div
+                className={`${
+                  validationErrors.image ? 'ring-2 ring-red-500 rounded-lg' : ''
+                }`}
+              >
+                <MultipleImageUploader
+                  mainImage={mainImageUrl}
+                  additionalImages={additionalImages}
+                  onMainImageChange={handleMainImageChange}
+                  onAddImage={handleAddImage}
+                  onRemoveImage={handleRemoveImage}
+                  descriptions={true}
+                />
+              </div>
+              {validationErrors.image && (
+                <p className="mt-1 text-sm text-red-600">
+                  {validationErrors.image}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Secciones adicionales colapsables */}
+        {/* Información financiera */}
+        <div className="border border-gray-200 rounded-lg">
+          <button
+            type="button"
+            onClick={() => setShowFinancialInfo(!showFinancialInfo)}
+            className="w-full px-4 py-3 text-left flex justify-between items-center hover:bg-gray-50"
+          >
+            <span className="text-lg font-medium text-gray-800">
+              Información financiera (opcional)
+            </span>
+            <svg
+              className={`h-5 w-5 transform transition-transform ${
+                showFinancialInfo ? 'rotate-180' : ''
+              }`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+
+          {showFinancialInfo && (
+            <div className="p-4 border-t border-gray-200 bg-gray-50 space-y-4">
+              <div>
+                <label
+                  htmlFor="cost"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Costo (ARS)
+                </label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                    $
+                  </span>
+                  <input
+                    id="cost"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    className={`w-full pl-7 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                      validationErrors.cost
+                        ? 'border-red-500'
+                        : 'border-gray-300'
+                    }`}
+                    {...register('cost')}
+                  />
+                </div>
+                <p className="mt-1 text-xs text-gray-500">
+                  Costo interno del producto (no visible para clientes)
+                </p>
+                {validationErrors.cost && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {validationErrors.cost}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label
+                  htmlFor="promoPrice"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Precio promocional (ARS)
+                </label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                    $
+                  </span>
+                  <input
+                    id="promoPrice"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    className={`w-full pl-7 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                      validationErrors.promoPrice
+                        ? 'border-red-500'
+                        : 'border-gray-300'
+                    }`}
+                    {...register('promoPrice')}
+                  />
+                </div>
+                <p className="mt-1 text-xs text-gray-500">
+                  Precio de oferta (dejar vacío si no aplica)
+                </p>
+                {validationErrors.promoPrice && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {validationErrors.promoPrice}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <div className="flex justify-between">
+                  <label
+                    htmlFor="profitMargin"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Margen de ganancia (%)
+                  </label>
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="autoCalculate"
+                      checked={autoCalculateMargin}
+                      onChange={() =>
+                        setAutoCalculateMargin(!autoCalculateMargin)
+                      }
+                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                    />
+                    <label
+                      htmlFor="autoCalculate"
+                      className="ml-2 text-xs text-gray-600"
+                    >
+                      Calcular automáticamente
+                    </label>
+                  </div>
+                </div>
+                <input
+                  type="number"
+                  id="profitMargin"
+                  step="0.01"
+                  min="0"
+                  max="100"
+                  disabled={autoCalculateMargin}
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                    validationErrors.profitMargin
+                      ? 'border-red-500'
+                      : 'border-gray-300'
+                  } ${autoCalculateMargin ? 'bg-gray-100' : ''}`}
+                  {...register('profitMargin')}
+                />
+                <p className="mt-1 text-xs text-gray-500">
+                  {autoCalculateMargin
+                    ? 'Calculado como: (precio venta - costo) / precio venta * 100'
+                    : 'Ingrese el margen manualmente (0-100%)'}
+                </p>
+                {validationErrors.profitMargin && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {validationErrors.profitMargin}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* SKU y opciones finales */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label
+              htmlFor="sku"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              SKU (Código de producto)
+            </label>
+            <input
+              type="text"
+              id="sku"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 border-gray-300"
+              placeholder="Se generará automáticamente si se deja vacío"
+              {...register('sku')}
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Código único para identificar el producto en inventario
+            </p>
+          </div>
+
+          <div className="flex items-center justify-center">
+            <div className="flex items-center">
+              <input
+                id="featured"
+                type="checkbox"
+                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                {...register('featured')}
+              />
+              <label
+                htmlFor="featured"
+                className="ml-2 block text-sm text-gray-700"
+              >
+                Producto destacado (aparecerá en la página principal)
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {/* Botones de acción */}
+        <div className="flex justify-end pt-4 border-t border-gray-200">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition mr-4"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={loading}
+          >
+            {loading ? (
+              <span className="flex items-center">
+                <svg
+                  className="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                Guardando...
+              </span>
+            ) : (
+              'Guardar Producto'
+            )}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default ProductForm;
