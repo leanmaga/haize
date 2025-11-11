@@ -1,5 +1,5 @@
 // lib/cloudinary.js
-import { v2 as cloudinary } from "cloudinary";
+import { v2 as cloudinary } from 'cloudinary';
 
 // Configurar Cloudinary
 cloudinary.config({
@@ -13,7 +13,7 @@ export const uploadImage = async (file) => {
   try {
     // Asegúrate de que file sea un string base64 o un buffer
     const result = await cloudinary.uploader.upload(file, {
-      folder: "ecommerce_products",
+      folder: 'ecommerce_products',
     });
 
     return {
@@ -21,7 +21,7 @@ export const uploadImage = async (file) => {
       publicId: result.public_id,
     };
   } catch (error) {
-    console.error("Error al subir imagen a Cloudinary:", error);
+    console.error('Error al subir imagen a Cloudinary:', error);
     throw new Error(`Error al subir la imagen: ${error.message}`);
   }
 };
@@ -30,9 +30,9 @@ export const uploadImage = async (file) => {
 export const deleteImage = async (publicId) => {
   try {
     const result = await cloudinary.uploader.destroy(publicId);
-    return { success: result.result === "ok" };
+    return { success: result.result === 'ok' };
   } catch (error) {
-    console.error("Error al eliminar imagen de Cloudinary:", error);
+    console.error('Error al eliminar imagen de Cloudinary:', error);
     throw new Error(`Error al eliminar la imagen: ${error.message}`);
   }
 };

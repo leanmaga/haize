@@ -51,6 +51,7 @@ const productSchema = new mongoose.Schema(
         'camperas',
         'chalecos',
         'trajes',
+        'sacos',
 
         // Ropa inferior
         'pantalones',
@@ -61,17 +62,36 @@ const productSchema = new mongoose.Schema(
         // Ropa interior y calcetines
         'ropa-interior',
         'medias',
+        'boxers',
+        'slips',
 
         // Calzado
         'zapatillas',
         'zapatos',
         'botas',
         'sandalias',
+        'ojotas',
 
-        // Otros
+        // Accesorios
+        'cinturones',
+        'carteras',
+        'mochilas',
+        'gorras',
+        'sombreros',
+        'bufandas',
+        'guantes',
+        'billeteras',
+        'lentes',
+        'relojes',
+
+        // Estilos
         'deportivo',
         'formal',
         'casual',
+        'urbano',
+        'elegante-sport',
+
+        // Otros
         'otros',
       ],
     },
@@ -85,6 +105,7 @@ const productSchema = new mongoose.Schema(
           size: {
             type: String,
             enum: [
+              // Talles de ropa
               'XS',
               'S',
               'M',
@@ -92,6 +113,7 @@ const productSchema = new mongoose.Schema(
               'XL',
               'XXL',
               'XXXL',
+              // Talles numéricos de pantalones y camisas
               '36',
               '38',
               '40',
@@ -100,6 +122,18 @@ const productSchema = new mongoose.Schema(
               '46',
               '48',
               '50',
+              '52',
+              // Talles de calzado (argentino)
+              '39',
+              '40',
+              '41',
+              '42',
+              '43',
+              '44',
+              '45',
+              '46',
+              // Talles únicos
+              'UNICO',
             ],
             required: true,
           },
@@ -134,6 +168,13 @@ const productSchema = new mongoose.Schema(
           },
           imageUrl: {
             type: String, // Imagen del producto en ese color
+          },
+          imageCloudinaryInfo: {
+            publicId: String,
+            format: String,
+            width: Number,
+            height: Number,
+            bytes: Number,
           },
         },
       ],
@@ -177,6 +218,29 @@ const productSchema = new mongoose.Schema(
       trim: true,
     },
 
+    // Peso (para cálculo de envío)
+    weight: {
+      type: Number,
+      min: [0, 'El peso no puede ser negativo'],
+      default: 0,
+    },
+
+    // Dimensiones del paquete (para envío)
+    dimensions: {
+      length: {
+        type: Number,
+        default: 0,
+      },
+      width: {
+        type: Number,
+        default: 0,
+      },
+      height: {
+        type: Number,
+        default: 0,
+      },
+    },
+
     // === CAMPOS DE IMAGEN ===
 
     // Imagen principal
@@ -198,8 +262,12 @@ const productSchema = new mongoose.Schema(
     additionalImages: {
       type: [
         {
-          imageUrl: String,
+          imageUrl: {
+            type: String,
+            required: true,
+          },
           description: String, // Ej: "vista frontal", "detalle", "modelo usando"
+          color: String, // Color asociado a esta imagen
           imageCloudinaryInfo: {
             publicId: String,
             format: String,
@@ -212,7 +280,21 @@ const productSchema = new mongoose.Schema(
       default: [],
     },
 
+    // === DESTACADOS Y PROMOCIONES ===
+
     featured: {
+      type: Boolean,
+      default: false,
+    },
+
+    // ✅ CAMBIO: Renombrado de isNew a productIsNew para evitar conflicto con Mongoose
+    productIsNew: {
+      type: Boolean,
+      default: false,
+    },
+
+    // Producto en oferta
+    onSale: {
       type: Boolean,
       default: false,
     },
@@ -244,21 +326,80 @@ const productSchema = new mongoose.Schema(
       default: true,
     },
 
-    // Producto nuevo
-    isNew: {
-      type: Boolean,
-      default: false,
-    },
-
     // Temporada
     season: {
       type: String,
       enum: ['primavera-verano', 'otoño-invierno', 'todo-el-año'],
       default: 'todo-el-año',
     },
+
+    // === ETIQUETAS Y FILTROS ===
+
+    // Tags para búsqueda y filtrado
+    tags: {
+      type: [String],
+      default: [],
+    },
+
+    // Estilo del producto
+    style: {
+      type: [String],
+      enum: [
+        'casual',
+        'formal',
+        'deportivo',
+        'urbano',
+        'elegante-sport',
+        'streetwear',
+        'clasico',
+        'moderno',
+      ],
+      default: [],
+    },
+
+    // Ocasión de uso
+    occasion: {
+      type: [String],
+      enum: [
+        'trabajo',
+        'fiesta',
+        'deportes',
+        'casual',
+        'playa',
+        'noche',
+        'dia',
+      ],
+      default: [],
+    },
+
+    // === SEO Y METADATA ===
+
+    // ✅ CAMBIO: Removido index: true para evitar duplicación
+    slug: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+
+    metaTitle: {
+      type: String,
+      trim: true,
+    },
+
+    metaDescription: {
+      type: String,
+      trim: true,
+    },
+
+    metaKeywords: {
+      type: [String],
+      default: [],
+    },
   },
   {
     timestamps: true,
+    // ✅ AGREGADO: Suprimir el warning de isNew
+    suppressReservedKeysWarning: true,
   }
 );
 
@@ -269,8 +410,23 @@ productSchema.index({ salePrice: 1 });
 productSchema.index({ isActive: 1 });
 productSchema.index({ brand: 1 });
 productSchema.index({ season: 1 });
-productSchema.index({ isNew: 1 });
+productSchema.index({ productIsNew: 1 }); // ✅ CAMBIO: Actualizado de isNew a productIsNew
+productSchema.index({ onSale: 1 });
 productSchema.index({ createdAt: -1 });
+// ✅ CAMBIO: Este ya crea el índice, no necesitamos index: true en el schema
+productSchema.index({ slug: 1 });
+productSchema.index({ tags: 1 });
+productSchema.index({ style: 1 });
+productSchema.index({ 'colors.name': 1 });
+productSchema.index({ 'sizes.size': 1 });
+
+// Índice de texto para búsqueda
+productSchema.index({
+  title: 'text',
+  description: 'text',
+  brand: 'text',
+  tags: 'text',
+});
 
 // Middleware pre-save para cálculos automáticos
 productSchema.pre('save', function (next) {
@@ -283,7 +439,10 @@ productSchema.pre('save', function (next) {
   if (!this.sku) {
     const categoryCode = this.category.substring(0, 3).toUpperCase();
     const timestamp = Date.now().toString().slice(-6);
-    this.sku = `${categoryCode}-${timestamp}`;
+    const random = Math.floor(Math.random() * 1000)
+      .toString()
+      .padStart(3, '0');
+    this.sku = `${categoryCode}-${timestamp}-${random}`;
   }
 
   // Calcular stock total si hay talles o colores con stock
@@ -291,6 +450,41 @@ productSchema.pre('save', function (next) {
     this.stock = this.sizes.reduce((total, size) => total + size.stock, 0);
   } else if (this.colors && this.colors.length > 0) {
     this.stock = this.colors.reduce((total, color) => total + color.stock, 0);
+  }
+
+  // Generar slug si no existe
+  if (!this.slug && this.title) {
+    this.slug = this.title
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Eliminar acentos
+      .replace(/[^a-z0-9\s-]/g, '') // Eliminar caracteres especiales
+      .replace(/\s+/g, '-') // Reemplazar espacios por guiones
+      .replace(/-+/g, '-') // Eliminar guiones duplicados
+      .trim();
+
+    // Agregar timestamp si el slug ya existe y el documento es nuevo
+    if (this.isNew) {
+      this.slug = `${this.slug}-${Date.now()}`;
+    }
+  }
+
+  // Auto-establecer onSale si hay precio promocional
+  if (this.promoPrice > 0 && this.promoPrice < this.salePrice) {
+    this.onSale = true;
+  } else {
+    this.onSale = false;
+  }
+
+  // Auto-generar meta tags si no existen
+  if (!this.metaTitle) {
+    this.metaTitle = this.title;
+  }
+
+  if (!this.metaDescription) {
+    this.metaDescription = this.description
+      ? this.description.substring(0, 160)
+      : `${this.title} - Indumentaria masculina de calidad`;
   }
 
   next();
@@ -325,6 +519,83 @@ productSchema.virtual('inStock').get(function () {
 productSchema.virtual('lowStock').get(function () {
   return this.stock > 0 && this.stock <= 5;
 });
+
+// Virtual para obtener todas las imágenes (principal + adicionales)
+productSchema.virtual('allImages').get(function () {
+  const images = [{ imageUrl: this.imageUrl, description: 'Imagen principal' }];
+  if (this.additionalImages && this.additionalImages.length > 0) {
+    images.push(...this.additionalImages);
+  }
+  return images;
+});
+
+// Virtual para verificar si tiene variantes (colores o talles)
+productSchema.virtual('hasVariants').get(function () {
+  return (
+    (this.colors && this.colors.length > 0) ||
+    (this.sizes && this.sizes.length > 0)
+  );
+});
+
+// ✅ AGREGADO: Virtual para compatibilidad con código existente que usa "isNew"
+productSchema.virtual('isNew').get(function () {
+  return this.productIsNew;
+});
+
+// Método para obtener stock de un talle específico
+productSchema.methods.getStockBySize = function (size) {
+  const sizeVariant = this.sizes.find((s) => s.size === size);
+  return sizeVariant ? sizeVariant.stock : 0;
+};
+
+// Método para obtener stock de un color específico
+productSchema.methods.getStockByColor = function (colorName) {
+  const colorVariant = this.colors.find((c) => c.name === colorName);
+  return colorVariant ? colorVariant.stock : 0;
+};
+
+// Método para actualizar stock de un talle
+productSchema.methods.updateStockBySize = function (size, quantity) {
+  const sizeVariant = this.sizes.find((s) => s.size === size);
+  if (sizeVariant) {
+    sizeVariant.stock = Math.max(0, sizeVariant.stock + quantity);
+    // Recalcular stock total
+    this.stock = this.sizes.reduce((total, s) => total + s.stock, 0);
+    return true;
+  }
+  return false;
+};
+
+// Método para actualizar stock de un color
+productSchema.methods.updateStockByColor = function (colorName, quantity) {
+  const colorVariant = this.colors.find((c) => c.name === colorName);
+  if (colorVariant) {
+    colorVariant.stock = Math.max(0, colorVariant.stock + quantity);
+    // Recalcular stock total
+    this.stock = this.colors.reduce((total, c) => total + c.stock, 0);
+    return true;
+  }
+  return false;
+};
+
+// Método para verificar disponibilidad
+productSchema.methods.isAvailable = function (size = null, color = null) {
+  if (size && this.sizes.length > 0) {
+    const sizeVariant = this.sizes.find((s) => s.size === size);
+    return sizeVariant && sizeVariant.stock > 0;
+  }
+
+  if (color && this.colors.length > 0) {
+    const colorVariant = this.colors.find((c) => c.name === color);
+    return colorVariant && colorVariant.stock > 0;
+  }
+
+  return this.stock > 0;
+};
+
+// Configurar para que los virtuals se incluyan en JSON
+productSchema.set('toJSON', { virtuals: true });
+productSchema.set('toObject', { virtuals: true });
 
 // Verificar si el modelo ya existe para evitar sobreescribirlo
 const Product =

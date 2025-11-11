@@ -1,21 +1,21 @@
-"use client";
-import { Suspense } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+'use client';
+import { Suspense } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 // Componente interno que usa useSearchParams
 function CategoryFilterContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const currentCategory = searchParams.get("category") || "all";
+  const currentCategory = searchParams.get('category') || 'all';
 
   const handleCategoryChange = (category) => {
     const params = new URLSearchParams(searchParams);
 
-    if (category === "all") {
-      params.delete("category");
+    if (category === 'all') {
+      params.delete('category');
     } else {
-      params.set("category", category);
+      params.set('category', category);
     }
 
     router.push(`${pathname}?${params.toString()}`);
@@ -28,54 +28,68 @@ function CategoryFilterContent() {
     if (isActive) {
       return {
         className:
-          "px-5 py-2 rounded-full border transition-colors text-sm text-black font-medium",
+          'px-5 py-2 rounded-full border transition-colors text-sm text-black font-medium',
         style: {
-          borderColor: "#F6C343",
-          backgroundColor: "#F6C343",
+          borderColor: '#F6C343',
+          backgroundColor: '#F6C343',
         },
       };
     } else {
       return {
         className:
-          "px-5 py-2 rounded-full border border-gray-300 transition-colors text-sm text-black hover:border-opacity-80",
+          'px-5 py-2 rounded-full border border-gray-300 transition-colors text-sm text-black hover:border-opacity-80',
         style: {
-          "&:hover": { borderColor: "#F6C343" },
+          '&:hover': { borderColor: '#F6C343' },
         },
         onMouseEnter: (e) => {
-          e.target.style.borderColor = "#F6C343";
+          e.target.style.borderColor = '#F6C343';
         },
         onMouseLeave: (e) => {
-          e.target.style.borderColor = "#d1d5db";
+          e.target.style.borderColor = '#d1d5db';
         },
       };
     }
   };
 
+  // ✅ CATEGORÍAS DE INDUMENTARIA MASCULINA
   const categories = [
-    { key: "all", label: "Todos" },
+    { key: 'all', label: 'Todos' },
 
-    // Categorías de pollería
-    { key: "pollos-enteros", label: "Pollos Enteros" },
-    { key: "cortes-pollo", label: "Cortes de Pollo" },
-    { key: "huevos", label: "Huevos" },
-    { key: "marinados-pollo", label: "Marinados de Pollo" },
-    { key: "embutidos-pollo", label: "Embutidos de Pollo" },
-    { key: "menudencias-pollo", label: "Menudencias de Pollo" },
+    // Ropa superior
+    { key: 'camisas', label: 'Camisas' },
+    { key: 'remeras', label: 'Remeras' },
+    { key: 'polos', label: 'Polos' },
+    { key: 'sweaters', label: 'Sweaters' },
+    { key: 'buzos', label: 'Buzos' },
+    { key: 'camperas', label: 'Camperas' },
+    { key: 'chalecos', label: 'Chalecos' },
+    { key: 'sacos', label: 'Sacos' },
 
-    // Categorías de carnicería
-    { key: "cortes-vacunos", label: "Cortes Vacunos" },
-    { key: "cortes-cerdo", label: "Cortes de Cerdo" },
-    { key: "cortes-cordero", label: "Cortes de Cordero" },
-    { key: "milanesas", label: "Milanesas" },
-    { key: "carne-picada", label: "Carne Picada" },
-    { key: "embutidos-vacunos", label: "Embutidos Vacunos" },
-    { key: "vísceras", label: "Vísceras" },
+    // Ropa inferior
+    { key: 'pantalones', label: 'Pantalones' },
+    { key: 'jeans', label: 'Jeans' },
+    { key: 'bermudas', label: 'Bermudas' },
+    { key: 'shorts', label: 'Shorts' },
 
-    // Categorías generales
-    { key: "productos-organicos", label: "Orgánicos" },
-    { key: "preparados", label: "Preparados" },
-    { key: "promociones", label: "Promociones" },
-    { key: "otros", label: "Otros" },
+    // Calzado
+    { key: 'zapatillas', label: 'Zapatillas' },
+    { key: 'zapatos', label: 'Zapatos' },
+    { key: 'botas', label: 'Botas' },
+    { key: 'sandalias', label: 'Sandalias' },
+
+    // Accesorios
+    { key: 'cinturones', label: 'Cinturones' },
+    { key: 'gorras', label: 'Gorras' },
+    { key: 'relojes', label: 'Relojes' },
+    { key: 'lentes', label: 'Lentes' },
+    { key: 'billeteras', label: 'Billeteras' },
+    { key: 'mochilas', label: 'Mochilas' },
+
+    // Estilos
+    { key: 'deportivo', label: 'Deportivo' },
+    { key: 'formal', label: 'Formal' },
+    { key: 'casual', label: 'Casual' },
+    { key: 'urbano', label: 'Urbano' },
   ];
 
   return (
