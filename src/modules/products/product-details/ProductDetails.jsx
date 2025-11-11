@@ -1,4 +1,4 @@
-// app/products/[id]/page.js
+// app/products/[id]/ProductDetails.jsx (or wherever this component is)
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -9,7 +9,10 @@ import StarRating from '@/components/ui/StarRating';
 import RelatedProducts from '@/components/product/RelatedProducts';
 import ProductImageSlider from '@/components/product/ProductImageSlider';
 
-export default async function ProductDetails({ id }) {
+export default async function ProductDetails({ params }) {
+  // Extract id from params
+  const { id } = params;
+
   const product = await getProductById(id);
 
   if (!product) {
@@ -27,7 +30,7 @@ export default async function ProductDetails({ id }) {
   const hasPromotion = product.promoPrice && product.promoPrice > 0;
   const displayPrice = hasPromotion ? product.promoPrice : regularPrice;
 
-  // Process images for slider - WITH DETAILED DEBUGGING
+  // Process images for slider
   let productImages = [];
 
   // Add main image if it exists
@@ -37,7 +40,7 @@ export default async function ProductDetails({ id }) {
 
   // Add additional images if they exist
   if (product.additionalImages && Array.isArray(product.additionalImages)) {
-    product.additionalImages.forEach((img, index) => {
+    product.additionalImages.forEach((img) => {
       if (img && img.imageUrl) {
         productImages.push(img.imageUrl);
       }
@@ -161,12 +164,12 @@ export default async function ProductDetails({ id }) {
                       Peso/Tamaño
                     </h3>
                     <div className="flex flex-wrap gap-2">
-                      {product.sizes.map((size) => (
+                      {product.sizes.map((size, idx) => (
                         <button
-                          key={size}
+                          key={idx}
                           className="px-3 py-1 border border-gray-300 rounded-md text-sm bg-[#F1ECE8] hover:bg-[#E8DFD6] hover:border-[#D4A63A] hover:text-[#D4A63A] focus:outline-none focus:ring-2 focus:ring-[#F6C343] transition-all duration-200"
                         >
-                          {size}
+                          {size.size}
                         </button>
                       ))}
                     </div>
@@ -179,12 +182,12 @@ export default async function ProductDetails({ id }) {
                       Tipo
                     </h3>
                     <div className="flex flex-wrap gap-2">
-                      {product.colors.map((color) => (
+                      {product.colors.map((color, idx) => (
                         <button
-                          key={color}
+                          key={idx}
                           className="px-3 py-1 border border-gray-300 rounded-md text-sm bg-[#F1ECE8] hover:bg-[#E8DFD6] hover:border-[#D4A63A] hover:text-[#D4A63A] focus:outline-none focus:ring-2 focus:ring-[#F6C343] transition-all duration-200"
                         >
-                          {color}
+                          {color.name}
                         </button>
                       ))}
                     </div>
@@ -231,17 +234,12 @@ export default async function ProductDetails({ id }) {
                     Disponibilidad:{' '}
                     {product.stock > 0 ? 'Disponible' : 'Agotado'}
                   </li>
-                  {product.material && <li>Tipo: {product.material}</li>}
-                  {product.gender && (
-                    <li>
-                      Corte:{' '}
-                      {product.gender.charAt(0).toUpperCase() +
-                        product.gender.slice(1)}
-                    </li>
+                  {product.material && <li>Material: {product.material}</li>}
+                  {product.brand && <li>Marca: {product.brand}</li>}
+                  {product.origin && <li>Origen: {product.origin}</li>}
+                  {product.composition && product.composition.length > 0 && (
+                    <li>Composición: {product.composition.join(', ')}</li>
                   )}
-                  {product.style && <li>Preparación: {product.style}</li>}
-                  <li>Frescura: Elaborado diariamente</li>
-                  <li>Empaque: Listo para freezer</li>
                 </ul>
               </details>
             </div>

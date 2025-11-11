@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 import {
   XCircleIcon,
   PhotoIcon,
   PlusCircleIcon,
-} from "@heroicons/react/24/outline";
+} from '@heroicons/react/24/outline';
 
 export default function MultipleImageUploader({
   mainImage,
@@ -12,110 +12,171 @@ export default function MultipleImageUploader({
   onAddImage,
   onRemoveImage,
   colors = [],
-  descriptions = false, // Para permitir descripciones en imágenes adicionales
+  descriptions = false,
 }) {
   const mainWidgetRef = useRef(null);
   const addWidgetRef = useRef(null);
-  const [selectedColor, setSelectedColor] = useState("");
-  const [selectedDescription, setSelectedDescription] = useState("");
+  const [selectedColor, setSelectedColor] = useState('');
+  const [selectedDescription, setSelectedDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [mainImageLoading, setMainImageLoading] = useState(false);
   const [mainImageError, setMainImageError] = useState(false);
+  const [cloudinaryLoaded, setCloudinaryLoaded] = useState(false);
+  const [initError, setInitError] = useState(null);
 
-  // Inicializar widgets de Cloudinary
+  // Cargar script de Cloudinary
   useEffect(() => {
-    if (typeof window === "undefined" || !window.cloudinary) {
+    // Verificar si ya existe el script
+    if (document.getElementById('cloudinary-widget-script')) {
+      if (window.cloudinary) {
+        setCloudinaryLoaded(true);
+      }
       return;
     }
 
+    // Crear y cargar el script
+    const script = document.createElement('script');
+    script.id = 'cloudinary-widget-script';
+    script.src = 'https://upload-widget.cloudinary.com/global/all.js';
+    script.async = true;
+
+    script.onload = () => {
+      console.log('✅ Script de Cloudinary cargado correctamente');
+      setCloudinaryLoaded(true);
+    };
+
+    script.onerror = () => {
+      console.error('❌ Error al cargar el script de Cloudinary');
+      setInitError(
+        'No se pudo cargar el widget de Cloudinary. Por favor, recarga la página.'
+      );
+    };
+
+    document.body.appendChild(script);
+
+    return () => {
+      // Limpiar si el componente se desmonta
+      const existingScript = document.getElementById(
+        'cloudinary-widget-script'
+      );
+      if (existingScript && existingScript.parentNode) {
+        existingScript.parentNode.removeChild(existingScript);
+      }
+    };
+  }, []);
+
+  // Inicializar widgets de Cloudinary solo cuando el script esté cargado
+  useEffect(() => {
+    if (!cloudinaryLoaded || !window.cloudinary) {
+      console.log('⏳ Esperando a que Cloudinary se cargue...');
+      return;
+    }
+
+    // Validar variables de entorno
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    if (!cloudName) {
+      const error = '❌ NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME no está configurado';
+      console.error(error);
+      setInitError(
+        'Error de configuración: Cloud Name no encontrado. Verifica tus variables de entorno.'
+      );
+      return;
+    }
+
+    console.log('🔧 Inicializando widgets de Cloudinary...');
+    console.log('Cloud Name:', cloudName);
+
     try {
+      const widgetConfig = {
+        cloudName: cloudName,
+        uploadPreset: 'haizeecommerce',
+        sources: ['local', 'camera'],
+        multiple: false,
+        maxFiles: 1,
+        folder: 'ecommerce_products',
+        language: 'es',
+        text: {
+          es: {
+            menu: {
+              files: 'Mis archivos',
+              camera: 'Cámara',
+            },
+            local: {
+              browse: 'Examinar',
+              dd_title_single: 'Arrastra y suelta una imagen aquí',
+              drop_title_single: 'Suelta un archivo para subir',
+            },
+            or: 'O',
+            back: 'Atrás',
+            close: 'Cerrar',
+            crop: {
+              title: 'Cortar',
+              crop_btn: 'Recortar',
+              skip_btn: 'Saltar',
+            },
+          },
+        },
+        cropping: true,
+        croppingAspectRatio: 0,
+        croppingDefaultSelectionRatio: 0.8,
+        croppingShowDimensions: true,
+        croppingCoordinatesMode: 'custom',
+        showSkipCropButton: true,
+        clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp'],
+        maxImageFileSize: 10000000,
+        showAdvancedOptions: false,
+        theme: 'minimal',
+        styles: {
+          palette: {
+            window: '#FFFFFF',
+            windowBorder: '#90A0B3',
+            tabIcon: '#4F46E5',
+            menuIcons: '#5A616A',
+            textDark: '#000000',
+            textLight: '#FFFFFF',
+            link: '#4F46E5',
+            action: '#339933',
+            inactiveTabIcon: '#B3B3B3',
+            error: '#F44235',
+            inProgress: '#0078FF',
+            complete: '#20B832',
+            sourceBg: '#E4EBF1',
+          },
+        },
+      };
+
       // Widget para imagen principal
       if (!mainWidgetRef.current) {
-        const config = {
-          cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-          uploadPreset: "PolleriaPatagonia",
-          sources: ["local", "camera"],
-          multiple: false,
-          maxFiles: 1,
-          folder: "ecommerce_products",
-          language: "es",
-          text: {
-            es: {
-              menu: {
-                files: "Mis archivos",
-                camera: "Cámara",
-              },
-              local: {
-                browse: "Examinar",
-                dd_title_single: "Arrastra y suelta una imagen aquí",
-                drop_title_single: "Suelta un archivo para subir",
-              },
-              or: "O",
-              back: "Atrás",
-              close: "Cerrar",
-              crop: {
-                title: "Cortar",
-                crop_btn: "Recortar",
-                skip_btn: "Salir",
-              },
-            },
-          },
-          cropping: true,
-          croppingAspectRatio: 0,
-          croppingDefaultSelectionRatio: 0.8,
-          croppingShowDimensions: true,
-          croppingCoordinatesMode: "custom",
-          showSkipCropButton: true,
-          clientAllowedFormats: ["jpg", "jpeg", "png", "webp"],
-          maxImageFileSize: 10000000,
-          showAdvancedOptions: false,
-          theme: "minimal",
-          styles: {
-            palette: {
-              window: "#FFFFFF",
-              windowBorder: "#90A0B3",
-              tabIcon: "#4F46E5",
-              menuIcons: "#5A616A",
-              textDark: "#000000",
-              textLight: "#FFFFFF",
-              link: "#4F46E5",
-              action: "#339933",
-              inactiveTabIcon: "#B3B3B3",
-              error: "#F44235",
-              inProgress: "#0078FF",
-              complete: "#20B832",
-              sourceBg: "#E4EBF1",
-            },
-          },
-        };
-
+        console.log('📸 Creando widget de imagen principal...');
         mainWidgetRef.current = window.cloudinary.createUploadWidget(
-          config,
+          widgetConfig,
           (error, result) => {
             if (error) {
-              console.error("❌ Error en imagen principal:", error);
+              console.error('❌ Error en imagen principal:', error);
 
-              if (error.status === "Upload preset not found") {
-                alert(
-                  "Error: El upload preset 'PolleriaPatagonia' no existe. Verifica en tu dashboard de Cloudinary."
-                );
-              } else if (error.status === "Invalid cloud name") {
-                alert(
-                  "Error: Cloud name inválido. Verifica NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME"
-                );
-              } else {
-                alert(
-                  `Error al subir imagen: ${
-                    error.statusText || error.message || "Error desconocido"
-                  }`
-                );
+              let errorMessage = 'Error al subir imagen';
+
+              if (error.status === 'Upload preset not found') {
+                errorMessage =
+                  "El upload preset 'haizeecommerce' no existe en Cloudinary. Ve a Settings > Upload > Upload presets y créalo.";
+              } else if (error.status === 'Invalid cloud name') {
+                errorMessage =
+                  'Cloud name inválido. Verifica NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME en tu archivo .env.local';
+              } else if (error.statusText) {
+                errorMessage = error.statusText;
+              } else if (error.message) {
+                errorMessage = error.message;
               }
 
+              alert(errorMessage);
               setIsLoading(false);
               return;
             }
 
-            if (result.event === "success") {
+            console.log('📡 Evento del widget principal:', result.event);
+
+            if (result.event === 'success') {
+              console.log('✅ Imagen principal subida:', result.info);
               let imageUrl = result.info.secure_url;
 
               // Aplicar recorte si existe
@@ -127,9 +188,10 @@ export default function MultipleImageUploader({
                 const coords = result.info.coordinates.custom[0];
                 const transformation = `/c_crop,x_${coords[0]},y_${coords[1]},w_${coords[2]},h_${coords[3]}/`;
                 imageUrl = imageUrl.replace(
-                  "/upload/",
+                  '/upload/',
                   `/upload${transformation}`
                 );
+                console.log('✂️ Imagen recortada:', imageUrl);
               }
 
               setMainImageError(false);
@@ -137,47 +199,46 @@ export default function MultipleImageUploader({
               onMainImageChange(result.info, imageUrl);
             }
 
-            if (result.event === "queues-start") {
+            if (result.event === 'queues-start') {
+              console.log('⏳ Iniciando cola de subida...');
               setIsLoading(true);
             }
 
-            if (result.event === "queues-end") {
+            if (result.event === 'queues-end') {
+              console.log('✅ Cola de subida finalizada');
               setIsLoading(false);
             }
           }
         );
+        console.log('✅ Widget de imagen principal creado');
       }
 
       // Widget para imágenes adicionales
       if (!addWidgetRef.current) {
+        console.log('📸 Creando widget de imágenes adicionales...');
         addWidgetRef.current = window.cloudinary.createUploadWidget(
-          {
-            cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-            uploadPreset: "PolleriaPatagonia",
-            sources: ["local", "camera"],
-            multiple: false,
-            maxFiles: 1,
-            folder: "ecommerce_products",
-            language: "es",
-            cropping: true,
-            croppingAspectRatio: 0,
-            clientAllowedFormats: ["jpg", "jpeg", "png", "webp"],
-            maxImageFileSize: 10000000,
-            theme: "minimal",
-          },
+          widgetConfig,
           (error, result) => {
             if (error) {
-              console.error("❌ Error en imagen adicional:", error);
-              alert(
-                `Error al subir imagen adicional: ${
-                  error.statusText || error.message
-                }`
-              );
+              console.error('❌ Error en imagen adicional:', error);
+
+              let errorMessage = 'Error al subir imagen adicional';
+
+              if (error.statusText) {
+                errorMessage = error.statusText;
+              } else if (error.message) {
+                errorMessage = error.message;
+              }
+
+              alert(errorMessage);
               setIsLoading(false);
               return;
             }
 
-            if (result.event === "success") {
+            console.log('📡 Evento del widget adicional:', result.event);
+
+            if (result.event === 'success') {
+              console.log('✅ Imagen adicional subida:', result.info);
               let imageUrl = result.info.secure_url;
 
               // Aplicar recorte si existe
@@ -189,9 +250,10 @@ export default function MultipleImageUploader({
                 const coords = result.info.coordinates.custom[0];
                 const transformation = `/c_crop,x_${coords[0]},y_${coords[1]},w_${coords[2]},h_${coords[3]}/`;
                 imageUrl = imageUrl.replace(
-                  "/upload/",
+                  '/upload/',
                   `/upload${transformation}`
                 );
+                console.log('✂️ Imagen recortada:', imageUrl);
               }
 
               onAddImage(
@@ -200,35 +262,62 @@ export default function MultipleImageUploader({
                 selectedColor,
                 selectedDescription
               );
-              setSelectedColor("");
-              setSelectedDescription("");
+              setSelectedColor('');
+              setSelectedDescription('');
             }
 
-            if (result.event === "queues-start") {
+            if (result.event === 'queues-start') {
+              console.log('⏳ Iniciando cola de subida...');
               setIsLoading(true);
             }
 
-            if (result.event === "queues-end") {
+            if (result.event === 'queues-end') {
+              console.log('✅ Cola de subida finalizada');
               setIsLoading(false);
             }
           }
         );
+        console.log('✅ Widget de imágenes adicionales creado');
       }
+
+      setInitError(null);
     } catch (initError) {
-      console.error("❌ Error al inicializar widgets:", initError);
+      console.error('❌ Error al inicializar widgets:', initError);
+      setInitError(
+        `Error al inicializar el sistema de carga: ${initError.message}`
+      );
     }
-  }, [onMainImageChange, onAddImage, selectedColor, selectedDescription]);
+  }, [
+    cloudinaryLoaded,
+    onMainImageChange,
+    onAddImage,
+    selectedColor,
+    selectedDescription,
+  ]);
 
   const handleMainImageClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
 
+    if (!cloudinaryLoaded) {
+      alert(
+        'El sistema de carga aún no está listo. Por favor, espera unos segundos.'
+      );
+      return;
+    }
+
+    if (initError) {
+      alert(initError);
+      return;
+    }
+
     if (!isLoading && mainWidgetRef.current) {
       try {
+        console.log('🚀 Abriendo widget de imagen principal...');
         mainWidgetRef.current.open();
       } catch (error) {
-        console.error("❌ Error opening main widget:", error);
-        alert(`Error al abrir el widget: ${error.message}`);
+        console.error('❌ Error opening main widget:', error);
+        alert(`Error al abrir el selector de imágenes: ${error.message}`);
       }
     }
   };
@@ -237,12 +326,25 @@ export default function MultipleImageUploader({
     e.preventDefault();
     e.stopPropagation();
 
+    if (!cloudinaryLoaded) {
+      alert(
+        'El sistema de carga aún no está listo. Por favor, espera unos segundos.'
+      );
+      return;
+    }
+
+    if (initError) {
+      alert(initError);
+      return;
+    }
+
     if (!isLoading && addWidgetRef.current) {
       try {
+        console.log('🚀 Abriendo widget de imagen adicional...');
         addWidgetRef.current.open();
       } catch (error) {
-        console.error("❌ Error opening add widget:", error);
-        alert(`Error al abrir el widget: ${error.message}`);
+        console.error('❌ Error opening add widget:', error);
+        alert(`Error al abrir el selector de imágenes: ${error.message}`);
       }
     }
   };
@@ -264,6 +366,64 @@ export default function MultipleImageUploader({
     }
   }, [mainImage]);
 
+  // Mostrar error de inicialización
+  if (initError) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg
+                className="h-5 w-5 text-red-400"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-800">
+                Error de configuración
+              </h3>
+              <div className="mt-2 text-sm text-red-700">
+                <p>{initError}</p>
+              </div>
+              <div className="mt-4">
+                <button
+                  type="button"
+                  onClick={() => window.location.reload()}
+                  className="bg-red-100 px-3 py-2 rounded-md text-sm font-medium text-red-800 hover:bg-red-200"
+                >
+                  Recargar página
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Mostrar mensaje de carga
+  if (!cloudinaryLoaded) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-center">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-3"></div>
+            <p className="text-sm text-blue-700">
+              Cargando sistema de imágenes...
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Imagen principal */}
@@ -278,8 +438,8 @@ export default function MultipleImageUploader({
           onClick={handleMainImageClick}
           className={`border-2 border-dashed rounded-lg p-4 w-full text-center relative transition-colors cursor-pointer ${
             isLoading
-              ? "bg-gray-100 cursor-not-allowed border-gray-300"
-              : "hover:bg-gray-50 border-gray-300 hover:border-indigo-400"
+              ? 'bg-gray-100 cursor-not-allowed border-gray-300'
+              : 'hover:bg-gray-50 border-gray-300 hover:border-indigo-400'
           }`}
         >
           {isLoading ? (
@@ -322,7 +482,7 @@ export default function MultipleImageUploader({
                   src={mainImage}
                   alt="Principal"
                   className={`mx-auto max-h-40 object-contain transition-opacity duration-300 ${
-                    mainImageLoading ? "opacity-0" : "opacity-100"
+                    mainImageLoading ? 'opacity-0' : 'opacity-100'
                   }`}
                   onLoad={handleMainImageLoad}
                   onError={handleMainImageError}
@@ -436,8 +596,8 @@ export default function MultipleImageUploader({
             onClick={handleAddImageClick}
             className={`border-2 border-dashed rounded-lg p-4 w-full text-center relative transition-colors cursor-pointer ${
               isLoading
-                ? "bg-gray-100 cursor-not-allowed border-gray-300"
-                : "hover:bg-gray-50 border-gray-300 hover:border-indigo-400"
+                ? 'bg-gray-100 cursor-not-allowed border-gray-300'
+                : 'hover:bg-gray-50 border-gray-300 hover:border-indigo-400'
             }`}
           >
             {isLoading ? (

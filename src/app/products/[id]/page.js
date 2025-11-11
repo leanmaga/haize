@@ -1,6 +1,8 @@
+// app/products/[id]/page.js
 import { Suspense } from 'react';
+import { getProductById } from '@/lib/data';
 import ProductDetails from '@/modules/products/product-details/ProductDetails';
-import ProductDetailsSkeleton from '@/products/product-details/ProductSkeleton';
+import ProductDetailsSkeleton from '@/modules/products/product-details/ProductSkeleton';
 
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
@@ -20,12 +22,12 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ProductPage({ params }) {
-  // AWAIT params before accessing its properties
+  // Await params before accessing its properties
   const resolvedParams = await params;
 
   return (
     <Suspense fallback={<ProductDetailsSkeleton />}>
-      <ProductDetails id={resolvedParams.id} />
+      <ProductDetails params={resolvedParams} />
     </Suspense>
   );
 }
