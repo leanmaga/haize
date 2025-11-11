@@ -1,9 +1,8 @@
-import { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
-import connectDB from "./db";
-import User from "@/models/User";
-import bcrypt from "bcryptjs";
+// lib/auth.js
+import GoogleProvider from 'next-auth/providers/google';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import connectDB from '@/lib/db';
+import User from '@/models/User';
 
 export const authOptions = {
   providers: [
@@ -12,194 +11,163 @@ export const authOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       authorization: {
         params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code",
+          prompt: 'consent',
+          access_type: 'offline',
+          response_type: 'code',
         },
-      },
-      profile(profile) {
-        return {
-          id: profile.sub,
-          name: profile.name,
-          email: profile.email,
-          image: profile.picture,
-          role: "user",
-          phone: "",
-          isVerified: true, // Usuarios de Google se consideran verificados automáticamente
-        };
       },
     }),
     CredentialsProvider({
-      name: "credentials",
+      name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
         try {
-          // Check if credentials are provided
-          if (!credentials?.email || !credentials?.password) {
-            return null;
-          }
-
-          // Connect to database
           await connectDB();
 
-          // Find user by email
-          let user = await User.findOne({ email: credentials.email });
+          const user = await User.findOne({ email: credentials.email }).select(
+            '+password +isVerified'
+          );
 
-          // If no user found
           if (!user) {
-            return null;
+            throw new Error('Credenciales incorrectas');
           }
 
-          // Recargar el usuario CON password
-          user = await User.findById(user._id).select("+password");
-
-          // Check if user is Google-only account without password
-          if (user.googleAuth && !user.password) {
-            return null;
+          // Verificar si el usuario está verificado
+          if (!user.isVerified && !user.googleAuth) {
+            throw new Error(
+              'Tu cuenta no está verificada. Por favor, revisa tu correo y verifica tu cuenta.'
+            );
           }
 
-          const isPasswordValid = await bcrypt.compare(
-            credentials.password,
-            user.password
+          const isPasswordValid = await user.comparePassword(
+            credentials.password
           );
 
           if (!isPasswordValid) {
-            return null;
+            throw new Error('Credenciales incorrectas');
           }
 
-          // Comprobar si el usuario está verificado
-          if (!user.isVerified && !user.googleAuth) {
-            // Devolver un objeto especial para indicar que el usuario no está verificado
-            return {
-              id: user._id.toString(),
-              name: user.name,
-              email: user.email,
-              phone: user.phone || "",
-              role: user.role || "user",
-              isVerified: false,
-              notVerified: true, // Campo especial para manejar en el cliente
-            };
-          }
-
-          // Return user data
           return {
             id: user._id.toString(),
-            name: user.name,
             email: user.email,
-            phone: user.phone || "",
-            role: user.role || "user",
-            isVerified: user.isVerified || false,
+            name: user.name,
+            role: user.role,
+            image: user.image,
           };
         } catch (error) {
-          console.error("ERROR GENERAL en NextAuth authorize:", error);
-          return null;
+          console.error('Error en authorize:', error);
+          throw error;
         }
       },
     }),
   ],
-  pages: {
-    signIn: "/auth/login",
-    signOut: "/auth/logout",
-    error: "/auth/error",
-  },
   callbacks: {
-    async redirect({ url, baseUrl }) {
-      if (
-        url.startsWith(baseUrl) ||
-        url.startsWith("/") ||
-        url.includes(baseUrl)
-      ) {
-        return url;
-      }
-      return baseUrl;
-    },
     async signIn({ user, account, profile }) {
-      // Google sign-in handling
-      if (account.provider === "google") {
-        try {
+      try {
+        // Solo procesar para Google OAuth
+        if (account?.provider === 'google') {
           await connectDB();
-          const existing = await User.findOne({ email: profile.email });
 
-          if (existing) {
-            // Update existing user with Google info
-            await User.findByIdAndUpdate(existing._id, {
-              googleAuth: true,
-              image: profile.picture,
-              isVerified: true, // Al usar Google, marcamos como verificado
-            });
-
-            user.id = existing._id.toString();
-            user.role = existing.role;
-            user.phone = existing.phone || "";
-            user.isVerified = true;
-            return true;
-          }
-
-          // Create new user for Google login
-          const newUser = await User.create({
-            name: profile.name,
-            email: profile.email,
-            role: "user",
-            googleAuth: true,
-            image: profile.picture,
-            isVerified: true, // Al usar Google, marcamos como verificado
+          // Buscar usuario por email o googleId
+          let dbUser = await User.findOne({
+            $or: [{ email: profile.email }, { googleId: profile.sub }],
           });
 
-          user.id = newUser._id.toString();
-          user.role = newUser.role;
-          user.phone = newUser.phone || "";
-          user.isVerified = true;
-          return true;
-        } catch (error) {
-          console.error("Google sign-in error:", error);
-          return false;
-        }
-      } else if (account.provider === "credentials") {
-        // Si el usuario tiene el flag notVerified, rechazar el inicio de sesión
-        if (user.notVerified) {
-          throw new Error(
-            "Usuario no verificado. Por favor verifica tu correo electrónico."
-          );
-        }
-        return true;
-      }
+          if (dbUser) {
+            // Usuario existe
+            // Actualizar googleId si no está presente
+            if (!dbUser.googleId) {
+              dbUser.googleId = profile.sub;
+              dbUser.googleAuth = true;
+              // Si el usuario no tiene imagen, usar la de Google
+              if (!dbUser.image && profile.picture) {
+                dbUser.image = profile.picture;
+              }
+              await dbUser.save();
+            }
+          } else {
+            // Crear nuevo usuario con Google
+            dbUser = await User.create({
+              email: profile.email,
+              name: profile.name || profile.email.split('@')[0],
+              googleId: profile.sub,
+              googleAuth: true,
+              image: profile.picture || '',
+              role: 'user',
+              isVerified: true, // Los usuarios de Google están automáticamente verificados
+            });
+          }
 
-      return true;
+          // Guardar el ID del usuario en el objeto user para usarlo en el callback session
+          user.id = dbUser._id.toString();
+          user.role = dbUser.role;
+        }
+
+        return true;
+      } catch (error) {
+        console.error('Error en signIn callback:', error);
+        return false;
+      }
     },
     async jwt({ token, user, account }) {
+      // Cuando el usuario inicia sesión por primera vez
       if (user) {
         token.id = user.id;
-        token.role = user.role || "user";
-        token.phone = user.phone || "";
-        token.isVerified = user.isVerified || false; // Guardar en el token si está verificado
+        token.role = user.role;
+      }
 
-        if (account?.provider === "google") {
-          token.googleAuth = true;
-          token.isVerified = true; // Los usuarios de Google siempre se consideran verificados
+      // Para Google OAuth, asegurarnos de tener el role
+      if (account?.provider === 'google' && token.email) {
+        try {
+          await connectDB();
+          const dbUser = await User.findOne({ email: token.email });
+          if (dbUser) {
+            token.id = dbUser._id.toString();
+            token.role = dbUser.role;
+          }
+        } catch (error) {
+          console.error('Error al obtener role del usuario:', error);
         }
       }
+
       return token;
     },
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id;
-        session.user.role = token.role || "user";
-        session.user.phone = token.phone || "";
-        session.user.googleAuth = token.googleAuth || false;
-        session.user.isVerified = token.isVerified || false; // Incluir en la sesión
+        session.user.role = token.role;
       }
+
+      // Asegurarnos de que el usuario tenga la información actualizada
+      if (session.user.email) {
+        try {
+          await connectDB();
+          const dbUser = await User.findOne({ email: session.user.email });
+          if (dbUser) {
+            session.user.id = dbUser._id.toString();
+            session.user.role = dbUser.role;
+            session.user.name = dbUser.name;
+            session.user.image = dbUser.image;
+          }
+        } catch (error) {
+          console.error('Error al actualizar sesión:', error);
+        }
+      }
+
       return session;
     },
   },
+  pages: {
+    signIn: '/auth/login',
+    error: '/auth/error',
+  },
   session: {
-    strategy: "jwt",
-    maxAge: 8 * 60 * 60, // 8 hours
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 días
   },
   secret: process.env.NEXTAUTH_SECRET,
-  useSecureCookies: process.env.NODE_ENV === "production",
+  debug: process.env.NODE_ENV === 'development',
 };
-
-export default authOptions;

@@ -1,27 +1,27 @@
-import connectDB from "./db";
-import Product from "@/models/Product";
-import User from "@/models/User";
-import Order from "@/models/Order";
+import connectDB from './db';
+import Product from '@/models/Product';
+import User from '@/models/User';
+import Order from '@/models/Order';
 
 // Función para obtener productos destacados
 export async function getFeaturedProducts() {
   try {
-    console.log("Conectando a la base de datos...");
+    console.log('Conectando a la base de datos...');
     await connectDB();
-    console.log("Conexión exitosa, buscando productos...");
+    console.log('Conexión exitosa, buscando productos...');
 
     const featuredProducts = await Product.find({ featured: true }).limit(8);
-    console.log("Productos encontrados:", featuredProducts.length);
+    console.log('Productos encontrados:', featuredProducts.length);
 
     if (featuredProducts.length === 0) {
       const regularProducts = await Product.find().limit(8);
-      console.log("Productos regulares encontrados:", regularProducts.length);
+      console.log('Productos regulares encontrados:', regularProducts.length);
       return JSON.parse(JSON.stringify(regularProducts));
     }
 
     return JSON.parse(JSON.stringify(featuredProducts));
   } catch (error) {
-    console.error("Error completo:", error);
+    console.error('Error completo:', error);
     throw new Error(`Error al obtener productos destacados: ${error.message}`);
   }
 }
@@ -33,7 +33,7 @@ export async function getProducts(options = {}) {
 
     const {
       category,
-      sort = "createdAt",
+      sort = 'createdAt',
       order = -1,
       limit = 100,
       page = 1,
@@ -44,7 +44,7 @@ export async function getProducts(options = {}) {
 
     let query = {};
 
-    if (category && category !== "all") {
+    if (category && category !== 'all') {
       query.category = category;
     }
 
@@ -64,7 +64,7 @@ export async function getProducts(options = {}) {
       },
     };
   } catch (error) {
-    console.error("Error al obtener productos:", error);
+    console.error('Error al obtener productos:', error);
     return { products: [], pagination: { total: 0, page: 1, pages: 0 } };
   }
 }
@@ -81,49 +81,49 @@ export async function getProductById(id) {
 
     return JSON.parse(JSON.stringify(product));
   } catch (error) {
-    console.error("Error al obtener producto por ID:", error);
+    console.error('Error al obtener producto por ID:', error);
     return null;
   }
 }
 
 export async function getOrderById(id) {
   try {
-    console.log("🔍 getOrderById llamada con ID:", id);
+    console.log('🔍 getOrderById llamada con ID:', id);
 
     // Validar que el ID no esté vacío
     if (!id) {
-      console.log("❌ ID no proporcionado");
+      console.log('❌ ID no proporcionado');
       return null;
     }
 
     // Validar que el ID tenga formato válido de MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      console.log("❌ ID no es un ObjectId válido:", id);
+      console.log('❌ ID no es un ObjectId válido:', id);
       return null;
     }
 
     // Conectar a la base de datos
-    console.log("🔌 Conectando a la base de datos...");
+    console.log('🔌 Conectando a la base de datos...');
     await connectDB();
-    console.log("✅ Conectado a la base de datos");
+    console.log('✅ Conectado a la base de datos');
 
     // Buscar la orden
-    console.log("🔍 Buscando orden con ID:", id);
+    console.log('🔍 Buscando orden con ID:', id);
     const order = await Order.findById(id).lean(); // .lean() para mejor performance
 
     if (!order) {
-      console.log("❌ Orden no encontrada para ID:", id);
+      console.log('❌ Orden no encontrada para ID:', id);
       return null;
     }
 
-    console.log("✅ Orden encontrada:", order._id);
+    console.log('✅ Orden encontrada:', order._id);
 
     // Convertir el objeto a JSON serializable
     const serializedOrder = JSON.parse(JSON.stringify(order));
 
     return serializedOrder;
   } catch (error) {
-    console.error("❌ Error completo en getOrderById:", {
+    console.error('❌ Error completo en getOrderById:', {
       message: error.message,
       stack: error.stack,
       id: id,
@@ -142,7 +142,7 @@ export async function getUserOrders(userId) {
     const orders = await Order.find({ user: userId }).sort({ createdAt: -1 });
     return JSON.parse(JSON.stringify(orders));
   } catch (error) {
-    console.error("Error al obtener órdenes del usuario:", error);
+    console.error('Error al obtener órdenes del usuario:', error);
     return [];
   }
 }
@@ -152,11 +152,11 @@ export async function getAllOrders() {
   try {
     await connectDB();
     const orders = await Order.find()
-      .populate("user", "name email phone")
+      .populate('user', 'name email phone')
       .sort({ createdAt: -1 });
     return JSON.parse(JSON.stringify(orders));
   } catch (error) {
-    console.error("Error al obtener todas las órdenes:", error);
+    console.error('Error al obtener todas las órdenes:', error);
     return [];
   }
 }
@@ -165,10 +165,10 @@ export async function getAllOrders() {
 export async function getAllUsers() {
   try {
     await connectDB();
-    const users = await User.find().select("-password").sort({ createdAt: -1 });
+    const users = await User.find().select('-password').sort({ createdAt: -1 });
     return JSON.parse(JSON.stringify(users));
   } catch (error) {
-    console.error("Error al obtener usuarios:", error);
+    console.error('Error al obtener usuarios:', error);
     return [];
   }
 }
@@ -193,7 +193,7 @@ export async function getRelatedProducts(
 
     return JSON.parse(JSON.stringify(relatedProducts));
   } catch (error) {
-    console.error("Error al obtener productos relacionados:", error);
+    console.error('Error al obtener productos relacionados:', error);
     return [];
   }
 }

@@ -1,23 +1,23 @@
 // models/User.js
-import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 
 const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "Por favor proporcione un nombre"],
+      required: [true, 'Por favor proporcione un nombre'],
       trim: true,
     },
     email: {
       type: String,
-      required: [true, "Por favor proporcione un correo electrónico"],
+      required: [true, 'Por favor proporcione un correo electrónico'],
       unique: true,
       lowercase: true,
       trim: true,
       match: [
         /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-        "Por favor proporcione un correo electrónico válido",
+        'Por favor proporcione un correo electrónico válido',
       ],
     },
     password: {
@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
       required: function () {
         return !this.googleAuth;
       },
-      minlength: [6, "La contraseña debe tener al menos 6 caracteres"],
+      minlength: [6, 'La contraseña debe tener al menos 6 caracteres'],
       select: false,
     },
     phone: {
@@ -33,27 +33,32 @@ const userSchema = new mongoose.Schema(
       required: function () {
         return !this.googleAuth;
       },
-      default: "",
+      default: '',
       trim: true,
     },
     role: {
       type: String,
-      enum: ["user", "admin"],
-      default: "user",
+      enum: ['user', 'admin'],
+      default: 'user',
     },
     orders: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Order",
+        ref: 'Order',
       },
     ],
     googleAuth: {
       type: Boolean,
       default: false,
     },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true, // Permite null para usuarios sin Google Auth
+    },
     image: {
       type: String,
-      default: "",
+      default: '',
     },
     // Campos para verificación de email
     isVerified: {
@@ -83,8 +88,8 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// VERSIÓN MEJORADA: Hash password before saving
-userSchema.pre("save", async function (next) {
+// Hash password before saving
+userSchema.pre('save', async function (next) {
   try {
     // Skip hashing for Google accounts without password
     if (this.googleAuth && !this.password) {
@@ -92,30 +97,29 @@ userSchema.pre("save", async function (next) {
     }
 
     // Only hash if password is modified
-    if (!this.isModified("password")) {
+    if (!this.isModified('password')) {
       return next();
     }
 
     // Verificar que no sea un hash ya existente
-    if (this.password.startsWith("$2a$") || this.password.startsWith("$2b$")) {
+    if (this.password.startsWith('$2a$') || this.password.startsWith('$2b$')) {
       return next();
     }
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
     next();
   } catch (error) {
-    console.error("Error hashing password:", error);
+    console.error('Error hashing password:', error);
     next(error);
   }
 });
 
-// VERSIÓN SIMPLIFICADA: Compare password method
+// Compare password method
 userSchema.methods.comparePassword = async function (candidatePassword) {
   try {
-    // Usar bcrypt.compare directamente
     return bcrypt.compare(candidatePassword, this.password);
   } catch (error) {
-    console.error("Error al comparar contraseñas:", error);
+    console.error('Error al comparar contraseñas:', error);
     return false;
   }
 };
@@ -126,6 +130,6 @@ userSchema.methods.canUseGoogleAuth = function () {
 };
 
 // Prevent model overwrite in development
-const User = mongoose.models.User || mongoose.model("User", userSchema);
+const User = mongoose.models.User || mongoose.model('User', userSchema);
 
 export default User;
