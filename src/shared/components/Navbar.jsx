@@ -14,6 +14,7 @@ import {
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 import AuthModal from '@/modules/auth/modal/AuthModal';
+import CategoriesDropdown from './CategoriesDropdown';
 import Image from 'next/image';
 
 const Navbar = () => {
@@ -35,6 +36,10 @@ const Navbar = () => {
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalView, setAuthModalView] = useState('login');
+
+  // Verificar si el usuario es administrador
+  const isAdmin =
+    session?.user?.role === 'admin' || session?.user?.isAdmin === true;
 
   // Efecto para detectar scroll
   useEffect(() => {
@@ -91,19 +96,15 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 w-full z-50 transition-colors duration-300 ${
+        className={`fixed top-0 left-0 w-full transition-colors duration-300 ${
           scrollPosition > 0 ? 'bg-black/60 backdrop-blur-sm' : 'bg-transparent'
         }`}
+        style={{ zIndex: 50 }}
       >
         <div className="container mx-auto px-4 flex items-center justify-between py-3">
           {/* Categorías - Desktop Left */}
           <div className="hidden md:block text-white font-mono">
-            <Link
-              href="/shop"
-              className="hover:text-gray-300 transition text-sm tracking-wide"
-            >
-              CATEGORIAS
-            </Link>
+            <CategoriesDropdown />
           </div>
 
           {/* Logo Central - HAIZE */}
@@ -149,14 +150,34 @@ const Navbar = () => {
                 </>
               ) : (
                 <>
+                  {/* Mostrar admin solo si es administrador */}
+                  {isAdmin && (
+                    <li>
+                      <Link
+                        href="/admin"
+                        className="hover:text-gray-300 transition"
+                      >
+                        ADMIN
+                      </Link>
+                    </li>
+                  )}
+
+                  {/* Carrito antes del perfil */}
                   <li>
                     <Link
-                      href="/admin"
-                      className="hover:text-gray-300 transition"
+                      href="/cart"
+                      className="relative hover:text-gray-300 transition"
                     >
-                      admin
+                      CARRITO
+                      {cartItemsCount > 0 && (
+                        <span className="absolute -top-2 -right-3 bg-white text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                          {cartItemsCount}
+                        </span>
+                      )}
                     </Link>
                   </li>
+
+                  {/* Perfil del usuario */}
                   <li>
                     <div className="relative" ref={dropdownRef}>
                       <button
@@ -229,19 +250,22 @@ const Navbar = () => {
                 </>
               )}
 
-              <li>
-                <Link
-                  href="/cart"
-                  className="relative hover:text-gray-300 transition"
-                >
-                  CARRITO
-                  {cartItemsCount > 0 && (
-                    <span className="absolute -top-2 -right-3 bg-white text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                      {cartItemsCount}
-                    </span>
-                  )}
-                </Link>
-              </li>
+              {/* Carrito para usuarios no autenticados */}
+              {!session && (
+                <li>
+                  <Link
+                    href="/cart"
+                    className="relative hover:text-gray-300 transition"
+                  >
+                    CARRITO
+                    {cartItemsCount > 0 && (
+                      <span className="absolute -top-2 -right-3 bg-white text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                        {cartItemsCount}
+                      </span>
+                    )}
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
 
@@ -381,15 +405,20 @@ const Navbar = () => {
                     Mi Cuenta
                   </h3>
                   <div className="space-y-2">
-                    <Link
-                      href="/admin"
-                      className={`flex items-center px-3 py-3 rounded-lg transition ${
-                        isActive('/admin') ? 'bg-white/20' : 'hover:bg-white/10'
-                      }`}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <span className="text-sm font-medium">admin</span>
-                    </Link>
+                    {/* Mostrar admin solo si es administrador */}
+                    {isAdmin && (
+                      <Link
+                        href="/admin"
+                        className={`flex items-center px-3 py-3 rounded-lg transition ${
+                          isActive('/admin')
+                            ? 'bg-white/20'
+                            : 'hover:bg-white/10'
+                        }`}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <span className="text-sm font-medium">ADMIN</span>
+                      </Link>
+                    )}
                     <Link
                       href="/profile"
                       className={`flex items-center px-3 py-3 rounded-lg transition ${
