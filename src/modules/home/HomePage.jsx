@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import Navbar from '@/shared/components/Navbar';
 import CustomLink from '@/shared/components/CustomLink';
 import HomeProduct from './HomeProduct';
 import HomeProductSlider from './HomeProductSlider';
@@ -8,8 +7,6 @@ import ProductSlider from '@/modules/products/ProductSlider';
 export default function Home() {
   return (
     <>
-      <Navbar />
-
       <div className="relative w-full h-[120vh] min-h-200">
         <Image
           src="/assets/home-man2.jpg"

@@ -125,7 +125,7 @@ const CategoriesDropdown = () => {
   const handleCategoryClick = (categoryValue) => {
     setIsOpen(false);
     setActiveSection(null);
-    router.push(`/shop?category=${categoryValue}`);
+    router.push(`/products?category=${categoryValue}`);
   };
 
   useEffect(() => {

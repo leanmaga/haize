@@ -1,17 +1,17 @@
-"use client";
-import { useState } from "react";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import CategoryFilter from "./CategoryFilter";
-import ProductGrid from "./ProductGrid";
-import { ButtonContact } from "../ui";
+'use client';
+import { useState } from 'react';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import CategoryFilter from './CategoryFilter';
+import ProductGrid from './ProductGrid';
+import { ButtonContact } from '../ui';
 
 export default function FilterableProducts({ products }) {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
   // Filtrar primero por categoría
   const byCategory =
-    selectedCategory === "all"
+    selectedCategory === 'all'
       ? products
       : products.filter((p) => p.category === selectedCategory);
 
@@ -22,7 +22,7 @@ export default function FilterableProducts({ products }) {
 
   return (
     <>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 mt-[80px]">
         {/* Pills de categorías */}
         <div className="mb-6">
           <CategoryFilter
@@ -50,7 +50,7 @@ export default function FilterableProducts({ products }) {
       </div>
       <section
         className="py-16 text-white"
-        style={{ backgroundColor: "#F6C343" }}
+        style={{ backgroundColor: '#F6C343' }}
       >
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">
