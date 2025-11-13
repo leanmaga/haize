@@ -5,6 +5,7 @@ import { authOptions } from '@/lib/auth';
 import { Providers } from './providers';
 import Footer from '@/shared/components/Footer';
 import Script from 'next/script';
+import Navbar from '@/shared/components/Navbar';
 
 export const metadata = {
   title: 'Haize - Moda que inspira tu estilo',
@@ -24,6 +25,7 @@ export default async function RootLayout({ children }) {
       </head>
       <body className="min-h-screen flex flex-col bg-gray-50">
         <Providers session={session}>
+          <Navbar />
           <main className="flex-grow">{children}</main>
           <Footer />
         </Providers>

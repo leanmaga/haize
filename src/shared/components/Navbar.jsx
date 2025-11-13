@@ -25,6 +25,9 @@ const Navbar = () => {
   const pathname = usePathname();
   const dropdownRef = useRef(null);
 
+  // Detectar si estamos en el home
+  const isHomePage = pathname === '/';
+
   // Zustand para el carrito
   const cartItems = useCartStore((state) => state.items);
   const clearCart = useCartStore((state) => state.clearCart);
@@ -93,11 +96,22 @@ const Navbar = () => {
     setIsProfileDropdownOpen(false);
   }, [pathname]);
 
+  // Determinar si el navbar debe tener fondo
+  // Si NO es home, siempre tiene fondo
+  // Si ES home, depende del scroll
+  const shouldHaveBackground = !isHomePage || scrollPosition > 0;
+
+  // Determinar si el logo debe estar escalado
+  // Solo se escala en el home cuando NO hay scroll
+  const shouldScaleLogo = isHomePage && scrollPosition === 0;
+
   return (
     <>
       <nav
         className={`fixed top-0 left-0 w-full transition-colors duration-300 ${
-          scrollPosition > 0 ? 'bg-black/60 backdrop-blur-sm' : 'bg-transparent'
+          shouldHaveBackground
+            ? 'bg-black/60 backdrop-blur-sm'
+            : 'bg-transparent'
         }`}
         style={{ zIndex: 50 }}
       >
@@ -110,7 +124,7 @@ const Navbar = () => {
           {/* Logo Central - HAIZE */}
           <h1
             className={`text-4xl font-bold transition-transform duration-300 text-white font-serif ${
-              scrollPosition > 0 ? 'scale-100' : 'md:scale-150 md:translate-y-8'
+              shouldScaleLogo ? 'md:scale-150 md:translate-y-8' : 'scale-100'
             }`}
           >
             <Link href="/">HAIZE</Link>
@@ -362,9 +376,11 @@ const Navbar = () => {
                     <span className="text-sm font-medium">INICIO</span>
                   </Link>
                   <Link
-                    href="/shop"
+                    href="/products"
                     className={`flex items-center px-3 py-3 rounded-lg transition ${
-                      isActive('/shop') ? 'bg-white/20' : 'hover:bg-white/10'
+                      isActive('/products')
+                        ? 'bg-white/20'
+                        : 'hover:bg-white/10'
                     }`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
