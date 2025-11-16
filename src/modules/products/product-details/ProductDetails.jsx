@@ -1,4 +1,4 @@
-// app/products/[id]/ProductDetails.jsx (or wherever this component is)
+// app/products/[id]/ProductDetails.jsx
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -19,16 +19,26 @@ export default async function ProductDetails({ params }) {
     notFound();
   }
 
-  // Determinar el precio a mostrar (precio regular y promocional si existe)
-  const regularPrice =
-    product.salePrice !== undefined
-      ? product.salePrice
-      : product.price !== undefined
-      ? product.price
-      : 0;
+  // ============================================
+  // LÓGICA DE PRECIOS SIMPLIFICADA
+  // ============================================
 
-  const hasPromotion = product.promoPrice && product.promoPrice > 0;
-  const displayPrice = hasPromotion ? product.promoPrice : regularPrice;
+  // Precio de venta normal (siempre debe existir)
+  const normalPrice = product.salePrice || 0;
+
+  // Precio promocional (puede ser 0 o null)
+  const promotionalPrice = product.promoPrice || 0;
+
+  // Hay descuento solo si promoPrice existe, es mayor a 0 Y menor al precio normal
+  const hasDiscount = promotionalPrice > 0 && promotionalPrice < normalPrice;
+
+  // El precio a mostrar es el promocional si hay descuento, sino el normal
+  const displayPrice = hasDiscount ? promotionalPrice : normalPrice;
+
+  // Calcular porcentaje de descuento
+  const discountPercentage = hasDiscount
+    ? Math.round(((normalPrice - promotionalPrice) / normalPrice) * 100)
+    : 0;
 
   // Process images for slider
   let productImages = [];
@@ -75,36 +85,39 @@ export default async function ProductDetails({ params }) {
         {/* Columna Izquierda - Imagen (Sticky) */}
         <div className="relative lg:sticky lg:top-6 lg:h-fit">
           <ProductImageSlider images={productImages} product={product} />
-
-          {/* Botón Favorito */}
-          <button
-            className="absolute top-4 right-4 w-10 h-10 bg-white rounded-full shadow-md hover:shadow-lg flex items-center justify-center transition-all hover:scale-110"
-            aria-label="Agregar a favoritos"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-              ></path>
-            </svg>
-          </button>
         </div>
 
-        {/* Columna Derecha - Detalles */}
-        <div className="flex flex-col pt-2">
-          {/* Badge Nuevo (si el producto es destacado) */}
-          {product.featured && (
-            <div className="inline-block w-fit bg-black text-white px-3 py-1 text-xs font-semibold uppercase tracking-wider mb-4">
-              NUEVO!
-            </div>
-          )}
+        {/* Columna Derecha - Detalles CENTRADO CON MAX 500PX */}
+        <div className="flex flex-col pt-2 mx-auto w-full max-w-[500px]">
+          {/* Badge Nuevo y Botón Favorito en la misma línea */}
+          <div className="flex items-center justify-between mb-4">
+            {/* Badge Nuevo (si el producto es destacado) */}
+            {product.featured && (
+              <div className="inline-block bg-black text-white px-3 py-1 text-xs font-semibold uppercase tracking-wider">
+                NUEVO!
+              </div>
+            )}
+
+            {/* Botón Favorito */}
+            <button
+              className="w-10 h-10 bg-white rounded-full shadow-md hover:shadow-lg flex items-center justify-center transition-all hover:scale-110"
+              aria-label="Agregar a favoritos"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                ></path>
+              </svg>
+            </button>
+          </div>
 
           {/* Título del producto */}
           <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 uppercase tracking-wide">
@@ -120,39 +133,43 @@ export default async function ProductDetails({ params }) {
             </span>
           </div>
 
-          {/* Precio - Diseño nuevo */}
-          <div className="mb-6">
-            <div className="text-4xl font-bold text-gray-900 mb-2">
-              ${displayPrice.toFixed(2)}
-            </div>
-
-            {/* Información de cuotas (mockeado) */}
-            <div className="text-sm text-gray-600">
-              6 cuotas sin interés de{' '}
-              <strong className="text-gray-900">
-                ${(displayPrice / 6).toFixed(2)}*
-              </strong>
-            </div>
-
-            {/* Precio sin impuestos (mockeado - 19% de impuestos) */}
-            <div className="text-xs text-gray-500 mt-1">
-              Precio sin impuestos nacionales{' '}
-              <strong>${(displayPrice * 0.81).toFixed(2)}</strong>
-            </div>
-
-            {/* Si hay promoción, mostrar precio original tachado */}
-            {hasPromotion && (
-              <div className="mt-3 flex items-center gap-2">
-                <span className="text-lg text-gray-500 line-through">
-                  ${regularPrice.toFixed(2)}
-                </span>
-                <span className="bg-red-500 text-white px-2 py-1 text-xs font-bold rounded">
-                  {Math.round((1 - product.promoPrice / regularPrice) * 100)}%
-                  OFF
-                </span>
+          {/* ============================================ */}
+          {/* SECCIÓN DE PRECIO - NUEVA LÓGICA */}
+          {/* ============================================ */}
+          {displayPrice > 0 && (
+            <div className="mb-6">
+              {/* Precio principal */}
+              <div className="text-4xl font-bold text-gray-900 mb-2">
+                ${displayPrice.toFixed(2)}
               </div>
-            )}
-          </div>
+
+              {/* Información de cuotas */}
+              <div className="text-sm text-gray-600">
+                6 cuotas sin interés de{' '}
+                <strong className="text-gray-900">
+                  ${(displayPrice / 6).toFixed(2)}*
+                </strong>
+              </div>
+
+              {/* Precio sin impuestos (mockeado - 19% de impuestos) */}
+              <div className="text-xs text-gray-500 mt-1">
+                Precio sin impuestos nacionales{' '}
+                <strong>${(displayPrice * 0.81).toFixed(2)}</strong>
+              </div>
+
+              {/* SOLO SI HAY DESCUENTO: mostrar precio original tachado y badge */}
+              {hasDiscount && (
+                <div className="mt-3 flex items-center gap-2">
+                  <span className="text-lg text-gray-500 line-through">
+                    ${normalPrice.toFixed(2)}
+                  </span>
+                  <span className="bg-red-500 text-white px-2 py-1 text-xs font-bold rounded">
+                    {discountPercentage}% OFF
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Descripción */}
           <div className="mb-6">
@@ -220,74 +237,9 @@ export default async function ProductDetails({ params }) {
             </div>
           )}
 
-          {/* Selector de Cantidad */}
-          <div className="mb-6 bg-gray-50 p-4">
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              Cantidad:
-            </label>
-            <div className="flex items-center justify-center gap-4 max-w-xs">
-              <button className="w-10 h-10 flex items-center justify-center border-2 border-gray-300 hover:border-gray-400 transition-colors">
-                <span className="text-xl text-gray-600">−</span>
-              </button>
-              <input
-                type="number"
-                min="1"
-                defaultValue="1"
-                className="w-20 h-10 text-center border-2 border-gray-300 focus:outline-none focus:border-gray-400"
-              />
-              <button className="w-10 h-10 flex items-center justify-center border-2 border-gray-300 hover:border-gray-400 transition-colors">
-                <span className="text-xl text-gray-600">+</span>
-              </button>
-            </div>
-          </div>
-
           {/* Botones de Acción */}
           <div className="mb-6 space-y-3">
-            {/* Botón Agregar al Carrito */}
-            <button className="w-full py-3.5 px-6 bg-[#F6C343] hover:bg-[#e5b332] text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                ></path>
-              </svg>
-              AGREGAR AL CARRITO
-            </button>
-
-            {/* Botón Pedir por WhatsApp */}
             <AddToCartButton product={product} />
-          </div>
-
-          {/* Box de Entrega Garantizada */}
-          <div className="mb-6 bg-green-50 border border-green-200 p-4 rounded-lg">
-            <div className="flex items-start gap-3">
-              <svg
-                className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clipRule="evenodd"
-                ></path>
-              </svg>
-              <div>
-                <p className="text-sm font-semibold text-green-800 mb-1">
-                  Entrega garantizada en 24 horas
-                </p>
-                <p className="text-xs text-green-700">
-                  Belgrano, Palermo, Las Cañitas, Colegiales y Núñez
-                </p>
-              </div>
-            </div>
           </div>
 
           {/* Secciones Expandibles con nuevo diseño */}
@@ -406,7 +358,7 @@ export default async function ProductDetails({ params }) {
               </div>
             </details>
 
-            {/* Información de entrega - Manteniendo tu contenido original */}
+            {/* Información de entrega */}
             <details className="group border-b border-gray-200">
               <summary className="py-5 flex justify-between items-center cursor-pointer hover:opacity-70 transition-opacity list-none">
                 <div className="flex items-center gap-3">
@@ -518,7 +470,7 @@ export default async function ProductDetails({ params }) {
             </details>
           </div>
 
-          {/* Información de Envío Same Day (movido después de las secciones) */}
+          {/* Información de Envío Same Day */}
           <div className="mt-6 bg-gray-50 border border-gray-200 p-4 flex gap-3 items-start">
             <svg
               className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5"

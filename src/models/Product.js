@@ -410,11 +410,9 @@ productSchema.index({ salePrice: 1 });
 productSchema.index({ isActive: 1 });
 productSchema.index({ brand: 1 });
 productSchema.index({ season: 1 });
-productSchema.index({ productIsNew: 1 }); // ✅ CAMBIO: Actualizado de isNew a productIsNew
+productSchema.index({ productIsNew: 1 });
 productSchema.index({ onSale: 1 });
 productSchema.index({ createdAt: -1 });
-// ✅ CAMBIO: Este ya crea el índice, no necesitamos index: true en el schema
-productSchema.index({ slug: 1 });
 productSchema.index({ tags: 1 });
 productSchema.index({ style: 1 });
 productSchema.index({ 'colors.name': 1 });

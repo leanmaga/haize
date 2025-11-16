@@ -1,95 +1,145 @@
-// components/cart/CartSummary.jsx
-"use client";
+'use client';
 
-import { useCartStore } from "@/lib/store";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { ShoppingBagIcon } from "@heroicons/react/24/outline";
+import { useCartStore } from '@/lib/store';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { useState } from 'react';
 
 const CartSummary = () => {
   const { items, getTotal } = useCartStore();
   const router = useRouter();
   const { data: session } = useSession();
+  const [discountCode, setDiscountCode] = useState('');
 
-  const total = getTotal();
+  const subtotal = getTotal();
+  const taxRate = 0.21; // 21% IVA
+  const subtotalWithoutTax = subtotal / (1 + taxRate);
+  const tax = subtotal - subtotalWithoutTax;
+  const freeShippingThreshold = 150000; // $150.000 para envío gratis
+  const remainingForFreeShipping = Math.max(
+    0,
+    freeShippingThreshold - subtotal
+  );
+
   const isEmpty = items.length === 0;
 
   const handleCheckout = () => {
     if (!session) {
-      router.push("/auth/login?redirect=/checkout");
+      router.push('/auth/login?redirect=/checkout');
     } else {
-      router.push("/checkout");
+      router.push('/checkout');
     }
   };
 
+  const handleApplyDiscount = (e) => {
+    e.preventDefault();
+    // Aquí implementarías la lógica del código de descuento
+    console.log('Applying discount code:', discountCode);
+  };
+
   return (
-    <div className="bg-white border border-gray-200 p-6">
-      <h2 className="text-xl font-semibold mb-6">Resumen de Compra</h2>
+    <div className="bg-white border border-gray-300 sticky top-4">
+      {/* Header */}
+      <div className="p-6 border-b border-gray-200">
+        <h2 className="text-lg font-medium">RESUMEN DE COMPRA</h2>
+        <p className="text-sm text-gray-600 mt-1">
+          ({items.length} producto{items.length !== 1 ? 's' : ''})
+        </p>
+      </div>
 
-      {isEmpty ? (
-        <div className="flex flex-col items-center py-6 text-gray-500">
-          <ShoppingBagIcon className="h-12 w-12 mb-3" />
-          <p className="text-lg">Tu carrito está vacío</p>
-          <button
-            onClick={() => router.push("/products")}
-            className="mt-4 btn-drop w-full py-3"
-          >
-            <span>Ver Productos</span>
-          </button>
+      {/* Summary details */}
+      <div className="p-6">
+        {/* Subtotal */}
+        <div className="flex justify-between items-center mb-3">
+          <span className="text-gray-700">Subtotal</span>
+          <span className="font-medium">
+            ${subtotal.toLocaleString('es-AR')}
+          </span>
         </div>
-      ) : (
-        <>
-          <div className="space-y-4 mb-6">
-            {/* Subtotal */}
-            <div className="flex justify-between py-2">
-              <span className="text-gray-600">Subtotal</span>
-              <span className="font-medium">${total.toFixed(2)}</span>
-            </div>
 
-            {/* Envío */}
-            <div className="flex justify-between py-2">
-              <span className="text-gray-600">Envío</span>
-              <span>Por coordinar</span>
-            </div>
+        {/* Subtotal without taxes */}
+        <div className="flex justify-between items-center mb-4">
+          <span className="text-sm text-gray-500">
+            Subtotal sin impuestos nacionales
+          </span>
+          <span className="text-sm text-gray-500">
+            $
+            {subtotalWithoutTax.toLocaleString('es-AR', {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            })}
+          </span>
+        </div>
 
-            {/* Total */}
-            <div className="flex justify-between py-3 text-lg font-semibold border-t border-gray-200 mt-2">
-              <span>Total</span>
-              <span>${total.toFixed(2)}</span>
-            </div>
-          </div>
+        {/* Total */}
+        <div className="flex justify-between items-center pt-4 border-t border-gray-200 mb-6">
+          <span className="text-lg font-semibold">TOTAL</span>
+          <span className="text-lg font-semibold">
+            ${subtotal.toLocaleString('es-AR')}
+          </span>
+        </div>
 
-          {/* Un solo botón para proceder al checkout donde estarán ambas opciones */}
-          <button
-            onClick={handleCheckout}
-            className="w-full btn-drop py-3 flex items-center justify-center mb-4"
-            disabled={isEmpty}
-          >
-            <span className="flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-2"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+        {/* Checkout button */}
+        <button
+          onClick={handleCheckout}
+          className="w-full bg-black text-white py-3 px-6 hover:bg-gray-800 transition-colors mb-6 font-medium"
+          disabled={isEmpty}
+        >
+          Iniciar Compra
+        </button>
+
+        {/* Free shipping message */}
+        {remainingForFreeShipping > 0 ? (
+          <div className="mb-6">
+            <div className="mb-2">
+              <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+                <div
+                  className="bg-green-500 h-full transition-all duration-300"
+                  style={{
+                    width: `${Math.min(
+                      100,
+                      (subtotal / freeShippingThreshold) * 100
+                    )}%`,
+                  }}
                 />
-              </svg>
-              Proceder al Pago
-            </span>
-          </button>
+              </div>
+            </div>
+            <p className="text-sm text-gray-700">
+              ¡Te faltan{' '}
+              <span className="font-semibold">
+                ${remainingForFreeShipping.toLocaleString('es-AR')}
+              </span>{' '}
+              para tener <span className="font-semibold">envío gratis!</span>
+            </p>
+          </div>
+        ) : (
+          <div className="mb-6 p-3 bg-green-50 border border-green-200">
+            <p className="text-sm text-green-800 font-medium">
+              ¡Tienes envío gratis! 🎉
+            </p>
+          </div>
+        )}
 
-          {/* Información adicional */}
-          <p className="mt-4 text-xs text-gray-500">
-            * El costo de envío se coordinará después de la compra
-          </p>
-        </>
-      )}
+        {/* Discount code section */}
+        <div className="border-t border-gray-200 pt-6">
+          <h3 className="font-medium mb-3">CÓDIGO DE DESCUENTO</h3>
+          <form onSubmit={handleApplyDiscount} className="space-y-3">
+            <input
+              type="text"
+              value={discountCode}
+              onChange={(e) => setDiscountCode(e.target.value)}
+              placeholder="Tipeá el código"
+              className="w-full px-4 py-2 border border-gray-300 focus:outline-none focus:border-gray-400"
+            />
+            <button
+              type="submit"
+              className="w-full py-2 px-4 border border-black bg-white text-black hover:bg-gray-50 transition-colors font-medium"
+            >
+              Ingresar
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };

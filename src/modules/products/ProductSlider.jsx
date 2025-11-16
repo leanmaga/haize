@@ -4,7 +4,7 @@ import { useRef, useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ProductCard from './ProductCard';
 
-export default function ProductSlider({ items = null }) {
+export default function ProductSlider({ products = [] }) {
   const sliderRef = useRef(null);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(false);
@@ -15,7 +15,6 @@ export default function ProductSlider({ items = null }) {
 
     const update = () => {
       setCanLeft(el.scrollLeft > 0);
-      // small epsilon to avoid rounding issues
       setCanRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
     };
 
@@ -39,7 +38,10 @@ export default function ProductSlider({ items = null }) {
     });
   };
 
-  const products = items && items.length ? items : sample;
+  // Si no hay productos, mostrar mensaje o retornar null
+  if (!products || products.length === 0) {
+    return null;
+  }
 
   return (
     <div className="p-5 relative bg-zinc-200">
@@ -73,14 +75,9 @@ export default function ProductSlider({ items = null }) {
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
         <div className="pb-2 flex gap-5 items-stretch">
-          {products.map((p, i) => (
-            <div key={i} className="flex-shrink-0 w-[260px]">
-              <ProductCard
-                imgSrc={p.imgSrc}
-                imgAlt={p.imgAlt}
-                title={p.title}
-                price={p.price}
-              />
+          {products.map((product) => (
+            <div key={product.id} className="flex-shrink-0 w-[260px]">
+              <ProductCard product={product} />
             </div>
           ))}
         </div>
