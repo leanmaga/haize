@@ -1,14 +1,15 @@
-"use client";
+'use client';
 
-import { useCartStore } from "@/lib/store";
-import Image from "next/image";
-import { TrashIcon, PlusIcon, MinusIcon } from "@heroicons/react/24/outline";
+import { useCartStore } from '@/lib/store';
+import Image from 'next/image';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 
 const CartItem = ({ item }) => {
   const removeItem = useCartStore((state) => state.removeItem);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
 
-  const handleQuantityChange = (newQuantity) => {
+  const handleQuantityChange = (e) => {
+    const newQuantity = parseInt(e.target.value);
     if (newQuantity >= 1) {
       updateQuantity(item.id, newQuantity);
     }
@@ -18,19 +19,22 @@ const CartItem = ({ item }) => {
     removeItem(item.id);
   };
 
+  const itemTotal = item.price * item.quantity;
+  const taxRate = 0.21; // 21% IVA
+  const itemTotalWithoutTax = itemTotal / (1 + taxRate);
+
   return (
-    <div className="py-6 flex flex-col sm:flex-row">
-      {/* Imagen del producto */}
-      <div className="flex-shrink-0 sm:w-24 mb-4 sm:mb-0">
-        <div className="aspect-square relative bg-gray-100">
+    <div className="border-b border-gray-200 p-6 flex gap-6">
+      {/* Product Image */}
+      <div className="flex-shrink-0 w-24 h-32">
+        <div className="relative w-full h-full bg-gray-100">
           {item.image ? (
             <Image
               src={item.image}
-              alt={item.name || "Producto en carrito"}
+              alt={item.name || 'Producto en carrito'}
               fill
-              style={{ objectFit: "cover" }}
-              className="rounded"
-              sizes="(max-width: 768px) 100px, 100px"
+              style={{ objectFit: 'cover' }}
+              sizes="96px"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
@@ -40,54 +44,49 @@ const CartItem = ({ item }) => {
         </div>
       </div>
 
-      {/* Detalles del producto */}
-      <div className="flex-1 sm:ml-6 flex flex-col sm:flex-row sm:justify-between">
-        <div className="mb-3 sm:mb-0">
-          <h3 className="text-base font-medium mb-1">{item.name}</h3>
-
-          {item.variant && (
-            <p className="text-sm text-gray-500 mb-1">Talle: {item.variant}</p>
-          )}
-
-          <p className="text-sm text-gray-500">${item.price.toFixed(2)}</p>
-        </div>
-
-        <div className="flex justify-between items-center sm:flex-col sm:items-end sm:justify-between">
-          {/* Control de cantidad */}
-          <div className="flex items-center border border-gray-300">
-            <button
-              onClick={() => handleQuantityChange(item.quantity - 1)}
-              className="px-2 py-1 text-black hover:bg-gray-100"
-              disabled={item.quantity <= 1}
-            >
-              <MinusIcon className="h-3 w-3" />
-            </button>
-
-            <span className="px-3 py-1 text-sm border-l border-r border-gray-300">
-              {item.quantity}
-            </span>
-
-            <button
-              onClick={() => handleQuantityChange(item.quantity + 1)}
-              className="px-2 py-1 text-black hover:bg-gray-100"
-            >
-              <PlusIcon className="h-3 w-3" />
-            </button>
+      {/* Product Details */}
+      <div className="flex-1 flex flex-col">
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h3 className="font-medium text-base mb-2">{item.name}</h3>
+            {item.variant && (
+              <p className="text-sm text-gray-600 mb-1">
+                TALLE: {item.variant}
+              </p>
+            )}
+            <div className="flex items-center gap-3 mt-2">
+              <label className="text-sm text-gray-600">CANTIDAD:</label>
+              <input
+                type="number"
+                min="1"
+                value={item.quantity}
+                onChange={handleQuantityChange}
+                className="w-16 px-2 py-1 border border-gray-300 text-center focus:outline-none focus:border-gray-400"
+              />
+            </div>
           </div>
 
-          {/* Precio total y botón de eliminar */}
-          <div className="flex items-center mt-3">
-            <span className="font-medium mr-4">
-              ${(item.price * item.quantity).toFixed(2)}
-            </span>
+          {/* Remove button */}
+          <button
+            onClick={handleRemove}
+            className="text-gray-400 hover:text-black transition-colors"
+            aria-label="Eliminar producto"
+          >
+            <XMarkIcon className="h-5 w-5" />
+          </button>
+        </div>
 
-            <button
-              onClick={handleRemove}
-              className="text-gray-400 hover:text-black"
-              aria-label="Eliminar producto"
-            >
-              <TrashIcon className="h-4 w-4" />
-            </button>
+        {/* Price info */}
+        <div className="mt-auto">
+          <div className="text-base font-medium mb-1">
+            ${itemTotal.toLocaleString('es-AR')}
+          </div>
+          <div className="text-sm text-gray-500">
+            Precio sin impuestos nacionales $
+            {itemTotalWithoutTax.toLocaleString('es-AR', {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            })}
           </div>
         </div>
       </div>

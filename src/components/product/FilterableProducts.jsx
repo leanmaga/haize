@@ -50,7 +50,7 @@ export default function FilterableProducts({ products }) {
       </div>
       <section
         className="py-16 text-white"
-        style={{ backgroundColor: '#F6C343' }}
+        style={{ backgroundColor: '#010101' }}
       >
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">

@@ -4,13 +4,11 @@ import { useCartStore } from '@/lib/store';
 import CartItem from '@/components/cart/CartItem';
 import CartSummary from '@/components/cart/CartSummary';
 import Link from 'next/link';
-import { ShoppingBagIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { useState, useEffect } from 'react';
 
 export default function CartPage() {
   const [mounted, setMounted] = useState(false);
   const items = useCartStore((state) => state.items);
-  const clearCart = useCartStore((state) => state.clearCart);
 
   // Hydration fix
   useEffect(() => {
@@ -22,61 +20,90 @@ export default function CartPage() {
   const isEmpty = items.length === 0;
 
   return (
-    <div className="bg-white min-h-screen">
-      <div className="container mx-auto px-4 py-12">
-        <h1 className="text-2xl font-bold mb-8 text-center">
-          Tu Carrito de Compras
-        </h1>
-
+    <div className="bg-gray-50 min-h-screen mt-[80px]">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
         {isEmpty ? (
-          <div className="max-w-md mx-auto text-center bg-white border border-gray-200 p-8">
-            <ShoppingBagIcon className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-            <h2 className="text-xl font-semibold text-gray-800 mb-3">
-              Tu carrito está vacío
-            </h2>
-            <p className="text-gray-500 mb-6">
-              Parece que aún no has añadido productos al carrito.
-            </p>
-            <Link href="/products" className="btn-drop inline-block px-6 py-3">
-              <span>Explorar Productos</span>
-            </Link>
-          </div>
-        ) : (
-          <div className="lg:flex lg:gap-12">
-            {/* Lista de Items */}
-            <div className="lg:w-2/3 mb-8 lg:mb-0">
-              <div className="bg-white mb-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-lg font-semibold">
-                    Productos ({items.length})
-                  </h2>
-                  <button
-                    onClick={clearCart}
-                    className="text-black hover:text-red-600 text-sm"
+          <div className="max-w-2xl mx-auto">
+            {/* Header */}
+            <div className="bg-white p-6 mb-6">
+              <div className="flex items-start gap-3 border border-gray-300 p-4">
+                <div className="flex-shrink-0">
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
-                    Vaciar Carrito
-                  </button>
+                    <circle cx="12" cy="12" r="10" strokeWidth="2" />
+                    <path
+                      strokeLinecap="round"
+                      strokeWidth="2"
+                      d="M12 16v-4m0-4h.01"
+                    />
+                  </svg>
                 </div>
-
-                <div className="divide-y border-t border-gray-200">
-                  {items.map((item) => (
-                    <CartItem key={item.id} item={item} />
-                  ))}
-                </div>
-
-                <div className="mt-8">
-                  <Link
-                    href="/products"
-                    className="text-black hover:underline flex items-center text-sm font-medium"
-                  >
-                    <ArrowLeftIcon className="h-4 w-4 mr-1" />
-                    Continuar Comprando
-                  </Link>
-                </div>
+                <p className="text-sm text-gray-700">
+                  Algunos de los productos más populares no pueden ser guardados
+                  en tu carrito por más de dos horas.
+                </p>
               </div>
             </div>
 
-            {/* Resumen del Carrito */}
+            {/* Empty state */}
+            <div className="bg-white p-12 text-center">
+              <h2 className="text-2xl font-medium mb-8">
+                No hay productos en tu carrito
+              </h2>
+              <Link
+                href="/products"
+                className="inline-block bg-black text-white px-8 py-3 hover:bg-gray-800 transition-colors"
+              >
+                Explorar Productos
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="lg:flex lg:gap-8">
+            {/* Left column - Cart items */}
+            <div className="lg:w-2/3 mb-8 lg:mb-0">
+              {/* Header */}
+              <div className="bg-white p-6 mb-6">
+                <h1 className="text-xl font-medium mb-4">
+                  RESUMEN DE COMPRA ({items.length} producto
+                  {items.length !== 1 ? 's' : ''})
+                </h1>
+                <div className="flex items-start gap-3 border border-gray-300 p-4">
+                  <div className="flex-shrink-0">
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle cx="12" cy="12" r="10" strokeWidth="2" />
+                      <path
+                        strokeLinecap="round"
+                        strokeWidth="2"
+                        d="M12 16v-4m0-4h.01"
+                      />
+                    </svg>
+                  </div>
+                  <p className="text-sm text-gray-700">
+                    Algunos de los productos más populares no pueden ser
+                    guardados en tu carrito por más de dos horas.
+                  </p>
+                </div>
+              </div>
+
+              {/* Cart items */}
+              <div className="bg-white">
+                {items.map((item) => (
+                  <CartItem key={item.id} item={item} />
+                ))}
+              </div>
+            </div>
+
+            {/* Right column - Summary */}
             <div className="lg:w-1/3">
               <CartSummary />
             </div>

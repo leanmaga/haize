@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useCartStore } from "@/lib/store";
-import { toast } from "react-hot-toast";
+import { useState } from 'react';
+import { useCartStore } from '@/lib/store';
+import { toast } from 'react-hot-toast';
 
 export default function AddToCartButton({ product }) {
   const addToCart = useCartStore((state) => state.addItem);
@@ -41,12 +41,12 @@ export default function AddToCartButton({ product }) {
 
   const handleAddToCart = () => {
     if (hasVariants && !selectedVariant) {
-      toast.error("Por favor selecciona talle y color");
+      toast.error('Por favor selecciona talle y color');
       return;
     }
 
     if (!hasStock) {
-      toast.error("Producto agotado");
+      toast.error('Producto agotado');
       return;
     }
 
@@ -68,7 +68,7 @@ export default function AddToCartButton({ product }) {
     };
 
     addToCart(cartItem);
-    toast.success("Producto agregado al carrito");
+    toast.success('Producto agregado al carrito');
 
     setTimeout(() => {
       setIsAdding(false);
@@ -77,41 +77,41 @@ export default function AddToCartButton({ product }) {
 
   const handleWhatsAppOrder = () => {
     if (hasVariants && !selectedVariant) {
-      toast.error("Por favor selecciona talle y color");
+      toast.error('Por favor selecciona talle y color');
       return;
     }
 
     if (!hasStock) {
-      toast.error("Producto agotado");
+      toast.error('Producto agotado');
       return;
     }
 
     const variantText = selectedVariant
       ? ` - Talle: ${selectedVariant.size}, Color: ${selectedVariant.color}`
-      : "";
+      : '';
 
     const message = `Hola, quiero pedir el siguiente producto:\n${product.title}${variantText}\nCantidad: ${quantity}\nPrecio: $${price}`;
-    const phone = "+5491125528131";
+    const phone = '+5491125528131';
     const url = `https://wa.me/${phone.replace(
       /\D/g,
-      ""
+      ''
     )}?text=${encodeURIComponent(message)}`;
 
-    window.open(url, "_blank");
+    window.open(url, '_blank');
   };
 
   return (
     <div className="space-y-4">
-      {/* Selector de cantidad mejorado */}
-      <div className="bg-[#F1ECE8] p-4 rounded-lg">
+      {/* Selector de cantidad sin fondo */}
+      <div className="p-4">
         <div className="flex items-center justify-between">
           <label className="text-sm font-medium text-gray-700">Cantidad:</label>
-          <div className="flex items-center border border-gray-300 rounded-lg bg-white shadow-sm">
+          <div className="flex items-center border border-gray-300 rounded-lg bg-white">
             <button
               type="button"
               onClick={decrementQuantity}
               disabled={quantity <= 1}
-              className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-[#E8DFD6] disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-l-lg"
+              className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-l-lg"
             >
               <svg
                 className="w-4 h-4"
@@ -140,7 +140,7 @@ export default function AddToCartButton({ product }) {
                     : true
                   : quantity >= product.stock
               }
-              className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-[#E8DFD6] disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-r-lg"
+              className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-r-lg"
             >
               <svg
                 className="w-4 h-4"
@@ -160,18 +160,18 @@ export default function AddToCartButton({ product }) {
         </div>
       </div>
 
-      {/* Botón de agregar al carrito con icono */}
+      {/* Botón de agregar al carrito - Negro con hover a gris */}
       <button
         type="button"
         onClick={handleAddToCart}
         disabled={isAdding || !hasStock || (hasVariants && !selectedVariant)}
-        className={`w-full py-4 font-semibold text-center rounded-lg transition-all duration-200 cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2 shadow-md
+        className={`w-full md:w-[500px] md:h-12 py-4 md:py-0 font-semibold text-center rounded-full transition-all duration-300 cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2 border-2
           ${
             isAdding
-              ? "opacity-70 text-white bg-[#F6C343]"
+              ? 'opacity-70 text-white bg-black border-black'
               : !hasStock || (hasVariants && !selectedVariant)
-              ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-              : "text-white bg-[#F6C343] hover:bg-[#D4A63A] active:bg-[#C19A34] hover:shadow-lg"
+              ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
+              : 'text-white bg-black border-black hover:bg-black/70'
           }`}
       >
         {isAdding ? (
@@ -248,16 +248,16 @@ export default function AddToCartButton({ product }) {
         )}
       </button>
 
-      {/* Botón de pedido por WhatsApp con icono */}
+      {/* Botón de pedido por WhatsApp - Blanco con hover a gris */}
       <button
         type="button"
         onClick={handleWhatsAppOrder}
         disabled={!hasStock || (hasVariants && !selectedVariant)}
-        className={`w-full py-4 font-semibold text-center rounded-lg transition-all duration-200 cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2 shadow-md
+        className={`w-full md:w-[500px] md:h-12 py-4 md:py-0 font-semibold text-center rounded-full transition-all duration-300 cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2 border-2
           ${
             !hasStock || (hasVariants && !selectedVariant)
-              ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-              : "text-white bg-[#25D366] hover:bg-[#1EA856] active:bg-[#1C9A50] hover:shadow-lg"
+              ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
+              : 'text-black bg-white border-black hover:bg-black/70 hover:text-white'
           }`}
       >
         <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -265,29 +265,6 @@ export default function AddToCartButton({ product }) {
         </svg>
         Pedir por WhatsApp
       </button>
-
-      {/* Información adicional */}
-      <div className="bg-green-50 border border-green-200 rounded-lg p-3 mt-4">
-        <div className="flex items-center gap-2 text-green-700 text-sm">
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
-          <span className="font-medium">Entrega garantizada en 24 horas</span>
-        </div>
-        <p className="text-green-600 text-xs mt-1 ml-6">
-          Belgrano, Palermo, Las Cañitas, Colegiales y Núñez
-        </p>
-      </div>
     </div>
   );
 }

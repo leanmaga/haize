@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { toast } from "react-hot-toast";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { signIn } from "next-auth/react";
-import GoogleLoginButton from "@/components/ui/GoogleLoginButton";
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { toast } from 'react-hot-toast';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { signIn } from 'next-auth/react';
+import GoogleLoginButton from '@/components/ui/GoogleLoginButton';
 
 export default function RegisterForm({ switchToLogin, afterRegister }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/";
+  const redirectTo = searchParams.get('redirect') || '/';
 
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -25,76 +25,75 @@ export default function RegisterForm({ switchToLogin, afterRegister }) {
     formState: { errors },
   } = useForm();
 
-  const password = watch("password", "");
+  const password = watch('password', '');
 
   useEffect(() => {
-    if (redirectTo.includes("/checkout")) {
-      toast.info("Completa el registro para continuar con tu compra", {
+    if (redirectTo.includes('/checkout')) {
+      toast.info('Completa el registro para continuar con tu compra', {
         duration: 5000,
       });
     }
   }, [redirectTo]);
 
   // Update the onSubmit function to handle modal scenarios
-const onSubmit = async (data) => {
-  setIsLoading(true);
+  const onSubmit = async (data) => {
+    setIsLoading(true);
 
-  try {
-    // Registrar usuario
-    const response = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: data.name,
-        email: data.email,
-        password: data.password,
-        phone: data.phone,
-      }),
-    });
+    try {
+      // Registrar usuario
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          password: data.password,
+          phone: data.phone,
+        }),
+      });
 
-    const result = await response.json();
+      const result = await response.json();
 
-    if (!response.ok) {
-      throw new Error(result.message || "Error al registrar el usuario");
+      if (!response.ok) {
+        throw new Error(result.message || 'Error al registrar el usuario');
+      }
+
+      // Store the email in localStorage for the success page
+      localStorage.setItem('registrationEmail', data.email);
+
+      // Mostrar mensaje de éxito
+      toast.success(
+        'Registro exitoso. Por favor, verifica tu correo para activar tu cuenta.'
+      );
+
+      // Check if we're in a modal (afterRegister callback exists)
+      if (typeof afterRegister === 'function') {
+        // Call the afterRegister callback to close the modal
+        afterRegister();
+
+        // Wait a brief moment to allow the modal to close, then redirect
+        setTimeout(() => {
+          router.push('/auth/register/success');
+        }, 300);
+      } else {
+        // Direct redirect if not in a modal
+        router.push('/auth/register/success');
+      }
+    } catch (error) {
+      toast.error(error.message || 'Error al registrar el usuario');
+      console.error('Error de registro:', error);
+      setIsLoading(false);
     }
-
-    // Store the email in localStorage for the success page
-    localStorage.setItem("registrationEmail", data.email);
-    
-    // Mostrar mensaje de éxito
-    toast.success("Registro exitoso. Por favor, verifica tu correo para activar tu cuenta.");
-    
-    // Check if we're in a modal (afterRegister callback exists)
-    if (typeof afterRegister === 'function') {
-      // Call the afterRegister callback to close the modal
-      afterRegister();
-      
-      // Wait a brief moment to allow the modal to close, then redirect
-      setTimeout(() => {
-        router.push("/auth/register/success");
-      }, 300);
-    } else {
-      // Direct redirect if not in a modal
-      router.push("/auth/register/success");
-    }
-    
-  } catch (error) {
-    toast.error(error.message || "Error al registrar el usuario");
-    console.error("Error de registro:", error);
-    setIsLoading(false);
-  }
-};
+  };
 
   return (
     // Your existing JSX return...
     <div className="w-full max-w-md mx-auto p-6">
-      <h2 className="font-bold text-center text-2xl mb-6">
-        CREAR CUENTA
-      </h2>
+      <h2 className="font-bold text-center text-2xl mb-6">CREAR CUENTA</h2>
 
-      {redirectTo.includes("/checkout") && (
+      {redirectTo.includes('/checkout') && (
         <div className="mb-6 bg-blue-50 p-4 rounded-md">
           <p className="text-sm text-blue-800">
             Completa el registro para continuar con tu compra. Todos los campos
@@ -114,13 +113,13 @@ const onSubmit = async (data) => {
             type="text"
             placeholder="Nombre completo"
             className={`w-full border border-gray-300 px-3 py-3 text-gray-900 focus:outline-none focus:border-black ${
-              errors.name ? "border-red-500" : ""
+              errors.name ? 'border-red-500' : ''
             }`}
-            {...register("name", {
-              required: "El nombre es requerido",
+            {...register('name', {
+              required: 'El nombre es requerido',
               minLength: {
                 value: 2,
-                message: "El nombre debe tener al menos 2 caracteres",
+                message: 'El nombre debe tener al menos 2 caracteres',
               },
             })}
           />
@@ -138,13 +137,13 @@ const onSubmit = async (data) => {
             type="email"
             placeholder="Email"
             className={`w-full border border-gray-300 px-3 py-3 text-gray-900 focus:outline-none focus:border-black ${
-              errors.email ? "border-red-500" : ""
+              errors.email ? 'border-red-500' : ''
             }`}
-            {...register("email", {
-              required: "El correo electrónico es requerido",
+            {...register('email', {
+              required: 'El correo electrónico es requerido',
               pattern: {
                 value: /^\S+@\S+\.\S+$/,
-                message: "Formato de correo electrónico inválido",
+                message: 'Formato de correo electrónico inválido',
               },
             })}
           />
@@ -162,10 +161,10 @@ const onSubmit = async (data) => {
             type="tel"
             placeholder="Teléfono"
             className={`w-full border border-gray-300 px-3 py-3 text-gray-900 focus:outline-none focus:border-black ${
-              errors.phone ? "border-red-500" : ""
+              errors.phone ? 'border-red-500' : ''
             }`}
-            {...register("phone", {
-              required: "El teléfono es requerido",
+            {...register('phone', {
+              required: 'El teléfono es requerido',
               pattern: {
                 value: /^\+?[0-9]{10,15}$/,
                 message:
@@ -185,16 +184,16 @@ const onSubmit = async (data) => {
           <div className="relative">
             <input
               id="password"
-              type={showPassword ? "text" : "password"}
+              type={showPassword ? 'text' : 'password'}
               placeholder="Contraseña"
               className={`w-full border border-gray-300 px-3 py-3 pr-10 text-gray-900 focus:outline-none focus:border-black ${
-                errors.password ? "border-red-500" : ""
+                errors.password ? 'border-red-500' : ''
               }`}
-              {...register("password", {
-                required: "La contraseña es requerida",
+              {...register('password', {
+                required: 'La contraseña es requerida',
                 minLength: {
                   value: 6,
-                  message: "La contraseña debe tener al menos 6 caracteres",
+                  message: 'La contraseña debe tener al menos 6 caracteres',
                 },
               })}
             />
@@ -220,15 +219,15 @@ const onSubmit = async (data) => {
           <div className="relative">
             <input
               id="confirmPassword"
-              type={showConfirmPassword ? "text" : "password"}
+              type={showConfirmPassword ? 'text' : 'password'}
               placeholder="Confirmar contraseña"
               className={`w-full border border-gray-300 px-3 py-3 pr-10 text-gray-900 focus:outline-none focus:border-black ${
-                errors.confirmPassword ? "border-red-500" : ""
+                errors.confirmPassword ? 'border-red-500' : ''
               }`}
-              {...register("confirmPassword", {
-                required: "Debe confirmar su contraseña",
+              {...register('confirmPassword', {
+                required: 'Debe confirmar su contraseña',
                 validate: (value) =>
-                  value === password || "Las contraseñas no coinciden",
+                  value === password || 'Las contraseñas no coinciden',
               })}
             />
             <button
@@ -255,17 +254,17 @@ const onSubmit = async (data) => {
             id="acceptTerms"
             type="checkbox"
             className={`h-4 w-4 text-black focus:ring-black border-gray-300 rounded ${
-              errors.acceptTerms ? "border-red-500" : ""
+              errors.acceptTerms ? 'border-red-500' : ''
             }`}
-            {...register("acceptTerms", {
-              required: "Debe aceptar los términos y condiciones",
+            {...register('acceptTerms', {
+              required: 'Debe aceptar los términos y condiciones',
             })}
           />
           <label
             htmlFor="acceptTerms"
             className="ml-2 block text-sm text-gray-700"
           >
-            Acepto los{" "}
+            Acepto los{' '}
             <Link href="/terms" className="text-black hover:underline">
               Términos y Condiciones
             </Link>
@@ -277,8 +276,8 @@ const onSubmit = async (data) => {
           </p>
         )}
 
-        <button type="submit" disabled={isLoading} className="w-full btn-drop">
-          <span>{isLoading ? "Registrando..." : "Registrarse"}</span>
+        <button type="submit" disabled={isLoading} className="w-full">
+          <span>{isLoading ? 'Registrando...' : 'Registrarse'}</span>
         </button>
       </form>
 
@@ -295,7 +294,7 @@ const onSubmit = async (data) => {
         <GoogleLoginButton callbackUrl={redirectTo} />
 
         <p className="mt-4 text-sm">
-          ¿Ya tienes cuenta?{" "}
+          ¿Ya tienes cuenta?{' '}
           {switchToLogin ? (
             <button
               type="button"
@@ -307,9 +306,9 @@ const onSubmit = async (data) => {
           ) : (
             <Link
               href={`/auth/login${
-                redirectTo !== "/"
+                redirectTo !== '/'
                   ? `?redirect=${encodeURIComponent(redirectTo)}`
-                  : ""
+                  : ''
               }`}
               className="font-medium text-black hover:underline"
             >

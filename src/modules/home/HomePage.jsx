@@ -3,8 +3,15 @@ import CustomLink from '@/shared/components/CustomLink';
 import HomeProduct from './HomeProduct';
 import HomeProductSlider from './HomeProductSlider';
 import ProductSlider from '@/modules/products/ProductSlider';
+import { getProducts } from '@/lib/data';
 
-export default function Home() {
+export default async function Home() {
+  // Obtener productos destacados o una categoría específica
+  const { products } = await getProducts({
+    featured: true, // O puedes usar category: 'destacados'
+    limit: 12, // Limitar la cantidad de productos
+  });
+
   return (
     <>
       <div className="relative w-full h-[120vh] min-h-200">
@@ -18,9 +25,7 @@ export default function Home() {
 
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-10 text-white text-center font-primary">
           <h3 className="text-4xl font-bold">PRIMAVERA VERANO 2026</h3>
-
           <p className="m-5 text-lg">Moda que inspira tu estilo</p>
-
           <button className="cursor-pointer">
             <CustomLink href="/shop">Explorar Tienda</CustomLink>
           </button>
@@ -90,64 +95,8 @@ export default function Home() {
         />
       </div>
 
-      <ProductSlider
-        items={[
-          {
-            imgSrc: '/assets/clothes4.jpg',
-            imgAlt: 'Clothes 4',
-            title: 'Camisa de cuadros',
-            price: 49.99,
-          },
-          {
-            imgSrc: '/assets/clothes.jpg',
-            imgAlt: 'Clothes 1',
-            title: 'Remera básica',
-            price: 29.99,
-          },
-          {
-            imgSrc: '/assets/clothes2.jpg',
-            imgAlt: 'Clothes 2',
-            title: 'Pantalón clásico',
-            price: 59.99,
-          },
-          {
-            imgSrc: '/assets/clothes3.jpg',
-            imgAlt: 'Clothes 3',
-            title: 'Chaqueta ligera',
-            price: 89.99,
-          },
-          {
-            imgSrc: '/assets/clothes4.jpg',
-            imgAlt: 'Clothes 4',
-            title: 'Camisa de cuadros',
-            price: 49.99,
-          },
-          {
-            imgSrc: '/assets/clothes.jpg',
-            imgAlt: 'Clothes 1',
-            title: 'Remera básica',
-            price: 29.99,
-          },
-          {
-            imgSrc: '/assets/clothes3.jpg',
-            imgAlt: 'Clothes 3',
-            title: 'Chaqueta ligera',
-            price: 89.99,
-          },
-          {
-            imgSrc: '/assets/clothes4.jpg',
-            imgAlt: 'Clothes 4',
-            title: 'Camisa de cuadros',
-            price: 49.99,
-          },
-          {
-            imgSrc: '/assets/clothes.jpg',
-            imgAlt: 'Clothes 1',
-            title: 'Remera básica',
-            price: 29.99,
-          },
-        ]}
-      ></ProductSlider>
+      {/* ProductSlider con productos reales */}
+      <ProductSlider products={products} />
     </>
   );
 }
