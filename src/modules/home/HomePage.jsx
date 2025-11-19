@@ -16,7 +16,7 @@ export default async function Home() {
     <>
       <div className="relative w-full h-[120vh] min-h-200">
         <Image
-          src="/assets/home-man2.jpg"
+          src="/assets/Conjuntos/Conjuntos/portada.jpg"
           alt="Home background"
           fill
           priority
@@ -85,13 +85,12 @@ export default async function Home() {
       </HomeProductSlider>
 
       <div className="w-full min-h-[100dvh]">
-        <HomeProduct
-          imageSrc="/assets/clothes6.jpg"
-          altText="Clothes 6"
-          title="Camisa de mezclilla"
-          description="Camisas clásica"
-          linkTitle="Descubrir Más"
-          link="/shop"
+        <video
+          src="/assets/Conjuntos/Conjuntos/videohero.mp4"
+          autoPlay
+          loop
+          muted
+          className="w-full h-full object-cover"
         />
       </div>
 
