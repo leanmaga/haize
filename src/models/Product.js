@@ -41,59 +41,7 @@ const productSchema = new mongoose.Schema(
     category: {
       type: String,
       required: [true, 'Por favor proporcione una categoría'],
-      enum: [
-        // Ropa superior
-        'camisas',
-        'remeras',
-        'polos',
-        'sweaters',
-        'buzos',
-        'camperas',
-        'chalecos',
-        'trajes',
-        'sacos',
-
-        // Ropa inferior
-        'pantalones',
-        'jeans',
-        'bermudas',
-        'shorts',
-
-        // Ropa interior y calcetines
-        'ropa-interior',
-        'medias',
-        'boxers',
-        'slips',
-
-        // Calzado
-        'zapatillas',
-        'zapatos',
-        'botas',
-        'sandalias',
-        'ojotas',
-
-        // Accesorios
-        'cinturones',
-        'carteras',
-        'mochilas',
-        'gorras',
-        'sombreros',
-        'bufandas',
-        'guantes',
-        'billeteras',
-        'lentes',
-        'relojes',
-
-        // Estilos
-        'deportivo',
-        'formal',
-        'casual',
-        'urbano',
-        'elegante-sport',
-
-        // Otros
-        'otros',
-      ],
+      enum: ['camisas', 'remeras', 'conjuntos', 'shorts', 'musculosas'],
     },
 
     // === TALLES Y VARIANTES ===

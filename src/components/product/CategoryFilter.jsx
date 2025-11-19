@@ -58,38 +58,11 @@ function CategoryFilterContent() {
     // Ropa superior
     { key: 'camisas', label: 'Camisas' },
     { key: 'remeras', label: 'Remeras' },
-    { key: 'polos', label: 'Polos' },
-    { key: 'sweaters', label: 'Sweaters' },
-    { key: 'buzos', label: 'Buzos' },
-    { key: 'camperas', label: 'Camperas' },
-    { key: 'chalecos', label: 'Chalecos' },
-    { key: 'sacos', label: 'Sacos' },
+    { key: 'musculosas', label: 'Musculosas' },
+    { key: 'conjuntos', label: 'Conjuntos' },
 
     // Ropa inferior
-    { key: 'pantalones', label: 'Pantalones' },
-    { key: 'jeans', label: 'Jeans' },
-    { key: 'bermudas', label: 'Bermudas' },
     { key: 'shorts', label: 'Shorts' },
-
-    // Calzado
-    { key: 'zapatillas', label: 'Zapatillas' },
-    { key: 'zapatos', label: 'Zapatos' },
-    { key: 'botas', label: 'Botas' },
-    { key: 'sandalias', label: 'Sandalias' },
-
-    // Accesorios
-    { key: 'cinturones', label: 'Cinturones' },
-    { key: 'gorras', label: 'Gorras' },
-    { key: 'relojes', label: 'Relojes' },
-    { key: 'lentes', label: 'Lentes' },
-    { key: 'billeteras', label: 'Billeteras' },
-    { key: 'mochilas', label: 'Mochilas' },
-
-    // Estilos
-    { key: 'deportivo', label: 'Deportivo' },
-    { key: 'formal', label: 'Formal' },
-    { key: 'casual', label: 'Casual' },
-    { key: 'urbano', label: 'Urbano' },
   ];
 
   return (

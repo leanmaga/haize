@@ -453,50 +453,11 @@ const ProductForm = ({ product = null }) => {
               inputError={validationErrors.category}
               register={register}
               options={[
-                // Ropa superior
                 { value: 'camisas', name: 'Camisas' },
                 { value: 'remeras', name: 'Remeras' },
-                { value: 'polos', name: 'Polos' },
-                { value: 'sweaters', name: 'Sweaters' },
-                { value: 'buzos', name: 'Buzos' },
-                { value: 'camperas', name: 'Camperas' },
-                { value: 'chalecos', name: 'Chalecos' },
-                { value: 'sacos', name: 'Sacos' },
-                { value: 'trajes', name: 'Trajes' },
-                // Ropa inferior
-                { value: 'pantalones', name: 'Pantalones' },
-                { value: 'jeans', name: 'Jeans' },
-                { value: 'bermudas', name: 'Bermudas' },
+                { value: 'musculosas', name: 'Musculosas' },
+                { value: 'conjuntos', name: 'Conjuntos' },
                 { value: 'shorts', name: 'Shorts' },
-                // Ropa interior
-                { value: 'ropa-interior', name: 'Ropa Interior' },
-                { value: 'medias', name: 'Medias' },
-                { value: 'boxers', name: 'Boxers' },
-                { value: 'slips', name: 'Slips' },
-                // Calzado
-                { value: 'zapatillas', name: 'Zapatillas' },
-                { value: 'zapatos', name: 'Zapatos' },
-                { value: 'botas', name: 'Botas' },
-                { value: 'sandalias', name: 'Sandalias' },
-                { value: 'ojotas', name: 'Ojotas' },
-                // Accesorios
-                { value: 'cinturones', name: 'Cinturones' },
-                { value: 'carteras', name: 'Carteras' },
-                { value: 'mochilas', name: 'Mochilas' },
-                { value: 'gorras', name: 'Gorras' },
-                { value: 'sombreros', name: 'Sombreros' },
-                { value: 'bufandas', name: 'Bufandas' },
-                { value: 'guantes', name: 'Guantes' },
-                { value: 'billeteras', name: 'Billeteras' },
-                { value: 'lentes', name: 'Lentes' },
-                { value: 'relojes', name: 'Relojes' },
-                // Estilos
-                { value: 'deportivo', name: 'Deportivo' },
-                { value: 'formal', name: 'Formal' },
-                { value: 'casual', name: 'Casual' },
-                { value: 'urbano', name: 'Urbano' },
-                { value: 'elegante-sport', name: 'Elegante Sport' },
-                { value: 'otros', name: 'Otros' },
               ]}
             />
 
