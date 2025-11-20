@@ -4,31 +4,34 @@ import { useState } from 'react';
 import { useCartStore } from '@/lib/store';
 import { toast } from 'react-hot-toast';
 
-export default function AddToCartButton({ product }) {
+export default function AddToCartButton({
+  product,
+  selectedSize,
+  selectedColor,
+}) {
   const addToCart = useCartStore((state) => state.addItem);
   const [quantity, setQuantity] = useState(1);
-  const [selectedVariant, setSelectedVariant] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
 
   const price =
     product.promoPrice && product.promoPrice > 0
       ? product.promoPrice
-      : product.salePrice !== undefined
-      ? product.salePrice
-      : product.price;
+      : product.salePrice;
 
-  const hasVariants = product.variants && product.variants.length > 0;
+  // Verificar si tiene variantes
+  const hasSizes = product.sizes && product.sizes.length > 0;
+  const hasColors = product.colors && product.colors.length > 0;
+  const hasVariants = hasSizes || hasColors;
 
-  const hasStock = hasVariants
-    ? selectedVariant
-      ? selectedVariant.stock > 0
-      : product.stock > 0
-    : product.stock > 0;
+  // Validar que se hayan seleccionado las variantes requeridas
+  const needsSize = hasSizes && !selectedSize;
+  const needsColor = hasColors && !selectedColor;
+  const canAddToCart = hasVariants ? !needsSize && !needsColor : true;
+
+  const hasStock = product.stock > 0;
 
   const incrementQuantity = () => {
-    if (selectedVariant && quantity < selectedVariant.stock) {
-      setQuantity(quantity + 1);
-    } else if (!selectedVariant && quantity < product.stock) {
+    if (quantity < product.stock) {
       setQuantity(quantity + 1);
     }
   };
@@ -40,8 +43,12 @@ export default function AddToCartButton({ product }) {
   };
 
   const handleAddToCart = () => {
-    if (hasVariants && !selectedVariant) {
-      toast.error('Por favor selecciona talle y color');
+    // Validar variantes
+    if (needsSize || needsColor) {
+      const missing = [];
+      if (needsSize) missing.push('talle');
+      if (needsColor) missing.push('color');
+      toast.error(`Por favor selecciona: ${missing.join(' y ')}`);
       return;
     }
 
@@ -58,11 +65,13 @@ export default function AddToCartButton({ product }) {
       price: price,
       image: product.imageUrl,
       quantity: quantity,
-      ...(selectedVariant && {
+      ...(hasVariants && {
         variant: {
-          size: selectedVariant.size,
-          color: selectedVariant.color,
-          variantId: `${selectedVariant.size}-${selectedVariant.color}`,
+          size: selectedSize || undefined,
+          color: selectedColor || undefined,
+          variantId: `${selectedSize || 'no-size'}-${
+            selectedColor || 'no-color'
+          }`,
         },
       }),
     };
@@ -76,8 +85,11 @@ export default function AddToCartButton({ product }) {
   };
 
   const handleWhatsAppOrder = () => {
-    if (hasVariants && !selectedVariant) {
-      toast.error('Por favor selecciona talle y color');
+    if (needsSize || needsColor) {
+      const missing = [];
+      if (needsSize) missing.push('talle');
+      if (needsColor) missing.push('color');
+      toast.error(`Por favor selecciona: ${missing.join(' y ')}`);
       return;
     }
 
@@ -86,9 +98,9 @@ export default function AddToCartButton({ product }) {
       return;
     }
 
-    const variantText = selectedVariant
-      ? ` - Talle: ${selectedVariant.size}, Color: ${selectedVariant.color}`
-      : '';
+    let variantText = '';
+    if (selectedSize) variantText += ` - Talle: ${selectedSize}`;
+    if (selectedColor) variantText += ` - Color: ${selectedColor}`;
 
     const message = `Hola, quiero pedir el siguiente producto:\n${product.title}${variantText}\nCantidad: ${quantity}\nPrecio: $${price}`;
     const phone = '+5491125528131';
@@ -102,7 +114,7 @@ export default function AddToCartButton({ product }) {
 
   return (
     <div className="space-y-4">
-      {/* Selector de cantidad sin fondo */}
+      {/* Selector de cantidad */}
       <div className="p-4">
         <div className="flex items-center justify-between">
           <label className="text-sm font-medium text-gray-700">Cantidad:</label>
@@ -133,13 +145,7 @@ export default function AddToCartButton({ product }) {
             <button
               type="button"
               onClick={incrementQuantity}
-              disabled={
-                hasVariants
-                  ? selectedVariant
-                    ? quantity >= selectedVariant.stock
-                    : true
-                  : quantity >= product.stock
-              }
+              disabled={quantity >= product.stock}
               className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-r-lg"
             >
               <svg
@@ -160,16 +166,16 @@ export default function AddToCartButton({ product }) {
         </div>
       </div>
 
-      {/* Botón de agregar al carrito - Negro con hover a gris */}
+      {/* Botón de agregar al carrito */}
       <button
         type="button"
         onClick={handleAddToCart}
-        disabled={isAdding || !hasStock || (hasVariants && !selectedVariant)}
+        disabled={isAdding || !hasStock || !canAddToCart}
         className={`w-full md:w-[500px] md:h-12 py-4 md:py-0 font-semibold text-center rounded-full transition-all duration-300 cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2 border-2
           ${
             isAdding
               ? 'opacity-70 text-white bg-black border-black'
-              : !hasStock || (hasVariants && !selectedVariant)
+              : !hasStock || !canAddToCart
               ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
               : 'text-white bg-black border-black hover:bg-black/70'
           }`}
@@ -211,7 +217,7 @@ export default function AddToCartButton({ product }) {
             </svg>
             Agotado
           </>
-        ) : hasVariants && !selectedVariant ? (
+        ) : !canAddToCart ? (
           <>
             <svg
               className="h-5 w-5"
@@ -226,7 +232,7 @@ export default function AddToCartButton({ product }) {
                 d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            Selecciona una variante
+            Selecciona variante
           </>
         ) : (
           <>
@@ -248,14 +254,14 @@ export default function AddToCartButton({ product }) {
         )}
       </button>
 
-      {/* Botón de pedido por WhatsApp - Blanco con hover a gris */}
+      {/* Botón de pedido por WhatsApp */}
       <button
         type="button"
         onClick={handleWhatsAppOrder}
-        disabled={!hasStock || (hasVariants && !selectedVariant)}
+        disabled={!hasStock || !canAddToCart}
         className={`w-full md:w-[500px] md:h-12 py-4 md:py-0 font-semibold text-center rounded-full transition-all duration-300 cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2 border-2
           ${
-            !hasStock || (hasVariants && !selectedVariant)
+            !hasStock || !canAddToCart
               ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
               : 'text-black bg-white border-black hover:bg-black/70 hover:text-white'
           }`}

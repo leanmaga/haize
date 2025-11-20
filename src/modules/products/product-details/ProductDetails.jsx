@@ -8,6 +8,7 @@ import ProductReviews from '@/components/ProductReviews';
 import StarRating from '@/components/ui/StarRating';
 import RelatedProducts from '@/components/product/RelatedProducts';
 import ProductImageSlider from '@/components/product/ProductImageSlider';
+import VariantSelector from '@/components/product/VariantSelector'; // NUEVO
 
 export default async function ProductDetails({ params }) {
   // Extract id from params
@@ -195,52 +196,8 @@ export default async function ProductDetails({ params }) {
             )}
           </div>
 
-          {/* Selector de variantes */}
-          {product.variants && product.variants.length > 0 && (
-            <div className="mb-6">
-              {product.sizes && product.sizes.length > 0 && (
-                <div className="mb-4">
-                  <div className="text-sm font-semibold mb-3">Peso/Tamaño</div>
-                  <div className="flex flex-wrap gap-2">
-                    {product.sizes.map((size, idx) => (
-                      <button
-                        key={idx}
-                        className="px-4 py-2 border-2 border-gray-300 hover:border-black text-sm font-medium transition-all"
-                      >
-                        {size.size}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {product.colors && product.colors.length > 0 && (
-                <div className="mb-4">
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="text-sm font-semibold">Colores</span>
-                    <span className="text-sm text-gray-600">
-                      {product.colors[0]?.name || 'Seleccionar'} ●
-                    </span>
-                  </div>
-                  <div className="flex gap-2">
-                    {product.colors.map((color, idx) => (
-                      <button
-                        key={idx}
-                        className="w-12 h-12 border-2 border-gray-300 hover:border-black rounded transition-all"
-                        style={{ backgroundColor: color.hex || '#e5e7eb' }}
-                        title={color.name}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Botones de Acción */}
-          <div className="mb-6 space-y-3">
-            <AddToCartButton product={product} />
-          </div>
+          {/* SELECTOR DE VARIANTES - NUEVO COMPONENTE */}
+          <VariantSelector product={product} />
 
           {/* Secciones Expandibles con nuevo diseño */}
           <div className="space-y-0 border-t border-gray-200">

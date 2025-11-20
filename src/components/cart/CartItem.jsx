@@ -11,12 +11,16 @@ const CartItem = ({ item }) => {
   const handleQuantityChange = (e) => {
     const newQuantity = parseInt(e.target.value);
     if (newQuantity >= 1) {
-      updateQuantity(item.id, newQuantity);
+      updateQuantity(
+        item.id,
+        newQuantity,
+        item.variant ? item.variant.variantId : null
+      );
     }
   };
 
   const handleRemove = () => {
-    removeItem(item.id);
+    removeItem(item.id, item.variant ? item.variant.variantId : null);
   };
 
   const itemTotal = item.price * item.quantity;
@@ -31,7 +35,7 @@ const CartItem = ({ item }) => {
           {item.image ? (
             <Image
               src={item.image}
-              alt={item.name || 'Producto en carrito'}
+              alt={item.title || 'Producto en carrito'}
               fill
               style={{ objectFit: 'cover' }}
               sizes="96px"
@@ -48,14 +52,30 @@ const CartItem = ({ item }) => {
       <div className="flex-1 flex flex-col">
         <div className="flex justify-between items-start mb-4">
           <div>
-            <h3 className="font-medium text-base mb-2">{item.name}</h3>
+            <h3 className="font-medium text-base mb-2">{item.title}</h3>
+
+            {/* Mostrar talle y color si existen */}
             {item.variant && (
-              <p className="text-sm text-gray-600 mb-1">
-                TALLE: {item.variant}
-              </p>
+              <div className="text-sm text-gray-600 space-y-1">
+                {item.variant.size && (
+                  <p className="uppercase">
+                    <span className="font-medium">Talle:</span>{' '}
+                    {item.variant.size}
+                  </p>
+                )}
+                {item.variant.color && (
+                  <p className="uppercase">
+                    <span className="font-medium">Color:</span>{' '}
+                    {item.variant.color}
+                  </p>
+                )}
+              </div>
             )}
-            <div className="flex items-center gap-3 mt-2">
-              <label className="text-sm text-gray-600">CANTIDAD:</label>
+
+            <div className="flex items-center gap-3 mt-3">
+              <label className="text-sm text-gray-600 uppercase">
+                Cantidad:
+              </label>
               <input
                 type="number"
                 min="1"

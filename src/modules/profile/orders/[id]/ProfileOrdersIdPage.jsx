@@ -15,7 +15,7 @@ import {
   CheckCircleIcon,
 } from '@heroicons/react/24/outline';
 
-export default function OrderDetailsPage() {
+export default function ProfileOrdersIdPage() {
   const params = useParams();
   const [order, setOrder] = useState(null);
   const [paymentDetails, setPaymentDetails] = useState(null);

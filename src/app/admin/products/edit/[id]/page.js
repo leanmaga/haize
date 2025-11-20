@@ -1,7 +1,7 @@
 // src/app/admin/products/edit/[id]/page.js
 import { notFound } from "next/navigation";
 import { getProductById } from "@/lib/data";
-import ProductForm from "@/components/admin/ProductForm";
+import ProductForm from "@/modules/products/form/ProductForm";
 import PropTypes from "prop-types";
 
 export async function generateMetadata({ params }) {

@@ -9,6 +9,9 @@ export default function ProductSlider({ products = [] }) {
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(false);
 
+  // Filtrar solo productos destacados
+  const featuredProducts = products.filter((product) => product.featured);
+
   useEffect(() => {
     const el = sliderRef.current;
     if (!el) return;
@@ -38,8 +41,8 @@ export default function ProductSlider({ products = [] }) {
     });
   };
 
-  // Si no hay productos, mostrar mensaje o retornar null
-  if (!products || products.length === 0) {
+  // Si no hay productos destacados, no mostrar el slider
+  if (!featuredProducts || featuredProducts.length === 0) {
     return null;
   }
 
@@ -75,7 +78,7 @@ export default function ProductSlider({ products = [] }) {
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
         <div className="pb-2 flex gap-5 items-stretch">
-          {products.map((product) => (
+          {featuredProducts.map((product) => (
             <div key={product.id} className="flex-shrink-0 w-[260px]">
               <ProductCard product={product} />
             </div>

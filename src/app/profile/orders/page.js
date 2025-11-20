@@ -1,9 +1,9 @@
-import OrdersPage from '@/modules/profile/orders/ProfileOrdersPage ';
+import ProfileOrdersPage from '@/modules/profile/orders/ProfileOrdersPage';
 
 const page = () => {
   return (
     <>
-      <OrdersPage />
+      <ProfileOrdersPage />
     </>
   );
 };

@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
+import CustomLink from './CustomLink';
+import Image from 'next/image';
 
 const CategoriesDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -136,16 +138,12 @@ const CategoriesDropdown = () => {
                   <div className="w-64 space-y-4">
                     {Object.entries(categories).map(([key, section]) => (
                       <div key={key}>
-                        <button
+                        <CustomLink
+                          barColor="bg-black"
                           onMouseEnter={() => setActiveSection(key)}
-                          className={`text-left w-full py-2 px-3 text-sm font-medium tracking-wider transition uppercase rounded ${
-                            activeSection === key
-                              ? 'text-black bg-gray-100'
-                              : 'text-gray-700 hover:text-black hover:bg-gray-50'
-                          }`}
                         >
                           {section.title}
-                        </button>
+                        </CustomLink>
                       </div>
                     ))}
                   </div>
@@ -155,17 +153,13 @@ const CategoriesDropdown = () => {
                     {activeSection && (
                       <div className="grid grid-cols-3 gap-x-8 gap-y-3">
                         {categories[activeSection].items.map((item, index) => (
-                          <button
+                          <CustomLink
                             key={index}
+                            barColor="bg-black"
                             onClick={() => handleCategoryClick(item.value)}
-                            className={`text-left py-2 px-3 text-sm transition hover:bg-gray-50 rounded ${
-                              item.isSpecial
-                                ? 'font-medium text-gray-900'
-                                : 'text-gray-700 hover:text-black'
-                            }`}
                           >
                             {item.name}
-                          </button>
+                          </CustomLink>
                         ))}
                       </div>
                     )}
@@ -180,11 +174,11 @@ const CategoriesDropdown = () => {
                   {/* Columna derecha - Imagen (opcional) */}
                   <div className="w-80 hidden xl:block">
                     {activeSection && (
-                      <div className="bg-gray-100 rounded-lg overflow-hidden h-full min-h-[300px] flex items-center justify-center">
-                        <img
-                          src="https://images.unsplash.com/photo-1490114538077-0a7f8cb49891?w=400&h=500&fit=crop"
+                      <div className="bg-gray-100 rounded-lg overflow-hidden h-full min-h-[300px] relative">
+                        <Image
+                          src="/assets/Conjuntos/Conjuntos/20251117_183927.jpg"
                           alt="Category preview"
-                          className="w-full h-full object-cover"
+                          className="object-cover"
                         />
                       </div>
                     )}
