@@ -16,7 +16,7 @@ export default async function Home() {
     <>
       <div className="relative w-full h-[120vh] min-h-200">
         <Image
-          src="/assets/Conjuntos/Conjuntos/portada.jpg"
+          src="/assets/portada.jpg"
           alt="Home background"
           fill
           priority
@@ -86,7 +86,7 @@ export default async function Home() {
 
       <div className="w-full min-h-[100dvh]">
         <video
-          src="/assets/Conjuntos/Conjuntos/videohero.mp4"
+          src="/assets/videohero.mp4"
           autoPlay
           loop
           muted
