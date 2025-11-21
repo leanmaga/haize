@@ -1,8 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, Mail, Phone, MapPin, ShoppingBag, User } from 'lucide-react';
+import {
+  MagnifyingGlassIcon,
+  EnvelopeIcon,
+  PhoneIcon,
+  MapPinIcon,
+  ShoppingBagIcon,
+  UserIcon,
+  XMarkIcon,
+  HeartIcon,
+  ShoppingCartIcon,
+} from '@heroicons/react/24/outline';
 
+/**
+ * CustomersManagement - Estilo Premium Minimalista
+ */
 export default function CustomersManagement() {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,10 +46,19 @@ export default function CustomersManagement() {
       customer.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const newThisMonth = customers.filter((c) => {
+    const createdDate = new Date(c.createdAt);
+    const now = new Date();
+    return (
+      createdDate.getMonth() === now.getMonth() &&
+      createdDate.getFullYear() === now.getFullYear()
+    );
+  }).length;
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+        <div className="w-8 h-8 border-2 border-gray-200 border-t-gray-900 rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -44,97 +66,61 @@ export default function CustomersManagement() {
   return (
     <div className="space-y-6">
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Total Clientes</p>
-              <p className="text-3xl font-bold">{customers.length}</p>
-            </div>
-            <div className="bg-blue-500 p-3 rounded-lg">
-              <User className="text-white" size={24} />
-            </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[
+          { label: 'Total Clientes', value: customers.length },
+          {
+            label: 'Con Compras',
+            value: customers.filter((c) => c.orders?.length > 0).length,
+          },
+          { label: 'Nuevos este mes', value: newThisMonth },
+        ].map((stat) => (
+          <div
+            key={stat.label}
+            className="bg-white border border-gray-200 p-6 hover:border-gray-400 transition-colors"
+          >
+            <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">
+              {stat.label}
+            </p>
+            <p className="text-3xl font-light text-gray-900">{stat.value}</p>
           </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Clientes Activos</p>
-              <p className="text-3xl font-bold">
-                {customers.filter((c) => c.orders?.length > 0).length}
-              </p>
-            </div>
-            <div className="bg-green-500 p-3 rounded-lg">
-              <ShoppingBag className="text-white" size={24} />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Nuevos este mes</p>
-              <p className="text-3xl font-bold">
-                {
-                  customers.filter((c) => {
-                    const createdDate = new Date(c.createdAt);
-                    const now = new Date();
-                    return (
-                      createdDate.getMonth() === now.getMonth() &&
-                      createdDate.getFullYear() === now.getFullYear()
-                    );
-                  }).length
-                }
-              </p>
-            </div>
-            <div className="bg-purple-500 p-3 rounded-lg">
-              <User className="text-white" size={24} />
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
 
       {/* Search */}
-      <div className="bg-white rounded-xl shadow-sm p-6">
+      <div className="bg-white border border-gray-200 p-4">
         <div className="relative">
-          <Search
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-            size={20}
-          />
+          <MagnifyingGlassIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
           <input
             type="text"
-            placeholder="Buscar clientes por nombre o email..."
+            placeholder="Buscar por nombre o email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+            className="w-full pl-12 pr-4 py-3 border border-gray-200 focus:border-gray-900 focus:ring-0 outline-none transition-colors text-sm"
           />
         </div>
       </div>
 
       {/* Customers Table */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-600">
+            <thead>
+              <tr className="border-b border-gray-200 bg-gray-50">
+                <th className="text-left py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Cliente
                 </th>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-600">
-                  Email
+                <th className="text-left py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Contacto
                 </th>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-600">
-                  Teléfono
-                </th>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-600">
+                <th className="text-center py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Órdenes
                 </th>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-600">
-                  Registrado
+                <th className="text-left py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Registro
                 </th>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-600">
-                  Acciones
+                <th className="text-right py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Acción
                 </th>
               </tr>
             </thead>
@@ -142,60 +128,60 @@ export default function CustomersManagement() {
               {filteredCustomers.map((customer) => (
                 <tr
                   key={customer._id}
-                  className="border-b border-gray-100 hover:bg-gray-50"
+                  className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
                 >
                   <td className="py-4 px-6">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4">
                       {customer.imageUrl ? (
                         <img
                           src={customer.imageUrl}
                           alt={customer.firstName}
-                          className="w-10 h-10 rounded-full object-cover"
+                          className="w-10 h-10 object-cover grayscale"
                         />
                       ) : (
-                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                          <User size={20} className="text-gray-500" />
+                        <div className="w-10 h-10 bg-gray-100 flex items-center justify-center">
+                          <UserIcon className="h-5 w-5 text-gray-400" />
                         </div>
                       )}
                       <div>
-                        <p className="font-medium text-sm">
+                        <p className="text-sm font-medium text-gray-900">
                           {customer.firstName} {customer.lastName}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-400">
                           @{customer.username}
                         </p>
                       </div>
                     </div>
                   </td>
                   <td className="py-4 px-6">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Mail size={14} />
-                      {customer.email}
+                    <div className="space-y-1">
+                      <p className="text-sm text-gray-600 flex items-center gap-2">
+                        <EnvelopeIcon className="h-4 w-4 text-gray-400" />
+                        {customer.email}
+                      </p>
+                      <p className="text-sm text-gray-400 flex items-center gap-2">
+                        <PhoneIcon className="h-4 w-4 text-gray-300" />
+                        {customer.phone || '—'}
+                      </p>
                     </div>
                   </td>
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Phone size={14} />
-                      {customer.phone || 'N/A'}
-                    </div>
-                  </td>
-                  <td className="py-4 px-6">
-                    <span className="text-sm font-medium">
+                  <td className="py-4 px-6 text-center">
+                    <span className="inline-flex items-center justify-center w-8 h-8 bg-gray-100 text-sm font-medium text-gray-700">
                       {customer.orders?.length || 0}
                     </span>
                   </td>
-                  <td className="py-4 px-6 text-sm text-gray-600">
-                    {new Date(customer.createdAt).toLocaleDateString()}
+                  <td className="py-4 px-6 text-sm text-gray-500">
+                    {new Date(customer.createdAt).toLocaleDateString('es-AR')}
                   </td>
-                  <td className="py-4 px-6">
+                  <td className="py-4 px-6 text-right">
                     <button
                       onClick={() => {
                         setSelectedCustomer(customer);
                         setShowDetailModal(true);
                       }}
-                      className="text-black hover:text-gray-600 text-sm underline"
+                      className="text-sm text-gray-500 hover:text-gray-900 underline underline-offset-4 transition-colors"
                     >
-                      Ver detalles
+                      Ver más
                     </button>
                   </td>
                 </tr>
@@ -205,51 +191,56 @@ export default function CustomersManagement() {
         </div>
 
         {filteredCustomers.length === 0 && (
-          <div className="text-center py-12">
-            <User className="mx-auto text-gray-400 mb-4" size={48} />
-            <p className="text-gray-500">No se encontraron clientes</p>
+          <div className="text-center py-16">
+            <UserIcon className="mx-auto h-12 w-12 text-gray-300 mb-4" />
+            <p className="text-gray-400 text-sm">No se encontraron clientes</p>
           </div>
         )}
       </div>
 
       {/* Detail Modal */}
       {showDetailModal && selectedCustomer && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
-              <h2 className="text-xl font-bold">Información del Cliente</h2>
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+              <h2 className="text-sm font-medium uppercase tracking-wider">
+                Detalle del Cliente
+              </h2>
               <button
                 onClick={() => setShowDetailModal(false)}
-                className="text-gray-500 hover:text-gray-700"
+                className="p-2 hover:bg-gray-100 transition-colors"
               >
-                ✕
+                <XMarkIcon className="h-5 w-5 text-gray-500" />
               </button>
             </div>
 
             <div className="p-6 space-y-6">
-              {/* Info Personal */}
+              {/* Profile */}
               <div className="flex items-center gap-4">
                 {selectedCustomer.imageUrl ? (
                   <img
                     src={selectedCustomer.imageUrl}
                     alt={selectedCustomer.firstName}
-                    className="w-20 h-20 rounded-full object-cover"
+                    className="w-20 h-20 object-cover"
                   />
                 ) : (
-                  <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center">
-                    <User size={32} className="text-gray-500" />
+                  <div className="w-20 h-20 bg-gray-100 flex items-center justify-center">
+                    <UserIcon className="h-8 w-8 text-gray-400" />
                   </div>
                 )}
                 <div>
-                  <h3 className="text-xl font-bold">
+                  <h3 className="text-lg font-medium text-gray-900">
                     {selectedCustomer.firstName} {selectedCustomer.lastName}
                   </h3>
-                  <p className="text-gray-500">@{selectedCustomer.username}</p>
+                  <p className="text-sm text-gray-500">
+                    @{selectedCustomer.username}
+                  </p>
                   <span
-                    className={`inline-block mt-2 text-xs px-2 py-1 rounded-full ${
+                    className={`inline-block mt-2 text-[10px] uppercase tracking-wider px-2 py-1 ${
                       selectedCustomer.role === 'admin'
-                        ? 'bg-purple-100 text-purple-800'
-                        : 'bg-blue-100 text-blue-800'
+                        ? 'bg-gray-900 text-white'
+                        : 'bg-gray-100 text-gray-600'
                     }`}
                   >
                     {selectedCustomer.role}
@@ -257,22 +248,28 @@ export default function CustomersManagement() {
                 </div>
               </div>
 
-              {/* Contacto */}
-              <div>
-                <h4 className="font-semibold mb-3">Información de Contacto</h4>
-                <div className="space-y-2 bg-gray-50 p-4 rounded-lg">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Mail size={16} className="text-gray-400" />
-                    <span>{selectedCustomer.email}</span>
+              {/* Contact */}
+              <div className="border-t border-gray-100 pt-6">
+                <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-4">
+                  Contacto
+                </h4>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 text-sm">
+                    <EnvelopeIcon className="h-4 w-4 text-gray-400" />
+                    <span className="text-gray-700">
+                      {selectedCustomer.email}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Phone size={16} className="text-gray-400" />
-                    <span>{selectedCustomer.phone || 'No especificado'}</span>
+                  <div className="flex items-center gap-3 text-sm">
+                    <PhoneIcon className="h-4 w-4 text-gray-400" />
+                    <span className="text-gray-700">
+                      {selectedCustomer.phone || '—'}
+                    </span>
                   </div>
                   {selectedCustomer.address && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <MapPin size={16} className="text-gray-400" />
-                      <span>
+                    <div className="flex items-center gap-3 text-sm">
+                      <MapPinIcon className="h-4 w-4 text-gray-400" />
+                      <span className="text-gray-700">
                         {selectedCustomer.address.street},{' '}
                         {selectedCustomer.address.city}
                       </span>
@@ -281,35 +278,52 @@ export default function CustomersManagement() {
                 </div>
               </div>
 
-              {/* Estadísticas */}
-              <div>
-                <h4 className="font-semibold mb-3">Estadísticas</h4>
+              {/* Stats */}
+              <div className="border-t border-gray-100 pt-6">
+                <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-4">
+                  Actividad
+                </h4>
                 <div className="grid grid-cols-3 gap-4">
-                  <div className="bg-blue-50 p-4 rounded-lg text-center">
-                    <p className="text-2xl font-bold text-blue-600">
-                      {selectedCustomer.orders?.length || 0}
-                    </p>
-                    <p className="text-sm text-gray-600">Órdenes</p>
-                  </div>
-                  <div className="bg-green-50 p-4 rounded-lg text-center">
-                    <p className="text-2xl font-bold text-green-600">
-                      {selectedCustomer.cart?.length || 0}
-                    </p>
-                    <p className="text-sm text-gray-600">Items en carrito</p>
-                  </div>
-                  <div className="bg-purple-50 p-4 rounded-lg text-center">
-                    <p className="text-2xl font-bold text-purple-600">
-                      {selectedCustomer.favorites?.length || 0}
-                    </p>
-                    <p className="text-sm text-gray-600">Favoritos</p>
-                  </div>
+                  {[
+                    {
+                      icon: ShoppingBagIcon,
+                      value: selectedCustomer.orders?.length || 0,
+                      label: 'Órdenes',
+                    },
+                    {
+                      icon: ShoppingCartIcon,
+                      value: selectedCustomer.cart?.length || 0,
+                      label: 'En carrito',
+                    },
+                    {
+                      icon: HeartIcon,
+                      value: selectedCustomer.favorites?.length || 0,
+                      label: 'Favoritos',
+                    },
+                  ].map((stat) => {
+                    const Icon = stat.icon;
+                    return (
+                      <div
+                        key={stat.label}
+                        className="text-center p-4 bg-gray-50"
+                      >
+                        <Icon className="h-5 w-5 text-gray-400 mx-auto mb-2" />
+                        <p className="text-xl font-light text-gray-900">
+                          {stat.value}
+                        </p>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-wider">
+                          {stat.label}
+                        </p>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
-              {/* Fecha registro */}
-              <div className="text-sm text-gray-500 pt-4 border-t">
+              {/* Footer */}
+              <div className="text-xs text-gray-400 pt-4 border-t border-gray-100">
                 Registrado el{' '}
-                {new Date(selectedCustomer.createdAt).toLocaleString()}
+                {new Date(selectedCustomer.createdAt).toLocaleString('es-AR')}
               </div>
             </div>
           </div>

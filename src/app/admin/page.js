@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
-import toast from "react-hot-toast";
-import PopularProducts from "@/components/admin/PopularProducts";
-import StatsCards from "@/components/admin/StatsCards";
+import Link from 'next/link';
+import { useSession, signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState, useCallback } from 'react';
+import toast from 'react-hot-toast';
+import PopularProducts from '@/components/admin/PopularProducts';
+import StatsCards from '@/components/admin/StatsCards';
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
@@ -26,14 +26,14 @@ export default function AdminDashboard() {
   // Función para obtener las clases CSS del estado de la orden
   const getOrderStatusStyles = (status) => {
     const statusConfig = {
-      pagado: { className: "bg-green-100 text-green-800", style: {} },
+      pagado: { className: 'bg-green-100 text-green-800', style: {} },
       pendiente: {
-        className: "text-yellow-800",
-        style: { backgroundColor: "rgba(246, 195, 67, 0.1)" },
+        className: 'text-yellow-800',
+        style: { backgroundColor: 'rgba(246, 195, 67, 0.1)' },
       },
-      enviado: { className: "bg-blue-100 text-blue-800", style: {} },
-      entregado: { className: "bg-gray-800 text-white", style: {} },
-      default: { className: "bg-red-100 text-red-800", style: {} },
+      enviado: { className: 'bg-blue-100 text-blue-800', style: {} },
+      entregado: { className: 'bg-gray-800 text-white', style: {} },
+      default: { className: 'bg-red-100 text-red-800', style: {} },
     };
 
     return statusConfig[status] || statusConfig.default;
@@ -51,7 +51,7 @@ export default function AdminDashboard() {
       const data = await response.json();
 
       // Para productos, extraer el array de products
-      if (url.includes("/products")) {
+      if (url.includes('/products')) {
         return data.products || defaultValue;
       }
 
@@ -70,7 +70,7 @@ export default function AdminDashboard() {
       0
     );
     const pendingOrders = orders.filter(
-      (order) => order.status === "pendiente"
+      (order) => order.status === 'pendiente'
     ).length;
     const recentOrders = orders.slice(0, 5);
 
@@ -83,9 +83,9 @@ export default function AdminDashboard() {
       setIsDataLoading(true);
 
       const [productsData, ordersData, usersData] = await Promise.all([
-        fetchWithErrorHandling("/api/products", []),
-        fetchWithErrorHandling("/api/orders", []),
-        fetchWithErrorHandling("/api/users", []),
+        fetchWithErrorHandling('/api/products', []),
+        fetchWithErrorHandling('/api/orders', []),
+        fetchWithErrorHandling('/api/users', []),
       ]);
 
       const { totalSales, pendingOrders, recentOrders } =
@@ -100,8 +100,8 @@ export default function AdminDashboard() {
         recentOrders,
       });
     } catch (error) {
-      console.error("Error general al cargar datos del dashboard:", error);
-      toast.error("Error al cargar datos del dashboard");
+      console.error('Error general al cargar datos del dashboard:', error);
+      toast.error('Error al cargar datos del dashboard');
     } finally {
       setIsDataLoading(false);
     }
@@ -109,19 +109,19 @@ export default function AdminDashboard() {
 
   // Verificar autenticación y rol de administrador
   useEffect(() => {
-    const isUnauthenticated = status === "unauthenticated";
+    const isUnauthenticated = status === 'unauthenticated';
     const isNotAdmin =
-      status === "authenticated" && session?.user?.role !== "admin";
+      status === 'authenticated' && session?.user?.role !== 'admin';
 
     if (isUnauthenticated || isNotAdmin) {
-      router.push("/auth/login");
+      router.push('/auth/login');
     }
   }, [status, session, router]);
 
   // Cargar datos del dashboard
   useEffect(() => {
     const isAuthenticatedAdmin =
-      status === "authenticated" && session?.user?.role === "admin";
+      status === 'authenticated' && session?.user?.role === 'admin';
 
     if (isAuthenticatedAdmin) {
       loadDashboardData();
@@ -131,16 +131,16 @@ export default function AdminDashboard() {
   // Función para cerrar sesión
   const handleLogout = async () => {
     await signOut({ redirect: false });
-    toast.success("Sesión cerrada correctamente");
-    router.push("/auth/login");
+    toast.success('Sesión cerrada correctamente');
+    router.push('/auth/login');
   };
 
   // Verificar si debe mostrar loading
   const shouldShowAuthLoading = () => {
     return (
-      status === "loading" ||
-      status === "unauthenticated" ||
-      (status === "authenticated" && session?.user?.role !== "admin")
+      status === 'loading' ||
+      status === 'unauthenticated' ||
+      (status === 'authenticated' && session?.user?.role !== 'admin')
     );
   };
 
@@ -150,7 +150,7 @@ export default function AdminDashboard() {
       <div className="min-h-screen flex items-center justify-center">
         <div
           className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2"
-          style={{ borderTopColor: "#F6C343", borderBottomColor: "#F6C343" }}
+          style={{ borderTopColor: '#F6C343', borderBottomColor: '#F6C343' }}
         ></div>
       </div>
     );
@@ -162,7 +162,7 @@ export default function AdminDashboard() {
       <div className="flex items-center justify-center min-h-[300px]">
         <div
           className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2"
-          style={{ borderTopColor: "#F6C343", borderBottomColor: "#F6C343" }}
+          style={{ borderTopColor: '#F6C343', borderBottomColor: '#F6C343' }}
         ></div>
       </div>
     );
@@ -172,18 +172,18 @@ export default function AdminDashboard() {
     dashboardData;
 
   return (
-    <div className="border border-gray-200 p-6">
+    <div className="border border-gray-200 p-6 ">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold">Dashboard</h1>
         <button
           onClick={handleLogout}
           className="px-4 py-2 text-white transition rounded-md"
-          style={{ backgroundColor: "#F6C343" }}
+          style={{ backgroundColor: '#F6C343' }}
           onMouseEnter={(e) => {
-            e.target.style.backgroundColor = "#E5B63C";
+            e.target.style.backgroundColor = '#E5B63C';
           }}
           onMouseLeave={(e) => {
-            e.target.style.backgroundColor = "#F6C343";
+            e.target.style.backgroundColor = '#F6C343';
           }}
         >
           Cerrar Sesión
@@ -214,12 +214,12 @@ export default function AdminDashboard() {
           <Link
             href="/admin/orders"
             className="text-sm font-medium transition-colors hover:underline"
-            style={{ color: "#F6C343" }}
+            style={{ color: '#F6C343' }}
             onMouseEnter={(e) => {
-              e.target.style.color = "#E5B63C";
+              e.target.style.color = '#E5B63C';
             }}
             onMouseLeave={(e) => {
-              e.target.style.color = "#F6C343";
+              e.target.style.color = '#F6C343';
             }}
           >
             Ver todos
@@ -271,17 +271,17 @@ export default function AdminDashboard() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        {order.shippingInfo?.name || "N/A"}
+                        {order.shippingInfo?.name || 'N/A'}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {order.shippingInfo?.email || "N/A"}
+                        {order.shippingInfo?.email || 'N/A'}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(order.createdAt).toLocaleDateString("es-ES")}
+                      {new Date(order.createdAt).toLocaleDateString('es-ES')}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      ${order.totalAmount?.toFixed(2) || "0.00"}
+                      ${order.totalAmount?.toFixed(2) || '0.00'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {(() => {
@@ -296,7 +296,7 @@ export default function AdminDashboard() {
                             {order.status
                               ? order.status.charAt(0).toUpperCase() +
                                 order.status.slice(1)
-                              : "N/A"}
+                              : 'N/A'}
                           </span>
                         );
                       })()}

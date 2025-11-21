@@ -1,17 +1,18 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import PropTypes from "prop-types";
+import Link from 'next/link';
+import PropTypes from 'prop-types';
 import {
   CubeIcon,
   ClipboardDocumentListIcon,
   UsersIcon,
   CurrencyDollarIcon,
-} from "@heroicons/react/24/outline";
+  ArrowUpRightIcon,
+} from '@heroicons/react/24/outline';
 
 /**
- * Componente que agrupa las tarjetas de estadísticas.
- * Recibe conteos y valores para productos, pedidos, usuarios y ventas.
+ * StatsCards - Estilo Premium Minimalista
+ * Inspirado en paneles admin de marcas como Cardón, Kevingston, Etiqueta Negra
  */
 export default function StatsCards({
   productsCount,
@@ -22,38 +23,36 @@ export default function StatsCards({
 }) {
   const stats = [
     {
-      label: "Productos",
+      label: 'Productos',
       value: productsCount,
       icon: CubeIcon,
-      href: "/admin/products",
-      color: "blue",
+      href: '/admin/products',
     },
     {
-      label: "Pedidos",
+      label: 'Pedidos',
       value: ordersCount,
       icon: ClipboardDocumentListIcon,
-      href: "/admin/orders",
-      color: "green",
+      href: '/admin/orders',
     },
     {
-      label: "Usuarios",
+      label: 'Usuarios',
       value: usersCount,
       icon: UsersIcon,
-      href: "/admin/users",
-      color: "purple",
+      href: '/admin/users',
     },
     {
-      label: "Ventas Totales",
-      value: `$${totalSales.toFixed(2)}`,
+      label: 'Ventas Totales',
+      value: `$${totalSales.toLocaleString('es-AR', {
+        minimumFractionDigits: 2,
+      })}`,
       icon: CurrencyDollarIcon,
-      href: "/admin/orders",
-      color: "yellow",
-      subtitle: `${pendingOrders} pedidos pendientes`,
+      href: '/admin/orders',
+      subtitle: pendingOrders > 0 ? `${pendingOrders} pendientes` : null,
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
       {stats.map((stat) => (
         <StatCard key={stat.label} {...stat} />
       ))}
@@ -70,70 +69,38 @@ StatsCards.propTypes = {
 };
 
 /**
- * Tarjeta individual de estadística.
+ * StatCard - Tarjeta individual con diseño premium
  */
-function StatCard({ label, value, icon: Icon, href, color, subtitle }) {
-  // Mapear colores para Tailwind
-  const colorMap = {
-    blue: {
-      bg: "bg-blue-100",
-      icon: "text-blue-600",
-      link: "text-blue-600 hover:text-blue-800",
-      subtitle: "text-blue-600",
-      hoverBorder: "hover:border-blue-200",
-    },
-    green: {
-      bg: "bg-green-100",
-      icon: "text-green-600",
-      link: "text-green-600 hover:text-green-800",
-      subtitle: "text-green-600",
-      hoverBorder: "hover:border-green-200",
-    },
-    purple: {
-      bg: "bg-purple-100",
-      icon: "text-purple-600",
-      link: "text-purple-600 hover:text-purple-800",
-      subtitle: "text-purple-600",
-      hoverBorder: "hover:border-purple-200",
-    },
-    yellow: {
-      bg: "bg-yellow-100",
-      icon: "text-yellow-600",
-      link: "text-yellow-600 hover:text-yellow-800",
-      subtitle: "text-yellow-600",
-      hoverBorder: "hover:border-yellow-200",
-    },
-  };
-
-  const styles = colorMap[color] || colorMap.blue;
-
+function StatCard({ label, value, icon: Icon, href, subtitle }) {
   return (
-    <div
-      className={`bg-white rounded-lg p-6 shadow transition-shadow duration-200 border border-gray-100 ${styles.hoverBorder}`}
-    >
-      <div className="flex items-center">
-        <div className={`${styles.bg} p-3 rounded-full`}>
-          <Icon className={`h-6 w-6 ${styles.icon}`} />
+    <Link href={href} className="group block">
+      <div className="bg-white border border-gray-200 p-6 transition-all duration-300 hover:border-gray-900 hover:shadow-sm">
+        {/* Header con icono */}
+        <div className="flex items-start justify-between mb-4">
+          <div className="p-2 bg-gray-50 group-hover:bg-gray-900 transition-colors duration-300">
+            <Icon className="h-5 w-5 text-gray-600 group-hover:text-white transition-colors duration-300" />
+          </div>
+          <ArrowUpRightIcon className="h-4 w-4 text-gray-300 group-hover:text-gray-900 transition-colors duration-300" />
         </div>
-        <div className="ml-4">
-          <h2 className="text-gray-500 text-sm">{label}</h2>
-          <p className="text-2xl font-semibold">{value}</p>
-        </div>
+
+        {/* Valor principal */}
+        <p className="text-3xl font-light tracking-tight text-gray-900 mb-1">
+          {value}
+        </p>
+
+        {/* Label */}
+        <p className="text-sm text-gray-500 uppercase tracking-wider font-medium">
+          {label}
+        </p>
+
+        {/* Subtitle opcional */}
+        {subtitle && (
+          <p className="text-xs text-gray-400 mt-2 pt-2 border-t border-gray-100">
+            {subtitle}
+          </p>
+        )}
       </div>
-
-      <Link
-        href={href}
-        className={`${styles.link} text-sm font-medium mt-4 inline-block`}
-      >
-        Ver detalles →
-      </Link>
-
-      {subtitle && (
-        <div className={`mt-2 text-sm font-medium ${styles.subtitle}`}>
-          {subtitle}
-        </div>
-      )}
-    </div>
+    </Link>
   );
 }
 
@@ -142,6 +109,5 @@ StatCard.propTypes = {
   value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   icon: PropTypes.elementType.isRequired,
   href: PropTypes.string.isRequired,
-  color: PropTypes.oneOf(["blue", "green", "purple", "yellow"]).isRequired,
   subtitle: PropTypes.string,
 };

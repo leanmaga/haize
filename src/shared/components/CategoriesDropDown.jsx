@@ -176,9 +176,11 @@ const CategoriesDropdown = () => {
                     {activeSection && (
                       <div className="bg-gray-100 rounded-lg overflow-hidden h-full min-h-[300px] relative">
                         <Image
-                          src="/assets/Conjuntos/Conjuntos/20251117_183927.jpg"
+                          src="/assets/20251117_183927.jpg"
                           alt="Category preview"
                           className="object-cover"
+                          fill
+                          sizes="64px"
                         />
                       </div>
                     )}

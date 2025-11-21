@@ -1,8 +1,7 @@
-// src/components/admin/AdminSidebar.jsx (Con color #F6C343)
-"use client";
+'use client';
 
-import { usePathname } from "next/navigation";
-import Link from "next/link";
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import {
   HomeIcon,
   CubeIcon,
@@ -10,126 +9,155 @@ import {
   ShoppingCartIcon,
   PlusCircleIcon,
   ListBulletIcon,
-  ChartBarIcon,
-  CogIcon, // Icono para configuración
-} from "@heroicons/react/24/outline";
+  CogIcon,
+  ChevronRightIcon,
+} from '@heroicons/react/24/outline';
 
+/**
+ * AdminSidebar - Estilo Premium Minimalista
+ * Diseño inspirado en marcas de ropa de alta gama
+ */
 const AdminSidebar = () => {
   const pathname = usePathname();
 
   const menuItems = [
     {
-      title: "Dashboard",
-      icon: <HomeIcon className="h-5 w-5" />,
-      href: "/admin",
+      title: 'Dashboard',
+      icon: HomeIcon,
+      href: '/admin',
     },
     {
-      title: "Productos",
-      icon: <CubeIcon className="h-5 w-5" />,
-      href: "/admin/products",
+      title: 'Productos',
+      icon: CubeIcon,
+      href: '/admin/products',
       submenu: [
         {
-          title: "Agregar Producto",
-          icon: <PlusCircleIcon className="h-5 w-5" />,
-          href: "/admin/products/add",
+          title: 'Agregar',
+          icon: PlusCircleIcon,
+          href: '/admin/products/add',
         },
         {
-          title: "Lista de Productos",
-          icon: <ListBulletIcon className="h-5 w-5" />,
-          href: "/admin/products",
+          title: 'Catálogo',
+          icon: ListBulletIcon,
+          href: '/admin/products',
         },
       ],
     },
     {
-      title: "Pedidos",
-      icon: <ShoppingCartIcon className="h-5 w-5" />,
-      href: "/admin/orders",
+      title: 'Pedidos',
+      icon: ShoppingCartIcon,
+      href: '/admin/orders',
     },
     {
-      title: "Usuarios",
-      icon: <UserGroupIcon className="h-5 w-5" />,
-      href: "/admin/users",
+      title: 'Usuarios',
+      icon: UserGroupIcon,
+      href: '/admin/users',
     },
     {
-      title: "Configuración",
-      icon: <CogIcon className="h-5 w-5" />,
-      href: "/admin/settings",
+      title: 'Configuración',
+      icon: CogIcon,
+      href: '/admin/settings',
     },
   ];
 
-  // Función para verificar si un enlace está activo
   const isActive = (href) => {
-    if (href === "/admin") {
-      return pathname === "/admin";
+    if (href === '/admin') {
+      return pathname === '/admin';
     }
     return pathname.startsWith(href);
   };
 
-  return (
-    <aside className="w-full md:w-64 bg-white border border-gray-200 p-6 md:sticky md:top-20 h-fit">
-      <h2 className="text-xl font-semibold mb-6 text-gray-900">
-        Administración
-      </h2>
-      <nav>
-        <ul className="space-y-2">
-          {menuItems.map((item) => (
-            <li key={item.href} className="space-y-2">
-              <Link
-                href={item.href}
-                className={`flex items-center px-4 py-2 transition-all ${
-                  isActive(item.href) && !item.submenu
-                    ? "text-white"
-                    : "text-gray-800 hover:border-l-2 pl-3"
-                }`}
-                style={
-                  isActive(item.href) && !item.submenu
-                    ? { backgroundColor: "#F6C343" }
-                    : {}
-                }
-                onMouseEnter={(e) => {
-                  if (!isActive(item.href) || item.submenu) {
-                    e.target.style.borderLeftColor = "#F6C343";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive(item.href) || item.submenu) {
-                    e.target.style.borderLeftColor = "transparent";
-                  }
-                }}
-              >
-                <span className="mr-3">{item.icon}</span>
-                <span>{item.title}</span>
-              </Link>
+  const isExactActive = (href) => pathname === href;
 
-              {/* Submenu items */}
-              {item.submenu && (
-                <ul className="pl-8 space-y-1 mt-1">
-                  {item.submenu.map((subItem) => (
-                    <li key={subItem.href}>
-                      <Link
-                        href={subItem.href}
-                        className={`flex items-center px-4 py-2 transition-all ${
-                          pathname === subItem.href
-                            ? "text-gray-900 font-medium"
-                            : "text-gray-600 hover:bg-gray-50"
-                        }`}
-                        style={
-                          pathname === subItem.href
-                            ? { backgroundColor: "#F6C343", opacity: 0.3 }
-                            : {}
-                        }
-                      >
-                        <span className="mr-3">{subItem.icon}</span>
-                        <span>{subItem.title}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          ))}
+  return (
+    <aside className="w-full md:w-64 bg-gray-950 md:min-h-screen md:sticky md:top-0">
+      {/* Logo/Brand */}
+      <div className="px-6 py-8 border-b border-gray-800">
+        <Link href="/admin" className="block">
+          <h1 className="text-white text-xl font-light tracking-[0.2em] uppercase">
+            HAIZE
+          </h1>
+          <span className="text-gray-500 text-xs tracking-widest uppercase mt-1 block">
+            Administración
+          </span>
+        </Link>
+      </div>
+
+      {/* Navigation */}
+      <nav className="px-4 py-6">
+        <ul className="space-y-1">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item.href);
+            const hasSubmenu = item.submenu && item.submenu.length > 0;
+
+            return (
+              <li key={item.href}>
+                {/* Main Menu Item */}
+                <Link
+                  href={hasSubmenu ? item.submenu[1].href : item.href}
+                  className={`
+                    flex items-center justify-between px-4 py-3 text-sm transition-all duration-200
+                    ${
+                      active && !hasSubmenu
+                        ? 'bg-white text-gray-900'
+                        : 'text-gray-400 hover:text-white hover:bg-gray-900'
+                    }
+                  `}
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon className="h-5 w-5" />
+                    <span className="font-medium tracking-wide">
+                      {item.title}
+                    </span>
+                  </div>
+                  {hasSubmenu && (
+                    <ChevronRightIcon
+                      className={`h-4 w-4 transition-transform ${
+                        active ? 'rotate-90' : ''
+                      }`}
+                    />
+                  )}
+                </Link>
+
+                {/* Submenu */}
+                {hasSubmenu && active && (
+                  <ul className="mt-1 ml-4 border-l border-gray-800 pl-4 space-y-1">
+                    {item.submenu.map((subItem) => {
+                      const SubIcon = subItem.icon;
+                      const subActive = isExactActive(subItem.href);
+
+                      return (
+                        <li key={subItem.href}>
+                          <Link
+                            href={subItem.href}
+                            className={`
+                              flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-200
+                              ${
+                                subActive
+                                  ? 'text-white bg-gray-800'
+                                  : 'text-gray-500 hover:text-white'
+                              }
+                            `}
+                          >
+                            <SubIcon className="h-4 w-4" />
+                            <span>{subItem.title}</span>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </nav>
+
+      {/* Footer */}
+      <div className="absolute bottom-0 left-0 right-0 px-6 py-4 border-t border-gray-800">
+        <p className="text-gray-600 text-xs tracking-wider">© 2025 HAIZE</p>
+      </div>
     </aside>
   );
 };
