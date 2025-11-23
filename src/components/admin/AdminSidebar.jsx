@@ -11,6 +11,7 @@ import {
   ListBulletIcon,
   CogIcon,
   ChevronRightIcon,
+  EnvelopeIcon,
 } from '@heroicons/react/24/outline';
 
 /**
@@ -52,6 +53,11 @@ const AdminSidebar = () => {
       title: 'Usuarios',
       icon: UserGroupIcon,
       href: '/admin/users',
+    },
+    {
+      title: 'Contactos',
+      icon: EnvelopeIcon,
+      href: '/admin/contact',
     },
     {
       title: 'Configuración',
