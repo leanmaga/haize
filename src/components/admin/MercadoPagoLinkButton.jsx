@@ -166,7 +166,7 @@ export default function MercadoPagoLinkButton() {
             isConnected && !connectionDetails?.isExpired
               ? 'bg-green-500'
               : connectionDetails?.isExpired
-              ? 'bg-yellow-500'
+              ? 'bg-gray-500'
               : 'bg-gray-300'
           }`}
         />
@@ -175,10 +175,10 @@ export default function MercadoPagoLinkButton() {
       {!isConnected || connectionDetails?.isExpired ? (
         <div className="space-y-4">
           {connectionDetails?.isExpired && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+            <div className="bg-gray-50 border border-gray-200 rounded-md p-4">
               <div className="flex items-center space-x-2">
                 <svg
-                  className="h-5 w-5 text-yellow-600"
+                  className="h-5 w-5 text-gray-600"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -188,11 +188,11 @@ export default function MercadoPagoLinkButton() {
                     clipRule="evenodd"
                   />
                 </svg>
-                <span className="text-yellow-800 font-medium">
+                <span className="text-gray-800 font-medium">
                   Token expirado
                 </span>
               </div>
-              <p className="text-yellow-700 text-sm mt-2">
+              <p className="text-gray-700 text-sm mt-2">
                 Tu token de acceso ha expirado. Vuelve a conectar tu cuenta para
                 continuar procesando pagos.
               </p>
@@ -327,8 +327,8 @@ export default function MercadoPagoLinkButton() {
             <p>3. Selecciona "Credenciales de producción"</p>
             <p>4. Copia tu "Access Token"</p>
             <p>5. Envíalo de forma segura al desarrollador</p>
-            <div className="bg-yellow-50 border border-yellow-200 rounded p-2 mt-2">
-              <p className="text-yellow-800">
+            <div className="bg-gray-50 border border-gray-200 rounded p-2 mt-2">
+              <p className="text-gray-800">
                 ⚠️ Nunca compartas tu Access Token por medios inseguros como
                 WhatsApp o email
               </p>

@@ -12,5 +12,12 @@
 }
 
 .slider-animation {
-  animation: slider-animation 15s linear infinite;
+  animation: slider-animation 20s linear infinite;
+}
+
+/* Mejora para mobile */
+@media (max-width: 768px) {
+  .slider-animation {
+    animation-duration: 25s;
+  }
 }

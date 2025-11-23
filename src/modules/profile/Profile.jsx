@@ -197,7 +197,7 @@ export default function ProfilePage() {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="p-8 bg-white rounded-lg shadow-md animate-pulse flex flex-col items-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-yellow-400 mb-4"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-400 mb-4"></div>
           <p className="text-gray-500">Cargando perfil...</p>
         </div>
       </div>
@@ -233,7 +233,7 @@ export default function ProfilePage() {
                 {!isEditing && (
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="flex items-center text-sm font-medium text-yellow-600 hover:text-yellow-800 transition-colors"
+                    className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors"
                   >
                     <PencilIcon className="h-4 w-4 mr-1" />
                     Editar
@@ -243,7 +243,7 @@ export default function ProfilePage() {
 
               <div className="p-6">
                 <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
-                  <div className="w-28 h-28 relative flex-shrink-0 rounded-full overflow-hidden bg-yellow-50 border-2 border-yellow-100">
+                  <div className="w-28 h-28 relative flex-shrink-0 rounded-full overflow-hidden bg-gray-50 border-2 border-gray-100">
                     {hasGoogleImage ? (
                       <Image
                         src={userData.image}
@@ -254,7 +254,7 @@ export default function ProfilePage() {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <ShieldCheckIcon className="h-12 w-12 text-yellow-500" />
+                        <ShieldCheckIcon className="h-12 w-12 text-gray-500" />
                       </div>
                     )}
                   </div>
@@ -312,7 +312,7 @@ export default function ProfilePage() {
                             value={formData.name}
                             onChange={handleChange}
                             required
-                            className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-colors"
+                            className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-colors"
                             placeholder="Tu nombre completo"
                           />
                         </div>
@@ -331,7 +331,7 @@ export default function ProfilePage() {
                             value={formData.email}
                             onChange={handleChange}
                             required
-                            className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-colors"
+                            className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-colors"
                             placeholder="tu@email.com"
                           />
                         </div>
@@ -349,7 +349,7 @@ export default function ProfilePage() {
                             name="phone"
                             value={formData.phone}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-colors"
+                            className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-colors"
                             placeholder="+54 9 11 1234-5678"
                           />
                         </div>
@@ -358,7 +358,7 @@ export default function ProfilePage() {
                           <button
                             type="submit"
                             disabled={submitting}
-                            className="px-6 py-3 bg-yellow-400 text-white rounded-md hover:bg-yellow-500 transition-colors font-medium flex items-center justify-center disabled:opacity-70"
+                            className="px-6 py-3 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition-colors font-medium flex items-center justify-center disabled:opacity-70"
                           >
                             {submitting ? (
                               <>
@@ -395,10 +395,10 @@ export default function ProfilePage() {
               </div>
 
               {userData.googleAuth && (
-                <div className="px-6 py-4 bg-yellow-50 border-t border-yellow-100">
+                <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
                   <div className="flex items-center">
                     <svg
-                      className="w-5 h-5 text-yellow-600 mr-2"
+                      className="w-5 h-5 text-gray-600 mr-2"
                       viewBox="0 0 24 24"
                       fill="currentColor"
                     >
@@ -419,7 +419,7 @@ export default function ProfilePage() {
                         fill="#EA4335"
                       />
                     </svg>
-                    <span className="text-sm text-yellow-800 font-medium">
+                    <span className="text-sm text-gray-800 font-medium">
                       Cuenta vinculada con Google
                     </span>
                   </div>
@@ -440,8 +440,8 @@ export default function ProfilePage() {
                   href="/admin/products"
                   className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                 >
-                  <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center mr-4">
-                    <BuildingStorefrontIcon className="h-6 w-6 text-yellow-600" />
+                  <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mr-4">
+                    <BuildingStorefrontIcon className="h-6 w-6 text-gray-600" />
                   </div>
                   <div>
                     <p className="font-medium">Productos</p>
@@ -505,7 +505,7 @@ export default function ProfilePage() {
               <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
                 <Link
                   href="/admin"
-                  className="flex items-center justify-center text-yellow-600 font-medium hover:text-yellow-800 transition-colors"
+                  className="flex items-center justify-center text-gray-600 font-medium hover:text-gray-800 transition-colors"
                 >
                   <span>Ir al Dashboard</span>
                   <ChevronRightIcon className="h-5 w-5 ml-2" />
@@ -559,8 +559,8 @@ export default function ProfilePage() {
                   href="/profile/settings"
                   className="p-4 flex items-center hover:bg-gray-50 transition-colors border-b border-gray-100"
                 >
-                  <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center mr-3">
-                    <CogIcon className="h-5 w-5 text-yellow-600" />
+                  <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                    <CogIcon className="h-5 w-5 text-gray-600" />
                   </div>
                   <div>
                     <p className="font-medium">Configuración</p>
@@ -573,10 +573,10 @@ export default function ProfilePage() {
                   href="/"
                   className="p-4 flex items-center hover:bg-gray-50 transition-colors"
                 >
-                  <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center mr-3">
+                  <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 text-yellow-600"
+                      className="h-5 w-5 text-gray-600"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -622,7 +622,7 @@ export default function ProfilePage() {
               {!isEditing && (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="flex items-center text-sm font-medium text-yellow-600 hover:text-yellow-800 transition-colors"
+                  className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors"
                 >
                   <PencilIcon className="h-4 w-4 mr-1" />
                   Editar
@@ -634,7 +634,7 @@ export default function ProfilePage() {
 
             <div className="p-6">
               <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
-                <div className="w-28 h-28 relative flex-shrink-0 rounded-full overflow-hidden bg-yellow-50 border-2 border-yellow-100">
+                <div className="w-28 h-28 relative flex-shrink-0 rounded-full overflow-hidden bg-gray-50 border-2 border-gray-100">
                   {hasGoogleImage ? (
                     <Image
                       src={userData.image}
@@ -645,7 +645,7 @@ export default function ProfilePage() {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <UserIcon className="h-12 w-12 text-yellow-400" />
+                      <UserIcon className="h-12 w-12 text-gray-400" />
                     </div>
                   )}
                 </div>
@@ -703,7 +703,7 @@ export default function ProfilePage() {
                           value={formData.name}
                           onChange={handleChange}
                           required
-                          className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-colors"
+                          className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-colors"
                           placeholder="Tu nombre completo"
                         />
                       </div>
@@ -722,7 +722,7 @@ export default function ProfilePage() {
                           value={formData.email}
                           onChange={handleChange}
                           required
-                          className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-colors"
+                          className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-colors"
                           placeholder="tu@email.com"
                         />
                       </div>
@@ -740,7 +740,7 @@ export default function ProfilePage() {
                           name="phone"
                           value={formData.phone}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-colors"
+                          className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-colors"
                           placeholder="+54 9 11 1234-5678"
                         />
                       </div>
@@ -749,7 +749,7 @@ export default function ProfilePage() {
                         <button
                           type="submit"
                           disabled={submitting}
-                          className="px-6 py-3 bg-yellow-400 text-white rounded-md hover:bg-yellow-500 transition-colors font-medium flex items-center justify-center disabled:opacity-70"
+                          className="px-6 py-3 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition-colors font-medium flex items-center justify-center disabled:opacity-70"
                         >
                           {submitting ? (
                             <>
@@ -786,10 +786,10 @@ export default function ProfilePage() {
             </div>
 
             {userData.googleAuth && (
-              <div className="px-6 py-4 bg-yellow-50 border-t border-yellow-100">
+              <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
                 <div className="flex items-center">
                   <svg
-                    className="w-5 h-5 text-yellow-600 mr-2"
+                    className="w-5 h-5 text-gray-600 mr-2"
                     viewBox="0 0 24 24"
                     fill="currentColor"
                   >
@@ -810,7 +810,7 @@ export default function ProfilePage() {
                       fill="#EA4335"
                     />
                   </svg>
-                  <span className="text-sm text-yellow-800 font-medium">
+                  <span className="text-sm text-gray-800 font-medium">
                     Cuenta vinculada con Google
                   </span>
                 </div>
@@ -826,7 +826,7 @@ export default function ProfilePage() {
               </h3>
               <Link
                 href="/profile/orders"
-                className="text-sm text-yellow-600 hover:text-yellow-800 font-medium flex items-center"
+                className="text-sm text-gray-600 hover:text-gray-800 font-medium flex items-center"
               >
                 Ver todos
                 <ChevronRightIcon className="h-4 w-4 ml-1" />
@@ -841,8 +841,8 @@ export default function ProfilePage() {
                     className="p-6 flex items-center justify-between"
                   >
                     <div className="flex items-center">
-                      <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center mr-4">
-                        <ShoppingBagIcon className="h-5 w-5 text-yellow-600" />
+                      <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-4">
+                        <ShoppingBagIcon className="h-5 w-5 text-gray-600" />
                       </div>
                       <div>
                         <p className="font-medium">
@@ -859,7 +859,7 @@ export default function ProfilePage() {
                       </p>
                       <Link
                         href={`/profile/orders/${order._id}`}
-                        className="text-sm text-yellow-600 hover:text-yellow-800"
+                        className="text-sm text-gray-600 hover:text-gray-800"
                       >
                         Ver detalles
                       </Link>
@@ -879,7 +879,7 @@ export default function ProfilePage() {
                   </p>
                   <Link
                     href="/products"
-                    className="inline-flex items-center text-yellow-600 hover:text-yellow-800"
+                    className="inline-flex items-center text-gray-600 hover:text-gray-800"
                   >
                     Explorar productos
                     <ChevronRightIcon className="h-4 w-4 ml-1" />
@@ -937,8 +937,8 @@ export default function ProfilePage() {
                 href="/profile/orders"
                 className="p-4 flex items-center hover:bg-gray-50 transition-colors"
               >
-                <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center mr-3">
-                  <ShoppingBagIcon className="h-5 w-5 text-yellow-600" />
+                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                  <ShoppingBagIcon className="h-5 w-5 text-gray-600" />
                 </div>
                 <div>
                   <p className="font-medium">Mis Pedidos</p>
@@ -951,10 +951,10 @@ export default function ProfilePage() {
                 href="/products"
                 className="p-4 flex items-center hover:bg-gray-50 transition-colors"
               >
-                <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center mr-3">
+                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-yellow-600"
+                    className="h-5 w-5 text-gray-600"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -972,10 +972,10 @@ export default function ProfilePage() {
                 href="/profile/settings"
                 className="p-4 flex items-center hover:bg-gray-50 transition-colors"
               >
-                <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center mr-3">
+                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-yellow-600"
+                    className="h-5 w-5 text-gray-600"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >

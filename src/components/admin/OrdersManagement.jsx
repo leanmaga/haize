@@ -13,7 +13,7 @@ const ORDER_STATUSES = [
   {
     value: 'pending',
     label: 'Pendiente',
-    color: 'bg-yellow-100 text-yellow-800',
+    color: 'bg-gray-100 text-gray-800',
   },
   {
     value: 'processing',

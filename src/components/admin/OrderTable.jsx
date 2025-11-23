@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import { toast } from "react-hot-toast";
-import { MagnifyingGlassIcon, EyeIcon } from "@heroicons/react/24/outline";
-import { FaWhatsapp } from "react-icons/fa";
+import { useState } from 'react';
+import Link from 'next/link';
+import { toast } from 'react-hot-toast';
+import { MagnifyingGlassIcon, EyeIcon } from '@heroicons/react/24/outline';
+import { FaWhatsapp } from 'react-icons/fa';
 
 const OrderTable = ({ orders: initialOrders }) => {
   const [orders, setOrders] = useState(initialOrders);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [isUpdating, setIsUpdating] = useState(false);
 
   // 🔹 Estados para paginación
@@ -30,9 +30,9 @@ const OrderTable = ({ orders: initialOrders }) => {
           .includes(searchTerm.toLowerCase()));
 
     const matchesStatus =
-      statusFilter === "all" ||
+      statusFilter === 'all' ||
       order.status === statusFilter ||
-      (statusFilter === "whatsapp" && order.paymentMethod === "whatsapp");
+      (statusFilter === 'whatsapp' && order.paymentMethod === 'whatsapp');
 
     return matchesSearch && matchesStatus;
   });
@@ -53,15 +53,15 @@ const OrderTable = ({ orders: initialOrders }) => {
       setIsUpdating(true);
 
       const response = await fetch(`/api/orders/${orderId}`, {
-        method: "PATCH",
+        method: 'PATCH',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ status: newStatus }),
       });
 
       if (!response.ok) {
-        throw new Error("Error al actualizar el estado del pedido");
+        throw new Error('Error al actualizar el estado del pedido');
       }
 
       setOrders(
@@ -70,24 +70,24 @@ const OrderTable = ({ orders: initialOrders }) => {
         )
       );
 
-      toast.success("Estado del pedido actualizado correctamente");
+      toast.success('Estado del pedido actualizado correctamente');
     } catch (error) {
-      console.error("Error al actualizar el estado del pedido:", error);
-      toast.error("Error al actualizar el estado del pedido");
+      console.error('Error al actualizar el estado del pedido:', error);
+      toast.error('Error al actualizar el estado del pedido');
     } finally {
       setIsUpdating(false);
     }
   };
 
   const formatDate = (dateString) => {
-    const options = { year: "numeric", month: "long", day: "numeric" };
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
   const openWhatsAppChat = (order) => {
-    const phone = order.shippingInfo?.phone || "5491126907696";
-    const whatsappUrl = `https://wa.me/${phone.replace(/\D/g, "")}`;
-    window.open(whatsappUrl, "_blank");
+    const phone = order.shippingInfo?.phone || '5491126907696';
+    const whatsappUrl = `https://wa.me/${phone.replace(/\D/g, '')}`;
+    window.open(whatsappUrl, '_blank');
   };
 
   return (
@@ -165,7 +165,7 @@ const OrderTable = ({ orders: initialOrders }) => {
                 <tr
                   key={order._id}
                   className={`hover:bg-gray-50 ${
-                    order.paymentMethod === "whatsapp" ? "bg-green-50" : ""
+                    order.paymentMethod === 'whatsapp' ? 'bg-green-50' : ''
                   }`}
                 >
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -173,10 +173,10 @@ const OrderTable = ({ orders: initialOrders }) => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
-                      {order.shippingInfo?.name || "N/A"}
+                      {order.shippingInfo?.name || 'N/A'}
                     </div>
                     <div className="text-sm text-gray-500">
-                      {order.shippingInfo?.email || "N/A"}
+                      {order.shippingInfo?.email || 'N/A'}
                     </div>
                     {order.shippingInfo?.phone && (
                       <div className="text-sm text-gray-500">
@@ -193,19 +193,19 @@ const OrderTable = ({ orders: initialOrders }) => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
                       className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        order.paymentMethod === "whatsapp"
-                          ? "bg-green-100 text-green-800"
-                          : order.paymentMethod === "mercadopago"
-                          ? "bg-blue-100 text-blue-800"
-                          : "bg-gray-100 text-gray-800"
+                        order.paymentMethod === 'whatsapp'
+                          ? 'bg-green-100 text-green-800'
+                          : order.paymentMethod === 'mercadopago'
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-gray-100 text-gray-800'
                       }`}
                     >
-                      {order.paymentMethod === "whatsapp" ? (
+                      {order.paymentMethod === 'whatsapp' ? (
                         <span className="flex items-center">
                           <FaWhatsapp className="mr-1" /> WhatsApp
                         </span>
-                      ) : order.paymentMethod === "mercadopago" ? (
-                        "MercadoPago"
+                      ) : order.paymentMethod === 'mercadopago' ? (
+                        'MercadoPago'
                       ) : (
                         order.paymentMethod
                       )}
@@ -215,21 +215,21 @@ const OrderTable = ({ orders: initialOrders }) => {
                     <div className="flex items-center">
                       <span
                         className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          order.status === "whatsapp_pendiente"
-                            ? "bg-green-100 text-green-800"
-                            : order.status === "pagado"
-                            ? "bg-green-100 text-green-800"
-                            : order.status === "pendiente"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : order.status === "enviado"
-                            ? "bg-blue-100 text-blue-800"
-                            : order.status === "entregado"
-                            ? "bg-indigo-100 text-indigo-800"
-                            : "bg-red-100 text-red-800"
+                          order.status === 'whatsapp_pendiente'
+                            ? 'bg-green-100 text-green-800'
+                            : order.status === 'pagado'
+                            ? 'bg-green-100 text-green-800'
+                            : order.status === 'pendiente'
+                            ? 'bg-gray-100 text-gray-800'
+                            : order.status === 'enviado'
+                            ? 'bg-blue-100 text-blue-800'
+                            : order.status === 'entregado'
+                            ? 'bg-indigo-100 text-indigo-800'
+                            : 'bg-red-100 text-red-800'
                         }`}
                       >
-                        {order.status === "whatsapp_pendiente"
-                          ? "WhatsApp - Pendiente"
+                        {order.status === 'whatsapp_pendiente'
+                          ? 'WhatsApp - Pendiente'
                           : order.status.charAt(0).toUpperCase() +
                             order.status.slice(1)}
                       </span>
@@ -255,7 +255,7 @@ const OrderTable = ({ orders: initialOrders }) => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end space-x-2">
-                      {order.paymentMethod === "whatsapp" && (
+                      {order.paymentMethod === 'whatsapp' && (
                         <button
                           onClick={() => openWhatsAppChat(order)}
                           className="text-green-600 hover:text-green-900"
@@ -268,9 +268,9 @@ const OrderTable = ({ orders: initialOrders }) => {
                         href={`/admin/orders/${order._id}`}
                         className="text-indigo-600 hover:text-indigo-900"
                         onClick={(e) => {
-                          console.log("🔍 Navegando a orden:", order._id);
-                          console.log("🔍 Longitud del ID:", order._id?.length);
-                          console.log("🔍 Tipo del ID:", typeof order._id);
+                          console.log('🔍 Navegando a orden:', order._id);
+                          console.log('🔍 Longitud del ID:', order._id?.length);
+                          console.log('🔍 Tipo del ID:', typeof order._id);
                         }}
                       >
                         <EyeIcon className="h-5 w-5" />

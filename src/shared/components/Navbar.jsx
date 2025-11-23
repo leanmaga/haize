@@ -26,7 +26,6 @@ const Navbar = () => {
   const pathname = usePathname();
   const dropdownRef = useRef(null);
 
-  // Detectar si estamos en el home
   const isHomePage = pathname === '/';
 
   // Zustand para el carrito
@@ -97,13 +96,7 @@ const Navbar = () => {
     setIsProfileDropdownOpen(false);
   }, [pathname]);
 
-  // Determinar si el navbar debe tener fondo
-  // Si NO es home, siempre tiene fondo
-  // Si ES home, depende del scroll
   const shouldHaveBackground = !isHomePage || scrollPosition > 0;
-
-  // Determinar si el logo debe estar escalado
-  // Solo se escala en el home cuando NO hay scroll
   const shouldScaleLogo = isHomePage && scrollPosition === 0;
 
   return (
@@ -160,7 +153,6 @@ const Navbar = () => {
                 </>
               ) : (
                 <>
-                  {/* Mostrar admin solo si es administrador */}
                   {isAdmin && (
                     <li>
                       <Link
@@ -172,7 +164,6 @@ const Navbar = () => {
                     </li>
                   )}
 
-                  {/* Carrito antes del perfil */}
                   <li>
                     <Link
                       href="/cart"
@@ -187,7 +178,6 @@ const Navbar = () => {
                     </Link>
                   </li>
 
-                  {/* Perfil del usuario */}
                   <li>
                     <div className="relative" ref={dropdownRef}>
                       <button
@@ -216,7 +206,6 @@ const Navbar = () => {
                         <ChevronDownIcon className="h-4 w-4 text-white" />
                       </button>
 
-                      {/* Dropdown de perfil */}
                       {isProfileDropdownOpen && (
                         <div className="absolute right-0 mt-3 w-60 bg-black text-white border border-white/20 rounded-lg shadow-lg overflow-hidden">
                           <div className="p-3 border-b border-white/10 bg-white/5">
@@ -260,7 +249,6 @@ const Navbar = () => {
                 </>
               )}
 
-              {/* Carrito para usuarios no autenticados */}
               {!session && (
                 <li>
                   <Link
@@ -281,6 +269,11 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center space-x-4">
+            {/* Búsqueda en móvil */}
+            <div className="text-white">
+              <SearchDropdown isMobile />
+            </div>
+
             <Link href="/cart" className="relative text-white">
               <ShoppingCartIcon className="h-6 w-6" />
               {cartItemsCount > 0 && (
@@ -383,16 +376,6 @@ const Navbar = () => {
                     <span className="text-sm font-medium">CATEGORIAS</span>
                   </Link>
                   <Link
-                    href="/search"
-                    className={`flex items-center px-3 py-3 rounded-lg transition ${
-                      isActive('/search') ? 'bg-white/20' : 'hover:bg-white/10'
-                    }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <MagnifyingGlassIcon className="h-5 w-5 mr-3" />
-                    <span className="text-sm font-medium">BUSCAR</span>
-                  </Link>
-                  <Link
                     href="/cart"
                     className={`flex items-center px-3 py-3 rounded-lg transition ${
                       isActive('/cart') ? 'bg-white/20' : 'hover:bg-white/10'
@@ -417,7 +400,6 @@ const Navbar = () => {
                     Mi Cuenta
                   </h3>
                   <div className="space-y-2">
-                    {/* Mostrar admin solo si es administrador */}
                     {isAdmin && (
                       <Link
                         href="/admin"

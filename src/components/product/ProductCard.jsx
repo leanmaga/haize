@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
-import { useCartStore } from "@/lib/store";
-import { toast } from "react-hot-toast";
-import StarRating from "../ui/StarRating";
+import Image from 'next/image';
+import Link from 'next/link';
+import { useCartStore } from '@/lib/store';
+import { toast } from 'react-hot-toast';
+import StarRating from '../ui/StarRating';
 
 const ProductCard = ({ product }) => {
   const addToCart = useCartStore((state) => state.addItem);
@@ -34,7 +34,7 @@ const ProductCard = ({ product }) => {
 
     // Verificar stock
     if (product.stock <= 0) {
-      toast.error("Producto sin stock disponible");
+      toast.error('Producto sin stock disponible');
       return;
     }
 
@@ -46,7 +46,7 @@ const ProductCard = ({ product }) => {
       image: product.imageUrl,
       quantity: 1,
     });
-    toast.success("Producto agregado al carrito");
+    toast.success('Producto agregado al carrito');
   };
 
   return (
@@ -67,14 +67,14 @@ const ProductCard = ({ product }) => {
               const message = encodeURIComponent(
                 `Hola! Me interesa este producto: ${product.title}`
               );
-              const phoneNumber = "1234567890"; // Cambia por tu número
+              const phoneNumber = '1234567890'; // Cambia por tu número
               window.open(
                 `https://wa.me/${phoneNumber}?text=${message}`,
-                "_blank"
+                '_blank'
               );
             }}
             className="absolute top-2 right-2 p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 z-10"
-            style={{ backgroundColor: "#F1ECE8" }}
+            style={{ backgroundColor: '#F1ECE8' }}
             aria-label="Consultar por WhatsApp"
           >
             <svg
@@ -105,15 +105,15 @@ const ProductCard = ({ product }) => {
               e.preventDefault();
               handleAddToCart();
             }}
-            className={`absolute bottom-0 left-0 right-0 text-black py-3 transform translate-y-full transition-transform duration-200 group-hover:translate-y-0 font-medium ${
-              product.stock <= 0 ? "opacity-50 cursor-not-allowed" : ""
+            className={`absolute bottom-0 left-0 right-0 text-white py-3 transform translate-y-full transition-transform duration-200 group-hover:translate-y-0 font-medium ${
+              product.stock <= 0 ? 'opacity-50 cursor-not-allowed' : ''
             }`}
-            style={{ backgroundColor: "#F6C343" }}
+            style={{ backgroundColor: '#000000' }}
             disabled={product.stock <= 0}
           >
             {product.variants && product.variants.length > 0
-              ? "SELECCIONAR OPCIONES"
-              : "AÑADIR AL CARRITO"}
+              ? 'SELECCIONAR OPCIONES'
+              : 'AÑADIR AL CARRITO'}
           </button>
         </div>
       </Link>

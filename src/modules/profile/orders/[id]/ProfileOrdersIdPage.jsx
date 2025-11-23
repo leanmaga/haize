@@ -174,7 +174,7 @@ Fecha: ${formatDate(order.createdAt)}
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="p-8 bg-white rounded-lg shadow-md animate-pulse flex flex-col items-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-yellow-400 mb-4"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-400 mb-4"></div>
           <p className="text-gray-500">Cargando detalles del pedido...</p>
         </div>
       </div>
@@ -214,7 +214,7 @@ Fecha: ${formatDate(order.createdAt)}
       },
       whatsapp_pendiente: {
         text: 'Consulta WhatsApp',
-        color: 'text-gray-700 border-yellow-300',
+        color: 'text-gray-700 border-gray-300',
         style: { backgroundColor: '#FEF3E2' },
         icon: <ClockIcon className="h-5 w-5 mr-2" />,
       },
@@ -247,7 +247,7 @@ Fecha: ${formatDate(order.createdAt)}
         <div className="mb-8">
           <Link
             href="/profile/orders"
-            className="inline-flex items-center text-yellow-600 hover:text-yellow-700 transition-colors font-medium"
+            className="inline-flex items-center text-gray-600 hover:text-gray-700 transition-colors font-medium"
           >
             <ArrowLeftIcon className="h-4 w-4 mr-2" />
             Volver a Mis Pedidos
@@ -491,7 +491,7 @@ Fecha: ${formatDate(order.createdAt)}
                         className="w-10 h-10 rounded-full flex items-center justify-center mr-3"
                         style={{ backgroundColor: '#FEF3E2' }}
                       >
-                        <CreditCardIcon className="h-5 w-5 text-yellow-600" />
+                        <CreditCardIcon className="h-5 w-5 text-gray-600" />
                       </div>
                       <div>
                         <p className="font-medium text-gray-700">
@@ -521,7 +521,7 @@ Fecha: ${formatDate(order.createdAt)}
                               paymentDetails.status === 'approved'
                                 ? 'text-gray-700'
                                 : paymentDetails.status === 'pending'
-                                ? 'bg-yellow-100 text-yellow-800'
+                                ? 'bg-gray-100 text-gray-800'
                                 : 'bg-red-100 text-red-800'
                             }`}
                             style={

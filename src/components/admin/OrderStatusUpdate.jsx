@@ -1,9 +1,9 @@
-// components/admin/OrderStatusUpdate.jsx (Con color #F6C343)
-"use client";
+// components/admin/OrderStatusUpdate.jsx (Con color #000000)
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "react-hot-toast";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';
 
 const OrderStatusUpdate = ({ order }) => {
   const [status, setStatus] = useState(order.status);
@@ -12,7 +12,7 @@ const OrderStatusUpdate = ({ order }) => {
 
   const handleUpdateStatus = async () => {
     if (status === order.status) {
-      toast.error("El estado seleccionado es el mismo que el actual");
+      toast.error('El estado seleccionado es el mismo que el actual');
       return;
     }
 
@@ -21,22 +21,22 @@ const OrderStatusUpdate = ({ order }) => {
     try {
       const response = await fetch(`/api/orders/${order._id}`, {
         // Cambia la ruta si es necesario
-        method: "PATCH",
+        method: 'PATCH',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ status }), // Usar status en lugar de newStatus
       });
 
       if (!response.ok) {
-        throw new Error("Error al actualizar el estado del pedido");
+        throw new Error('Error al actualizar el estado del pedido');
       }
 
-      toast.success("Estado del pedido actualizado correctamente");
+      toast.success('Estado del pedido actualizado correctamente');
       router.refresh();
     } catch (error) {
-      console.error("Error al actualizar el estado del pedido:", error);
-      toast.error("Error al actualizar el estado del pedido");
+      console.error('Error al actualizar el estado del pedido:', error);
+      toast.error('Error al actualizar el estado del pedido');
     } finally {
       setLoading(false);
     }
@@ -57,16 +57,16 @@ const OrderStatusUpdate = ({ order }) => {
           onChange={(e) => setStatus(e.target.value)}
           className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none sm:text-sm rounded-md"
           style={{
-            "--focus-ring-color": "#F6C343",
-            "--focus-border-color": "#F6C343",
+            '--focus-ring-color': '#000000',
+            '--focus-border-color': '#000000',
           }}
           onFocus={(e) => {
-            e.target.style.borderColor = "#F6C343";
+            e.target.style.borderColor = '#000000';
             e.target.style.boxShadow = `0 0 0 3px rgba(246, 195, 67, 0.1)`;
           }}
           onBlur={(e) => {
-            e.target.style.borderColor = "#d1d5db";
-            e.target.style.boxShadow = "none";
+            e.target.style.borderColor = '#d1d5db';
+            e.target.style.boxShadow = 'none';
           }}
         >
           <option value="whatsapp_pendiente">WhatsApp - Pendiente</option>
@@ -84,16 +84,16 @@ const OrderStatusUpdate = ({ order }) => {
         className="text-white px-4 py-2 rounded-md transition flex items-center justify-center whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed mt-5"
         style={{
           backgroundColor:
-            status === order.status || loading ? "#9ca3af" : "#F6C343",
+            status === order.status || loading ? '#9ca3af' : '#000000',
         }}
         onMouseEnter={(e) => {
           if (!loading && status !== order.status) {
-            e.target.style.backgroundColor = "#E5B63C"; // Versión más oscura del amarillo
+            e.target.style.backgroundColor = '#E5B63C'; // Versión más oscura del amarillo
           }
         }}
         onMouseLeave={(e) => {
           if (!loading && status !== order.status) {
-            e.target.style.backgroundColor = "#F6C343";
+            e.target.style.backgroundColor = '#000000';
           }
         }}
       >
@@ -122,7 +122,7 @@ const OrderStatusUpdate = ({ order }) => {
             Actualizando...
           </>
         ) : (
-          "Actualizar Estado"
+          'Actualizar Estado'
         )}
       </button>
     </div>

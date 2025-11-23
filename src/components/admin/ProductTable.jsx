@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { toast } from "react-hot-toast";
+import { useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { toast } from 'react-hot-toast';
 import {
   PencilIcon,
   TrashIcon,
   MagnifyingGlassIcon,
-} from "@heroicons/react/24/outline";
+} from '@heroicons/react/24/outline';
 
 const ProductTable = ({ products: initialProducts }) => {
   const [products, setProducts] = useState(initialProducts);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Filtrar productos por término de búsqueda
@@ -26,26 +26,26 @@ const ProductTable = ({ products: initialProducts }) => {
   const handleDeleteProduct = async (id) => {
     if (
       window.confirm(
-        "¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer."
+        '¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.'
       )
     ) {
       setIsDeleting(true);
 
       try {
         const response = await fetch(`/api/products/${id}`, {
-          method: "DELETE",
+          method: 'DELETE',
         });
 
         if (!response.ok) {
-          throw new Error("Error al eliminar el producto");
+          throw new Error('Error al eliminar el producto');
         }
 
         // Actualizar estado local
         setProducts(products.filter((product) => product._id !== id));
-        toast.success("Producto eliminado correctamente");
+        toast.success('Producto eliminado correctamente');
       } catch (error) {
-        console.error("Error al eliminar producto:", error);
-        toast.error("Error al eliminar el producto");
+        console.error('Error al eliminar producto:', error);
+        toast.error('Error al eliminar el producto');
       } finally {
         setIsDeleting(false);
       }
@@ -183,18 +183,18 @@ const ProductTable = ({ products: initialProducts }) => {
                     <span
                       className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                         product.stock > 0
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
                       }`}
                     >
                       {product.stock > 0
                         ? `${product.stock} unidades`
-                        : "Agotado"}
+                        : 'Agotado'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {product.featured ? (
-                      <span className="text-yellow-500">
+                      <span className="text-dark-500">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="h-5 w-5"

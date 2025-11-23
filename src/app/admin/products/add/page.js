@@ -24,7 +24,7 @@ export default function AddProductPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div
           className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2"
-          style={{ borderTopColor: '#F6C343', borderBottomColor: '#F6C343' }}
+          style={{ borderTopColor: '#000000', borderBottomColor: '#000000' }}
         ></div>
       </div>
     );

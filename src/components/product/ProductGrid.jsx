@@ -13,7 +13,7 @@ const ProductGrid = ({ products }) => {
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-12 w-12"
-              style={{ color: '#F6C343' }}
+              style={{ color: '#000000' }}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -40,7 +40,7 @@ const ProductGrid = ({ products }) => {
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 text-white rounded-lg font-medium hover:opacity-90 transition-opacity"
-            style={{ backgroundColor: '#F6C343' }}
+            style={{ backgroundColor: '#000000' }}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

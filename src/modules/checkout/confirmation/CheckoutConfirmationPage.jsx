@@ -44,7 +44,7 @@ function OrderConfirmationContent() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-400"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-400"></div>
       </div>
     );
   }
@@ -95,7 +95,7 @@ function OrderConfirmationContent() {
 
             <Link
               href="/profile/orders"
-              className="bg-yellow-400 text-white px-6 py-3 rounded-lg hover:bg-yellow-500 transition"
+              className="bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 transition"
             >
               Ver Mis Pedidos
             </Link>
@@ -112,7 +112,7 @@ export default function OrderConfirmationPage() {
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-400"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-400"></div>
         </div>
       }
     >

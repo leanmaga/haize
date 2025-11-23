@@ -1,45 +1,45 @@
 // src/components/sections/CategoriesSection.jsx
-"use client";
+'use client';
 
-import Link from "next/link";
-import Image from "next/image";
-import imagenPollo from "/public/images/9.jpg";
+import Link from 'next/link';
+import Image from 'next/image';
+import imagenPollo from '/public/images/9.jpg';
 
 export default function CategoriesSection() {
   const categories = [
     {
       id: 1,
-      title: "MILANESAS PREMIUM",
-      subtitle: "ELABORACIÓN DIARIA",
+      title: 'MILANESAS PREMIUM',
+      subtitle: 'ELABORACIÓN DIARIA',
       description:
-        "Suprema, nalga y cerdo. Preparadas todos los días con carne premium",
-      price: "4.999",
-      originalPrice: "6.500",
+        'Suprema, nalga y cerdo. Preparadas todos los días con carne premium',
+      price: '4.999',
+      originalPrice: '6.500',
       image: { src: imagenPollo, width: 300, height: 200 },
-      accent: "from-amber-400 to-yellow-500",
-      href: "/productos/milanesas",
+      accent: 'from-amber-400 to-gray-500',
+      href: '/productos/milanesas',
     },
     {
       id: 2,
-      title: "POLLO SIN AGUA",
-      subtitle: "NO SE ACHICA",
-      description: "Pollos frescos que mantienen su tamaño al cocinar",
-      price: "2.899",
-      originalPrice: "3.400",
+      title: 'POLLO SIN AGUA',
+      subtitle: 'NO SE ACHICA',
+      description: 'Pollos frescos que mantienen su tamaño al cocinar',
+      price: '2.899',
+      originalPrice: '3.400',
       image: { src: imagenPollo, width: 300, height: 200 },
-      accent: "from-emerald-400 to-green-500",
-      href: "/productos/pollo",
+      accent: 'from-emerald-400 to-green-500',
+      href: '/productos/pollo',
     },
     {
       id: 3,
-      title: "CARNE VACUNA",
-      subtitle: "FRESCA PREMIUM",
-      description: "Cortes frescos seleccionados, listos para tu freezer",
-      price: "3.499",
-      originalPrice: "4.200",
+      title: 'CARNE VACUNA',
+      subtitle: 'FRESCA PREMIUM',
+      description: 'Cortes frescos seleccionados, listos para tu freezer',
+      price: '3.499',
+      originalPrice: '4.200',
       image: { src: imagenPollo, width: 300, height: 200 },
-      accent: "from-rose-400 to-pink-500",
-      href: "/productos/carnes",
+      accent: 'from-rose-400 to-pink-500',
+      href: '/productos/carnes',
     },
   ];
 
@@ -55,7 +55,7 @@ export default function CategoriesSection() {
         }
 
         .premium-card::before {
-          content: "";
+          content: '';
           position: absolute;
           top: 0;
           left: -100%;
@@ -87,7 +87,7 @@ export default function CategoriesSection() {
         }
 
         .image-container::after {
-          content: "";
+          content: '';
           position: absolute;
           bottom: 0;
           left: 0;
@@ -112,10 +112,10 @@ export default function CategoriesSection() {
         }
 
         .price-main {
-          font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont,
+          font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont,
             sans-serif;
           font-weight: 800;
-          background: linear-gradient(135deg, #f6c343 0%, #e6b339 100%);
+          background: linear-gradient(135deg, #000000 0%, #e6b339 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -123,7 +123,7 @@ export default function CategoriesSection() {
         }
 
         .price-main::after {
-          content: "$";
+          content: '$';
           position: absolute;
           left: -16px;
           top: 0;
@@ -135,7 +135,7 @@ export default function CategoriesSection() {
           position: absolute;
           top: -8px;
           right: -8px;
-          background: linear-gradient(135deg, #f6c343 0%, #e6b339 100%);
+          background: linear-gradient(135deg, #000000 0%, #e6b339 100%);
           color: white;
           padding: 8px 16px;
           border-radius: 20px;
@@ -158,7 +158,7 @@ export default function CategoriesSection() {
         }
 
         .cta-button {
-          background: linear-gradient(135deg, #f6c343 0%, #e6b339 100%);
+          background: linear-gradient(135deg, #000000 0%, #e6b339 100%);
           color: white;
           border: none;
           padding: 14px 28px;
@@ -173,7 +173,7 @@ export default function CategoriesSection() {
         }
 
         .cta-button::before {
-          content: "";
+          content: '';
           position: absolute;
           top: 0;
           left: -100%;
@@ -228,7 +228,7 @@ export default function CategoriesSection() {
           <div className="text-center mb-16">
             <div
               className="inline-block px-4 py-2 text-white text-xs font-medium rounded-full mb-6 tracking-widest uppercase"
-              style={{ backgroundColor: "#F6C343" }}
+              style={{ backgroundColor: '#000000' }}
             >
               Elaboración Diaria
             </div>

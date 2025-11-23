@@ -83,7 +83,7 @@ export default function ResetPasswordPage({
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Hemos enviado instrucciones para restablecer tu contraseña a{' '}
-            <span className="font-medium text-yellow-600">{email}</span>. Revisa
+            <span className="font-medium text-gray-600">{email}</span>. Revisa
             tu bandeja de entrada y sigue el enlace.
           </p>
         </div>
@@ -93,7 +93,7 @@ export default function ResetPasswordPage({
             <div className="flex flex-col space-y-4">
               <button
                 onClick={() => setSubmitted(false)}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400"
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-400 hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
               >
                 Intentar con otro correo
               </button>
@@ -163,7 +163,7 @@ export default function ResetPasswordPage({
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-yellow-400 focus:border-yellow-400 sm:text-sm"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-400 focus:border-gray-400 sm:text-sm"
                 />
               </div>
             </div>
@@ -172,7 +172,7 @@ export default function ResetPasswordPage({
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-400 hover:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400 disabled:bg-yellow-300"
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-400 hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 disabled:bg-gray-300"
               >
                 {loading ? 'Enviando...' : 'Enviar instrucciones'}
               </button>

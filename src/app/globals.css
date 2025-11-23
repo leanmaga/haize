@@ -110,7 +110,7 @@ body {
     @apply text-black;
   }
 
-  /* Nuevo botón con color personalizado #F6C343 */
+  /* Nuevo botón con color personalizado #000000 */
   .btn-drop-yellow {
     background-color: #444;
     @apply relative text-white py-3 font-medium overflow-hidden transition-all duration-300 inline-block;
@@ -118,7 +118,7 @@ body {
 
   .btn-drop-yellow:before {
     content: '';
-    background-color: #f6c343;
+    background-color: #000000;
     @apply absolute bottom-0 right-0 w-2 h-2 transition-all duration-500 ease-out;
     z-index: 1;
   }
@@ -150,9 +150,7 @@ body {
 .price-main {
   font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 800;
-  background: linear-gradient(135deg, #f6c343 0%, #e6b339 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  background: #000000;
   background-clip: text;
   position: relative;
 }

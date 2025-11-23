@@ -140,7 +140,7 @@ const getStatusStyle = (status) => {
       return { color: '#dc2626', fontWeight: 'medium' };
     case 'pendiente':
     case 'entregado':
-      return { color: '#F6C343', fontWeight: 'medium' };
+      return { color: '#000000', fontWeight: 'medium' };
     default:
       return { color: '#4b5563', fontWeight: 'medium' };
   }
@@ -246,12 +246,12 @@ export default async function OrderDetailPage({ params }) {
         <Link
           href="/admin/orders"
           className="inline-flex items-center mb-6 transition-colors"
-          style={{ color: '#F6C343' }}
+          style={{ color: '#000000' }}
           onMouseEnter={(e) => {
             e.target.style.color = '#E5B63C';
           }}
           onMouseLeave={(e) => {
-            e.target.style.color = '#F6C343';
+            e.target.style.color = '#000000';
           }}
         >
           <ArrowLeftIcon className="h-5 w-5 mr-1" />

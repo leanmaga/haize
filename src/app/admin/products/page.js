@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-import Link from "next/link";
-import toast from "react-hot-toast";
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
+import toast from 'react-hot-toast';
 import {
   PlusIcon,
   PencilSquareIcon,
   TrashIcon,
   MagnifyingGlassIcon,
-} from "@heroicons/react/24/outline";
-import Image from "next/image";
+} from '@heroicons/react/24/outline';
+import Image from 'next/image';
 
 export default function ProductsAdminPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
   // Función para obtener el precio de forma segura
   const getProductPrice = (product) => {
@@ -39,7 +39,7 @@ export default function ProductsAdminPage() {
   // Función para obtener las clases de los botones de paginación
   const getPaginationButtonClasses = (isDisabled, isActive = false) => {
     const baseClasses =
-      "relative inline-flex items-center px-4 py-2 text-sm font-medium";
+      'relative inline-flex items-center px-4 py-2 text-sm font-medium';
 
     if (isActive) {
       return `${baseClasses} text-white`;
@@ -54,7 +54,7 @@ export default function ProductsAdminPage() {
 
   // Función para obtener las clases de los botones de navegación
   const getNavigationButtonClasses = (isDisabled) => {
-    const baseClasses = "relative inline-flex items-center px-2 py-2";
+    const baseClasses = 'relative inline-flex items-center px-2 py-2';
 
     return isDisabled
       ? `${baseClasses} text-gray-300`
@@ -67,25 +67,25 @@ export default function ProductsAdminPage() {
       setLoading(true);
       const queryParams = new URLSearchParams();
 
-      if (selectedCategory !== "all") {
-        queryParams.set("category", selectedCategory);
+      if (selectedCategory !== 'all') {
+        queryParams.set('category', selectedCategory);
       }
 
-      queryParams.set("page", currentPage);
-      queryParams.set("limit", 10);
+      queryParams.set('page', currentPage);
+      queryParams.set('limit', 10);
 
       const response = await fetch(`/api/products?${queryParams}`);
 
       if (!response.ok) {
-        throw new Error("Error al obtener productos");
+        throw new Error('Error al obtener productos');
       }
 
       const data = await response.json();
       setProducts(data.products);
       setTotalPages(data.pagination.pages);
     } catch (error) {
-      console.error("Error al cargar productos:", error);
-      toast.error("Error al cargar productos");
+      console.error('Error al cargar productos:', error);
+      toast.error('Error al cargar productos');
     } finally {
       setLoading(false);
     }
@@ -93,19 +93,19 @@ export default function ProductsAdminPage() {
 
   // Efecto para redirigir si el usuario no está autenticado o no es admin
   useEffect(() => {
-    const isUnauthenticated = status === "unauthenticated";
+    const isUnauthenticated = status === 'unauthenticated';
     const isNotAdmin =
-      status === "authenticated" && session?.user?.role !== "admin";
+      status === 'authenticated' && session?.user?.role !== 'admin';
 
     if (isUnauthenticated || isNotAdmin) {
-      router.push("/auth/signin?callbackUrl=/admin");
+      router.push('/auth/signin?callbackUrl=/admin');
     }
   }, [status, session, router]);
 
   // Cargar productos
   useEffect(() => {
     const isAuthenticatedAdmin =
-      status === "authenticated" && session?.user?.role === "admin";
+      status === 'authenticated' && session?.user?.role === 'admin';
 
     if (isAuthenticatedAdmin) {
       fetchProducts();
@@ -113,20 +113,20 @@ export default function ProductsAdminPage() {
   }, [status, session, fetchProducts]);
 
   // Verificar estados de carga y autenticación
-  if (status === "loading") {
+  if (status === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div
           className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2"
-          style={{ borderTopColor: "#F6C343", borderBottomColor: "#F6C343" }}
+          style={{ borderTopColor: '#000000', borderBottomColor: '#000000' }}
         ></div>
       </div>
     );
   }
 
-  const isUnauthenticated = status === "unauthenticated";
+  const isUnauthenticated = status === 'unauthenticated';
   const isNotAdmin =
-    status === "authenticated" && session?.user?.role !== "admin";
+    status === 'authenticated' && session?.user?.role !== 'admin';
 
   if (isUnauthenticated || isNotAdmin) {
     return null;
@@ -139,24 +139,24 @@ export default function ProductsAdminPage() {
 
   // Eliminar producto
   const handleDeleteProduct = async (id) => {
-    if (!confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+    if (!confirm('¿Estás seguro de que deseas eliminar este producto?')) {
       return;
     }
 
     try {
       const response = await fetch(`/api/products/${id}`, {
-        method: "DELETE",
+        method: 'DELETE',
       });
 
       if (!response.ok) {
-        throw new Error("Error al eliminar producto");
+        throw new Error('Error al eliminar producto');
       }
 
       setProducts(products.filter((product) => product._id !== id));
-      toast.success("Producto eliminado con éxito");
+      toast.success('Producto eliminado con éxito');
     } catch (error) {
-      console.error("Error al eliminar producto:", error);
-      toast.error("Error al eliminar producto");
+      console.error('Error al eliminar producto:', error);
+      toast.error('Error al eliminar producto');
     }
   };
 
@@ -183,12 +183,12 @@ export default function ProductsAdminPage() {
         <Link
           href="/admin/products/add"
           className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white transition-colors"
-          style={{ backgroundColor: "#F6C343" }}
+          style={{ backgroundColor: '#000000' }}
           onMouseEnter={(e) => {
-            e.target.style.backgroundColor = "#E5B63C";
+            e.target.style.backgroundColor = '#E5B63C';
           }}
           onMouseLeave={(e) => {
-            e.target.style.backgroundColor = "#F6C343";
+            e.target.style.backgroundColor = '#000000';
           }}
         >
           <PlusIcon className="h-5 w-5 mr-2" />
@@ -206,12 +206,12 @@ export default function ProductsAdminPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none pl-10"
             onFocus={(e) => {
-              e.target.style.borderColor = "#F6C343";
+              e.target.style.borderColor = '#000000';
               e.target.style.boxShadow = `0 0 0 3px rgba(246, 195, 67, 0.1)`;
             }}
             onBlur={(e) => {
-              e.target.style.borderColor = "#d1d5db";
-              e.target.style.boxShadow = "none";
+              e.target.style.borderColor = '#d1d5db';
+              e.target.style.boxShadow = 'none';
             }}
           />
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -224,12 +224,12 @@ export default function ProductsAdminPage() {
           onChange={(e) => setSelectedCategory(e.target.value)}
           className="cursor-pointer px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
           onFocus={(e) => {
-            e.target.style.borderColor = "#F6C343";
+            e.target.style.borderColor = '#000000';
             e.target.style.boxShadow = `0 0 0 3px rgba(246, 195, 67, 0.1)`;
           }}
           onBlur={(e) => {
-            e.target.style.borderColor = "#d1d5db";
-            e.target.style.boxShadow = "none";
+            e.target.style.borderColor = '#d1d5db';
+            e.target.style.boxShadow = 'none';
           }}
         >
           <option value="all">Todas las categorías</option>
@@ -251,7 +251,7 @@ export default function ProductsAdminPage() {
         <div className="flex justify-center py-8">
           <div
             className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2"
-            style={{ borderTopColor: "#F6C343", borderBottomColor: "#F6C343" }}
+            style={{ borderTopColor: '#000000', borderBottomColor: '#000000' }}
           ></div>
         </div>
       ) : (
@@ -357,12 +357,12 @@ export default function ProductsAdminPage() {
                           <Link
                             href={`/admin/products/edit/${product._id}`}
                             className="transition-colors"
-                            style={{ color: "#F6C343" }}
+                            style={{ color: '#000000' }}
                             onMouseEnter={(e) => {
-                              e.target.style.color = "#E5B63C";
+                              e.target.style.color = '#E5B63C';
                             }}
                             onMouseLeave={(e) => {
-                              e.target.style.color = "#F6C343";
+                              e.target.style.color = '#000000';
                             }}
                           >
                             <PencilSquareIcon className="h-5 w-5" />
@@ -417,15 +417,15 @@ export default function ProductsAdminPage() {
               <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm text-gray-700">
-                    Mostrando{" "}
+                    Mostrando{' '}
                     <span className="font-medium">
                       {(currentPage - 1) * 10 + 1}
-                    </span>{" "}
-                    a{" "}
+                    </span>{' '}
+                    a{' '}
                     <span className="font-medium">
                       {Math.min(currentPage * 10, products.length)}
-                    </span>{" "}
-                    de <span className="font-medium">{products.length}</span>{" "}
+                    </span>{' '}
+                    de <span className="font-medium">{products.length}</span>{' '}
                     resultados
                   </p>
                 </div>
@@ -470,7 +470,7 @@ export default function ProductsAdminPage() {
                             isCurrentPage
                           )}
                           style={
-                            isCurrentPage ? { backgroundColor: "#F6C343" } : {}
+                            isCurrentPage ? { backgroundColor: '#000000' } : {}
                           }
                         >
                           {pageNumber}

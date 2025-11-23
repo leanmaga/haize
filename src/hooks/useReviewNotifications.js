@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
-import { toast } from "react-hot-toast";
+import React, { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { toast } from 'react-hot-toast';
 import {
   BellIcon,
   ChatBubbleLeftRightIcon,
@@ -8,7 +8,7 @@ import {
   ExclamationTriangleIcon,
   CheckIcon,
   XMarkIcon,
-} from "@heroicons/react/24/outline";
+} from '@heroicons/react/24/outline';
 
 // Hook para notificaciones en tiempo real
 const useReviewNotifications = () => {
@@ -17,7 +17,7 @@ const useReviewNotifications = () => {
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    if (!session?.user || session.user.role !== "admin") return;
+    if (!session?.user || session.user.role !== 'admin') return;
 
     // Cargar notificaciones iniciales
     fetchNotifications();
@@ -30,7 +30,7 @@ const useReviewNotifications = () => {
 
   const fetchNotifications = async () => {
     try {
-      const response = await fetch("/api/admin/notifications/reviews");
+      const response = await fetch('/api/admin/notifications/reviews');
       const data = await response.json();
 
       if (data.success) {
@@ -38,7 +38,7 @@ const useReviewNotifications = () => {
         setUnreadCount(data.unreadCount);
       }
     } catch (error) {
-      console.error("Error fetching notifications:", error);
+      console.error('Error fetching notifications:', error);
     }
   };
 
@@ -47,7 +47,7 @@ const useReviewNotifications = () => {
       const response = await fetch(
         `/api/admin/notifications/${notificationId}/read`,
         {
-          method: "POST",
+          method: 'POST',
         }
       );
 
@@ -58,14 +58,14 @@ const useReviewNotifications = () => {
         setUnreadCount((prev) => Math.max(0, prev - 1));
       }
     } catch (error) {
-      console.error("Error marking notification as read:", error);
+      console.error('Error marking notification as read:', error);
     }
   };
 
   const markAllAsRead = async () => {
     try {
-      const response = await fetch("/api/admin/notifications/mark-all-read", {
-        method: "POST",
+      const response = await fetch('/api/admin/notifications/mark-all-read', {
+        method: 'POST',
       });
 
       if (response.ok) {
@@ -73,7 +73,7 @@ const useReviewNotifications = () => {
         setUnreadCount(0);
       }
     } catch (error) {
-      console.error("Error marking all notifications as read:", error);
+      console.error('Error marking all notifications as read:', error);
     }
   };
 
@@ -93,17 +93,17 @@ const ReviewNotificationsPanel = () => {
     useReviewNotifications();
   const [showPanel, setShowPanel] = useState(false);
 
-  if (!session?.user || session.user.role !== "admin") {
+  if (!session?.user || session.user.role !== 'admin') {
     return null;
   }
 
   const getNotificationIcon = (type) => {
     switch (type) {
-      case "new_question":
+      case 'new_question':
         return <ChatBubbleLeftRightIcon className="h-5 w-5 text-blue-500" />;
-      case "new_rating":
-        return <StarIcon className="h-5 w-5 text-yellow-500" />;
-      case "review_reported":
+      case 'new_rating':
+        return <StarIcon className="h-5 w-5 text-gray-500" />;
+      case 'review_reported':
         return <ExclamationTriangleIcon className="h-5 w-5 text-red-500" />;
       default:
         return <BellIcon className="h-5 w-5 text-gray-500" />;
@@ -112,14 +112,14 @@ const ReviewNotificationsPanel = () => {
 
   const getNotificationText = (notification) => {
     switch (notification.type) {
-      case "new_question":
+      case 'new_question':
         return `Nueva pregunta sobre "${notification.productTitle}"`;
-      case "new_rating":
+      case 'new_rating':
         return `Nueva calificación (${notification.rating}★) para "${notification.productTitle}"`;
-      case "review_reported":
+      case 'review_reported':
         return `Review reportada en "${notification.productTitle}"`;
       default:
-        return notification.message || "Nueva notificación";
+        return notification.message || 'Nueva notificación';
     }
   };
 
@@ -131,11 +131,11 @@ const ReviewNotificationsPanel = () => {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return "Ahora mismo";
+    if (diffMins < 1) return 'Ahora mismo';
     if (diffMins < 60) return `Hace ${diffMins} min`;
     if (diffHours < 24) return `Hace ${diffHours}h`;
     if (diffDays < 7) return `Hace ${diffDays}d`;
-    return notificationDate.toLocaleDateString("es-ES");
+    return notificationDate.toLocaleDateString('es-ES');
   };
 
   return (
@@ -148,7 +148,7 @@ const ReviewNotificationsPanel = () => {
         <BellIcon className="h-6 w-6" />
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
-            {unreadCount > 99 ? "99+" : unreadCount}
+            {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
       </button>
@@ -193,8 +193,8 @@ const ReviewNotificationsPanel = () => {
                     key={notification._id}
                     className={`px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors ${
                       !notification.read
-                        ? "bg-blue-50 border-l-2 border-l-blue-500"
-                        : ""
+                        ? 'bg-blue-50 border-l-2 border-l-blue-500'
+                        : ''
                     }`}
                     onClick={() => {
                       if (!notification.read) {
@@ -212,8 +212,8 @@ const ReviewNotificationsPanel = () => {
                         <p
                           className={`text-sm ${
                             !notification.read
-                              ? "font-semibold text-gray-900"
-                              : "text-gray-700"
+                              ? 'font-semibold text-gray-900'
+                              : 'text-gray-700'
                           }`}
                         >
                           {getNotificationText(notification)}
@@ -249,7 +249,7 @@ const ReviewNotificationsPanel = () => {
                 onClick={() => {
                   setShowPanel(false);
                   // Navegar al panel de reviews
-                  window.location.href = "/admin/reviews";
+                  window.location.href = '/admin/reviews';
                 }}
                 className="w-full text-center text-sm text-indigo-600 hover:text-indigo-800 font-medium"
               >
@@ -268,12 +268,12 @@ const ReviewNotificationToast = () => {
   const { data: session } = useSession();
 
   useEffect(() => {
-    if (!session?.user || session.user.role !== "admin") return;
+    if (!session?.user || session.user.role !== 'admin') return;
 
     // Simular notificaciones en tiempo real con polling
     const checkForNewNotifications = async () => {
       try {
-        const response = await fetch("/api/admin/notifications/latest");
+        const response = await fetch('/api/admin/notifications/latest');
         const data = await response.json();
 
         if (data.success && data.hasNew) {
@@ -284,19 +284,19 @@ const ReviewNotificationToast = () => {
               duration: 5000,
               icon: getToastIcon(notification.type),
               style: {
-                background: "#f0f9ff",
-                border: "1px solid #0ea5e9",
-                color: "#0c4a6e",
+                background: '#f0f9ff',
+                border: '1px solid #0ea5e9',
+                color: '#0c4a6e',
               },
               action: {
-                label: "Ver",
-                onClick: () => (window.location.href = "/admin/reviews"),
+                label: 'Ver',
+                onClick: () => (window.location.href = '/admin/reviews'),
               },
             });
           });
         }
       } catch (error) {
-        console.error("Error checking for new notifications:", error);
+        console.error('Error checking for new notifications:', error);
       }
     };
 
@@ -308,27 +308,27 @@ const ReviewNotificationToast = () => {
 
   const getToastMessage = (notification) => {
     switch (notification.type) {
-      case "new_question":
+      case 'new_question':
         return `💬 Nueva pregunta sobre ${notification.productTitle}`;
-      case "new_rating":
+      case 'new_rating':
         return `⭐ Nueva calificación (${notification.rating}★) recibida`;
-      case "review_reported":
+      case 'review_reported':
         return `🚨 Review reportada necesita atención`;
       default:
-        return "🔔 Nueva notificación de review";
+        return '🔔 Nueva notificación de review';
     }
   };
 
   const getToastIcon = (type) => {
     switch (type) {
-      case "new_question":
-        return "💬";
-      case "new_rating":
-        return "⭐";
-      case "review_reported":
-        return "🚨";
+      case 'new_question':
+        return '💬';
+      case 'new_rating':
+        return '⭐';
+      case 'review_reported':
+        return '🚨';
       default:
-        return "🔔";
+        return '🔔';
     }
   };
 
@@ -359,7 +359,7 @@ const useNewReviewAlert = (productId) => {
           }, 30000);
         }
       } catch (error) {
-        console.error("Error checking for new reviews:", error);
+        console.error('Error checking for new reviews:', error);
       }
     };
 

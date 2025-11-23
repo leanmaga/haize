@@ -35,8 +35,8 @@ function CheckoutPendingContent() {
     <div className="bg-gray-50 py-12">
       <div className="container mx-auto px-4">
         <div className="max-w-lg mx-auto bg-white rounded-lg shadow-md p-8 text-center">
-          <div className="mx-auto w-16 h-16 flex items-center justify-center rounded-full bg-yellow-100 mb-6">
-            <ClockIcon className="h-10 w-10 text-yellow-600" />
+          <div className="mx-auto w-16 h-16 flex items-center justify-center rounded-full bg-gray-100 mb-6">
+            <ClockIcon className="h-10 w-10 text-gray-600" />
           </div>
 
           <h1 className="text-3xl font-bold mb-4 text-gray-800">
@@ -64,7 +64,7 @@ function CheckoutPendingContent() {
           <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center">
             <Link
               href="/products"
-              className="bg-yellow-400 text-white px-6 py-3 rounded-lg hover:bg-yellow-500 transition"
+              className="bg-gray-400 text-white px-6 py-3 rounded-lg hover:bg-gray-500 transition"
             >
               Volver a la Tienda
             </Link>
@@ -88,7 +88,7 @@ export default function CheckoutPendingPage() {
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-400"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-400"></div>
         </div>
       }
     >

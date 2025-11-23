@@ -6,15 +6,16 @@ import ProductSlider from '@/modules/products/ProductSlider';
 import { getProducts } from '@/lib/data';
 
 export default async function Home() {
-  // Obtener productos destacados o una categoría específica
   const { products } = await getProducts({
-    featured: true, // O puedes usar category: 'destacados'
-    limit: 12, // Limitar la cantidad de productos
+    featured: true,
+    limit: 12,
   });
 
   return (
     <>
-      <div className="relative w-full h-[120vh] min-h-200">
+      {/* Hero Section */}
+      <div className="relative w-full h-[100vh] md:h-[120vh] min-h-[600px]">
+        {/* Imagen Desktop */}
         <Image
           src="https://res.cloudinary.com/dz7fsiwnu/image/upload/portada"
           alt="Home background"
@@ -23,7 +24,7 @@ export default async function Home() {
           className="hidden md:block object-cover object-top"
         />
 
-        {/* Imagen Mobile (oculta en desktop) */}
+        {/* Imagen Mobile */}
         <Image
           src="https://res.cloudinary.com/dz7fsiwnu/image/upload/portadaMobil"
           alt="Home background mobile"
@@ -32,16 +33,25 @@ export default async function Home() {
           className="block md:hidden object-cover object-center"
         />
 
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-10 text-white text-center font-primary">
-          <h3 className="text-4xl font-bold">PRIMAVERA VERANO 2026</h3>
-          <p className="m-5 text-lg">Moda que inspira tu estilo</p>
-          <button className="cursor-pointer">
+        {/* Overlay para mejor legibilidad en mobile */}
+        <div className="absolute inset-0 bg-black/20 md:bg-transparent" />
+
+        {/* Contenido Hero */}
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 md:translate-y-10 text-white text-center font-primary px-4 w-full">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 md:mb-0">
+            PRIMAVERA VERANO 2026
+          </h3>
+          <p className="my-3 md:my-5 text-base md:text-lg">
+            Moda que inspira tu estilo
+          </p>
+          <button className="cursor-pointer mt-2">
             <CustomLink href="/shop">Explorar Tienda</CustomLink>
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 w-full min-h-[100dvh]">
+      {/* Grid de Productos - 1 columna en mobile, 2 en desktop */}
+      <div className="grid grid-cols-1 md:grid-cols-2 w-full">
         <HomeProduct
           imageSrc="/assets/clothes.jpg"
           altText="Clothes 1"
@@ -61,9 +71,10 @@ export default async function Home() {
         />
       </div>
 
+      {/* Slider de Productos */}
       <HomeProductSlider>
         <HomeProduct
-          width="w-[50vw]"
+          width="w-[80vw] md:w-[50vw]"
           imageSrc="/assets/clothes4.jpg"
           altText="Clothes 4"
           title="Camisa de mezclilla"
@@ -73,7 +84,7 @@ export default async function Home() {
         />
 
         <HomeProduct
-          width="w-[50vw]"
+          width="w-[80vw] md:w-[50vw]"
           imageSrc="/assets/clothes3.jpg"
           altText="Clothes 3"
           title="Camisa de mezclilla"
@@ -83,7 +94,7 @@ export default async function Home() {
         />
 
         <HomeProduct
-          width="w-[50vw]"
+          width="w-[80vw] md:w-[50vw]"
           imageSrc="/assets/clothes5.jpg"
           altText="Clothes 5"
           title="Camisa de rayas"
@@ -93,18 +104,22 @@ export default async function Home() {
         />
       </HomeProductSlider>
 
-      <div className="w-full min-h-[100dvh]">
+      {/* Video Hero */}
+      <div className="w-full h-[70vh] md:h-[100vh] min-h-[500px]">
         <video
           src="/assets/videohero.mp4"
           autoPlay
           loop
           muted
+          playsInline
           className="w-full h-full object-cover"
         />
       </div>
 
       {/* ProductSlider con productos reales */}
-      <ProductSlider products={products} />
+      <div className="py-8 md:py-12">
+        <ProductSlider products={products} />
+      </div>
     </>
   );
 }

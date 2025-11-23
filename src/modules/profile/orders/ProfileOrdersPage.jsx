@@ -43,7 +43,7 @@ export default function ProfileOrdersPage() {
   // Traducir estado de la orden
   const getStatusText = (status) => {
     const statusMap = {
-      pendiente: { text: 'Pendiente', color: 'bg-yellow-100 text-yellow-800' },
+      pendiente: { text: 'Pendiente', color: 'bg-gray-100 text-gray-800' },
       pagado: {
         text: 'Pagado',
         color: 'text-gray-700',
@@ -81,7 +81,7 @@ export default function ProfileOrdersPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-400"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-400"></div>
       </div>
     );
   }
@@ -134,7 +134,7 @@ export default function ProfileOrdersPage() {
                   </span>
                   <Link
                     href={`/profile/orders/${order._id}`}
-                    className="text-yellow-600 hover:text-yellow-700 text-sm underline transition-colors"
+                    className="text-gray-600 hover:text-gray-700 text-sm underline transition-colors"
                   >
                     Ver detalles
                   </Link>

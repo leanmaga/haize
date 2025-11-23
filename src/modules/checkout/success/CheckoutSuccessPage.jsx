@@ -43,14 +43,14 @@ export default function CheckoutSuccessPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/products"
-              className="bg-white border border-yellow-400 text-yellow-600 hover:bg-gray-50 font-medium py-2 px-6 rounded-lg transition-colors"
+              className="bg-white border border-gray-400 text-gray-600 hover:bg-gray-50 font-medium py-2 px-6 rounded-lg transition-colors"
             >
               Seguir Comprando
             </Link>
 
             <Link
               href="/profile/orders"
-              className="bg-yellow-400 hover:bg-yellow-500 text-white font-medium py-2 px-6 rounded-lg transition-colors"
+              className="bg-gray-400 hover:bg-gray-500 text-white font-medium py-2 px-6 rounded-lg transition-colors"
             >
               Ver Mis Pedidos
             </Link>

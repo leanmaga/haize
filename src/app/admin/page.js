@@ -28,7 +28,7 @@ export default function AdminDashboard() {
     const statusConfig = {
       pagado: { className: 'bg-green-100 text-green-800', style: {} },
       pendiente: {
-        className: 'text-yellow-800',
+        className: 'text-gray-800',
         style: { backgroundColor: 'rgba(246, 195, 67, 0.1)' },
       },
       enviado: { className: 'bg-blue-100 text-blue-800', style: {} },
@@ -150,7 +150,7 @@ export default function AdminDashboard() {
       <div className="min-h-screen flex items-center justify-center">
         <div
           className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2"
-          style={{ borderTopColor: '#F6C343', borderBottomColor: '#F6C343' }}
+          style={{ borderTopColor: '#000000', borderBottomColor: '#000000' }}
         ></div>
       </div>
     );
@@ -162,7 +162,7 @@ export default function AdminDashboard() {
       <div className="flex items-center justify-center min-h-[300px]">
         <div
           className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2"
-          style={{ borderTopColor: '#F6C343', borderBottomColor: '#F6C343' }}
+          style={{ borderTopColor: '#000000', borderBottomColor: '#000000' }}
         ></div>
       </div>
     );
@@ -178,12 +178,12 @@ export default function AdminDashboard() {
         <button
           onClick={handleLogout}
           className="px-4 py-2 text-white transition rounded-md"
-          style={{ backgroundColor: '#F6C343' }}
+          style={{ backgroundColor: '#000000' }}
           onMouseEnter={(e) => {
             e.target.style.backgroundColor = '#E5B63C';
           }}
           onMouseLeave={(e) => {
-            e.target.style.backgroundColor = '#F6C343';
+            e.target.style.backgroundColor = '#000000';
           }}
         >
           Cerrar Sesión
@@ -214,12 +214,12 @@ export default function AdminDashboard() {
           <Link
             href="/admin/orders"
             className="text-sm font-medium transition-colors hover:underline"
-            style={{ color: '#F6C343' }}
+            style={{ color: '#000000' }}
             onMouseEnter={(e) => {
               e.target.style.color = '#E5B63C';
             }}
             onMouseLeave={(e) => {
-              e.target.style.color = '#F6C343';
+              e.target.style.color = '#000000';
             }}
           >
             Ver todos

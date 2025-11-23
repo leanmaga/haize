@@ -66,7 +66,7 @@ export default function ProductCard({ product }) {
 
           {/* Stock info */}
           {product.stock <= 5 && product.stock > 0 && (
-            <p className="text-xs text-yellow-600 font-medium mb-2">
+            <p className="text-xs text-gray-600 font-medium mb-2">
               ⚠ Quedan {product.stock} unidades
             </p>
           )}

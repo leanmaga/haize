@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
-const SearchDropdown = () => {
+const SearchDropdown = ({ isMobile = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [products, setProducts] = useState([]);
@@ -46,7 +46,7 @@ const SearchDropdown = () => {
     setIsLoading(true);
     const delayDebounceFn = setTimeout(() => {
       searchProducts(searchTerm);
-    }, 300); // 300ms de debounce
+    }, 300);
 
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm]);
@@ -95,28 +95,32 @@ const SearchDropdown = () => {
         <button
           onClick={handleOpen}
           className="flex items-center gap-1 hover:text-gray-300 transition text-sm"
+          aria-label="Buscar productos"
         >
-          <MagnifyingGlassIcon className="h-5 w-5" />
-          BUSCAR
+          <MagnifyingGlassIcon
+            className={`${isMobile ? 'h-6 w-6' : 'h-5 w-5'}`}
+          />
+          {!isMobile && 'BUSCAR'}
         </button>
       ) : (
-        <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 bg-black/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[60] flex items-start justify-center pt-16 md:pt-20 bg-black/50 backdrop-blur-sm">
           <div className="w-full max-w-2xl mx-4">
             {/* Input de búsqueda */}
             <div className="bg-white rounded-lg shadow-2xl">
-              <div className="flex items-center gap-3 p-4 border-b border-gray-200">
-                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+              <div className="flex items-center gap-3 p-3 md:p-4 border-b border-gray-200">
+                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 flex-shrink-0" />
                 <input
                   ref={inputRef}
                   type="text"
                   placeholder="Buscar productos..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="flex-1 outline-none text-gray-900 placeholder-gray-400"
+                  className="flex-1 outline-none text-gray-900 placeholder-gray-400 text-sm md:text-base"
                 />
                 <button
                   onClick={handleClose}
-                  className="p-1 hover:bg-gray-100 rounded transition"
+                  className="p-1 hover:bg-gray-100 rounded transition flex-shrink-0"
+                  aria-label="Cerrar búsqueda"
                 >
                   <XMarkIcon className="h-5 w-5 text-gray-500" />
                 </button>
@@ -124,56 +128,56 @@ const SearchDropdown = () => {
 
               {/* Dropdown con resultados */}
               {(isLoading || hasSearched) && (
-                <div className="max-h-96 overflow-y-auto">
+                <div className="max-h-[60vh] md:max-h-96 overflow-y-auto">
                   {isLoading ? (
                     <div className="p-8 text-center">
                       <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-gray-300 border-r-black"></div>
                       <p className="mt-2 text-sm text-gray-500">Buscando...</p>
                     </div>
                   ) : products.length > 0 ? (
-                    <div className="p-3">
+                    <div className="p-2 md:p-3">
                       <div className="grid grid-cols-1 gap-2">
                         {products.map((product) => (
                           <Link
                             key={product._id}
                             href={`/products/${product._id}`}
                             onClick={handleClose}
-                            className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition group"
+                            className="flex items-center gap-3 p-2 md:p-3 hover:bg-gray-50 rounded-lg transition group"
                           >
                             {/* Imagen del producto */}
-                            <div className="relative w-16 h-16 flex-shrink-0 bg-gray-100 rounded overflow-hidden">
+                            <div className="relative w-14 h-14 md:w-16 md:h-16 flex-shrink-0 bg-gray-100 rounded overflow-hidden">
                               <Image
                                 src={product.imageUrl}
                                 alt={product.title}
                                 fill
                                 className="object-cover group-hover:scale-105 transition-transform"
-                                sizes="64px"
+                                sizes="(max-width: 768px) 56px, 64px"
                               />
                             </div>
 
                             {/* Información del producto */}
                             <div className="flex-1 min-w-0">
-                              <h3 className="font-medium text-gray-900 truncate group-hover:text-black">
+                              <h3 className="font-medium text-gray-900 truncate group-hover:text-black text-sm md:text-base">
                                 {product.title}
                               </h3>
-                              <p className="text-sm text-gray-500 capitalize">
+                              <p className="text-xs md:text-sm text-gray-500 capitalize">
                                 {product.category}
                               </p>
                             </div>
 
                             {/* Precio */}
-                            <div className="text-right">
+                            <div className="text-right flex-shrink-0">
                               {product.onSale && product.promoPrice > 0 ? (
                                 <>
-                                  <p className="text-sm text-gray-400 line-through">
+                                  <p className="text-xs md:text-sm text-gray-400 line-through">
                                     {formatPrice(product.salePrice)}
                                   </p>
-                                  <p className="font-bold text-red-600">
+                                  <p className="text-sm md:text-base font-bold text-red-600">
                                     {formatPrice(product.promoPrice)}
                                   </p>
                                 </>
                               ) : (
-                                <p className="font-bold text-gray-900">
+                                <p className="text-sm md:text-base font-bold text-gray-900">
                                   {formatPrice(product.salePrice)}
                                 </p>
                               )}
@@ -188,18 +192,18 @@ const SearchDropdown = () => {
                           searchTerm
                         )}`}
                         onClick={handleClose}
-                        className="block mt-3 p-3 text-center text-sm text-gray-600 hover:text-black hover:bg-gray-50 rounded-lg transition"
+                        className="block mt-2 md:mt-3 p-2.5 md:p-3 text-center text-xs md:text-sm text-gray-600 hover:text-black hover:bg-gray-50 rounded-lg transition"
                       >
                         VER MÁS RESULTADOS →
                       </Link>
                     </div>
                   ) : (
                     <div className="p-8 text-center">
-                      <MagnifyingGlassIcon className="h-12 w-12 text-gray-300 mx-auto mb-2" />
-                      <p className="text-gray-600">
+                      <MagnifyingGlassIcon className="h-10 w-10 md:h-12 md:w-12 text-gray-300 mx-auto mb-2" />
+                      <p className="text-sm md:text-base text-gray-600">
                         No se encontraron productos
                       </p>
-                      <p className="text-sm text-gray-400 mt-1">
+                      <p className="text-xs md:text-sm text-gray-400 mt-1">
                         Intenta con otros términos de búsqueda
                       </p>
                     </div>

@@ -176,22 +176,6 @@ export default function FilterableProducts({ products }) {
           <ProductGrid products={filteredProducts} />
         )}
       </div>
-
-      <section
-        className="py-16 text-white"
-        style={{ backgroundColor: '#010101' }}
-      >
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">
-            ¿Tenés preguntas sobre nuestros productos?
-          </h2>
-          <p className="text-xl mb-8">
-            Contactanos por WhatsApp y te respondemos de inmediato. Atención
-            cordial garantizada.
-          </p>
-          <ButtonContact />
-        </div>
-      </section>
     </>
   );
 }

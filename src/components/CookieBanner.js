@@ -1,13 +1,13 @@
 // components/CookieBanner.js
-"use client";
-import { useState, useEffect } from "react";
+'use client';
+import { useState, useEffect } from 'react';
 
 const CookieBanner = ({ onOpenCookiesSettings, onAccept }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     // Comprobar si el usuario ya ha aceptado las cookies
-    const cookiesAccepted = localStorage.getItem("cookiesAccepted");
+    const cookiesAccepted = localStorage.getItem('cookiesAccepted');
 
     // Si no las ha aceptado, mostrar el banner
     if (!cookiesAccepted) {
@@ -21,22 +21,22 @@ const CookieBanner = ({ onOpenCookiesSettings, onAccept }) => {
   }, []);
 
   const handleAcceptAll = () => {
-    localStorage.setItem("cookiesAccepted", "all");
-    localStorage.setItem("cookiesAcceptedAt", new Date().toISOString());
+    localStorage.setItem('cookiesAccepted', 'all');
+    localStorage.setItem('cookiesAcceptedAt', new Date().toISOString());
     setIsVisible(false);
 
     if (onAccept) {
-      onAccept("all");
+      onAccept('all');
     }
   };
 
   const handleAcceptEssential = () => {
-    localStorage.setItem("cookiesAccepted", "essential");
-    localStorage.setItem("cookiesAcceptedAt", new Date().toISOString());
+    localStorage.setItem('cookiesAccepted', 'essential');
+    localStorage.setItem('cookiesAcceptedAt', new Date().toISOString());
     setIsVisible(false);
 
     if (onAccept) {
-      onAccept("essential");
+      onAccept('essential');
     }
   };
 
@@ -56,7 +56,7 @@ const CookieBanner = ({ onOpenCookiesSettings, onAccept }) => {
               las esenciales o configurar tus preferencias.
               <button
                 onClick={onOpenCookiesSettings}
-                className="text-yellow-600 underline ml-1 font-semibold hover:text-yellow-700 transition-colors"
+                className="text-gray-600 underline ml-1 font-semibold hover:text-gray-700 transition-colors"
               >
                 Más información
               </button>
@@ -72,7 +72,7 @@ const CookieBanner = ({ onOpenCookiesSettings, onAccept }) => {
             <button
               onClick={handleAcceptAll}
               className="px-4 py-2 text-sm text-white rounded-md hover:opacity-90 focus:outline-none font-sora-regular transition-colors"
-              style={{ backgroundColor: "#FAC348" }}
+              style={{ backgroundColor: '#FAC348' }}
             >
               Aceptar todas
             </button>

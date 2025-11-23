@@ -221,7 +221,7 @@ const legalDocuments = {
       <p class="mb-4 text-gray-700">Algunos de nuestros socios, como MercadoPago, pueden establecer cookies en su dispositivo cuando visita nuestro sitio web. Estas cookies permiten que estos terceros recopilen información para sus propios propósitos, como rastrear el rendimiento de sus servicios o personalizar sus ofertas.</p>
       
       <h2 class="text-xl font-bold mb-4 text-gray-800">4. GESTIÓN DE COOKIES</h2>
-      <p class="mb-4 text-gray-700">La mayoría de los navegadores web permiten cierto control de la mayoría de las cookies a través de la configuración del navegador. Para saber más sobre las cookies y cómo gestionarlas o eliminarlas, visite <a href="http://www.allaboutcookies.org" class="text-yellow-600 hover:text-yellow-700 transition-colors" target="_blank" rel="noopener noreferrer">www.allaboutcookies.org</a>.</p>
+      <p class="mb-4 text-gray-700">La mayoría de los navegadores web permiten cierto control de la mayoría de las cookies a través de la configuración del navegador. Para saber más sobre las cookies y cómo gestionarlas o eliminarlas, visite <a href="http://www.allaboutcookies.org" class="text-dark-600 hover:text-dark-700 transition-colors" target="_blank" rel="noopener noreferrer">www.allaboutcookies.org</a>.</p>
       
       <h3 class="text-lg font-bold mb-2 text-gray-700">4.1. Cómo Deshabilitar las Cookies</h3>
       <p class="mb-4 text-gray-700">Puede rechazar, aceptar o eliminar cookies de nuestro sitio web en cualquier momento modificando la configuración de su navegador. Para hacerlo, siga las instrucciones proporcionadas por su navegador (generalmente ubicadas en las opciones de "ayuda", "herramientas" o "editar").</p>
@@ -273,7 +273,7 @@ const legalDocuments = {
         </div>
         
         <div class="mt-6 flex justify-end space-x-4">
-          <button class="px-4 py-2 border border-yellow-500 text-yellow-600 rounded hover:bg-yellow-50 transition-colors">Rechazar todo</button>
+          <button class="px-4 py-2 border border-dark-500 text-dark-600 rounded hover:bg-dark-50 transition-colors">Rechazar todo</button>
           <button class="px-4 py-2 text-white rounded hover:opacity-90 transition-colors" style="background-color: #FAC348;">Guardar preferencias</button>
         </div>
       </div>

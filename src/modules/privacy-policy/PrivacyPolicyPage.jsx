@@ -70,7 +70,7 @@ export default function PrivacyPage() {
               utilizamos las cookies, consulte nuestra{' '}
               <a
                 href="/cookies"
-                className="text-yellow-600 hover:text-yellow-700 transition-colors"
+                className="text-gray-600 hover:text-gray-700 transition-colors"
               >
                 Configuración de Cookies
               </a>

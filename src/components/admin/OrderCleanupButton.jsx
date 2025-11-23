@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { toast } from "react-hot-toast";
+import { useState, useEffect } from 'react';
+import { toast } from 'react-hot-toast';
 
 export default function OrderCleanupButton() {
   const [stats, setStats] = useState(null);
@@ -15,13 +15,13 @@ export default function OrderCleanupButton() {
   const fetchStats = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/admin/cleanup-orders");
+      const response = await fetch('/api/admin/cleanup-orders');
       if (response.ok) {
         const data = await response.json();
         setStats(data);
       }
     } catch (error) {
-      console.error("Error fetching stats:", error);
+      console.error('Error fetching stats:', error);
     } finally {
       setIsLoading(false);
     }
@@ -30,7 +30,7 @@ export default function OrderCleanupButton() {
   const executeCleanup = async () => {
     if (
       !confirm(
-        "¿Estás seguro de ejecutar la limpieza de órdenes?\n\nEsto cancelará órdenes pendientes de más de 30 minutos."
+        '¿Estás seguro de ejecutar la limpieza de órdenes?\n\nEsto cancelará órdenes pendientes de más de 30 minutos.'
       )
     ) {
       return;
@@ -38,8 +38,8 @@ export default function OrderCleanupButton() {
 
     setIsCleaning(true);
     try {
-      const response = await fetch("/api/admin/cleanup-orders", {
-        method: "POST",
+      const response = await fetch('/api/admin/cleanup-orders', {
+        method: 'POST',
       });
 
       if (response.ok) {
@@ -48,11 +48,11 @@ export default function OrderCleanupButton() {
         await fetchStats(); // Actualizar estadísticas
       } else {
         const error = await response.json();
-        toast.error(error.error || "Error al ejecutar limpieza");
+        toast.error(error.error || 'Error al ejecutar limpieza');
       }
     } catch (error) {
-      console.error("Error en limpieza:", error);
-      toast.error("Error al ejecutar limpieza");
+      console.error('Error en limpieza:', error);
+      toast.error('Error al ejecutar limpieza');
     } finally {
       setIsCleaning(false);
     }
@@ -109,27 +109,27 @@ export default function OrderCleanupButton() {
               <div key={stat._id} className="border rounded-md p-3 text-center">
                 <div
                   className={`text-lg font-bold ${
-                    stat._id === "pagado"
-                      ? "text-green-600"
-                      : stat._id === "pendiente" ||
-                        stat._id === "whatsapp_pendiente"
-                      ? "text-yellow-600"
-                      : stat._id === "cancelado"
-                      ? "text-red-600"
-                      : "text-gray-600"
+                    stat._id === 'pagado'
+                      ? 'text-green-600'
+                      : stat._id === 'pendiente' ||
+                        stat._id === 'whatsapp_pendiente'
+                      ? 'text-dark-600'
+                      : stat._id === 'cancelado'
+                      ? 'text-red-600'
+                      : 'text-gray-600'
                   }`}
                 >
                   {stat.count}
                 </div>
                 <div className="text-xs text-gray-600 capitalize">
-                  {stat._id === "whatsapp_pendiente"
-                    ? "WhatsApp Pend."
-                    : stat._id === "pendiente"
-                    ? "Pendientes"
-                    : stat._id === "pagado"
-                    ? "Pagadas"
-                    : stat._id === "cancelado"
-                    ? "Canceladas"
+                  {stat._id === 'whatsapp_pendiente'
+                    ? 'WhatsApp Pend.'
+                    : stat._id === 'pendiente'
+                    ? 'Pendientes'
+                    : stat._id === 'pagado'
+                    ? 'Pagadas'
+                    : stat._id === 'cancelado'
+                    ? 'Canceladas'
                     : stat._id}
                 </div>
               </div>
@@ -138,10 +138,10 @@ export default function OrderCleanupButton() {
 
           {/* Alerta si hay órdenes para limpiar */}
           {stats.needsCleanup?.pendingToCancel > 0 && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+            <div className="bg-dark-50 border border-dark-200 rounded-md p-4">
               <div className="flex items-center space-x-2 mb-2">
                 <svg
-                  className="h-5 w-5 text-yellow-600"
+                  className="h-5 w-5 text-dark-600"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -151,12 +151,12 @@ export default function OrderCleanupButton() {
                     clipRule="evenodd"
                   />
                 </svg>
-                <span className="text-yellow-800 font-medium">
+                <span className="text-dark-800 font-medium">
                   ⚠️ {stats.needsCleanup.pendingToCancel} órdenes pendientes de
                   más de 30 minutos
                 </span>
               </div>
-              <p className="text-yellow-700 text-sm">
+              <p className="text-dark-700 text-sm">
                 Estas órdenes probablemente fueron abandonadas y pueden estar
                 duplicadas.
               </p>
@@ -179,11 +179,11 @@ export default function OrderCleanupButton() {
             <button
               onClick={executeCleanup}
               disabled={isCleaning || stats.needsCleanup?.pendingToCancel === 0}
-              className="bg-yellow-50 text-yellow-700 py-2 px-4 rounded-md hover:bg-yellow-100 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 border border-yellow-200"
+              className="bg-dark-50 text-dark-700 py-2 px-4 rounded-md hover:bg-dark-100 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 border border-dark-200"
             >
               {isCleaning ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-yellow-600"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-dark-600"></div>
                   <span>Limpiando...</span>
                 </>
               ) : (
@@ -204,7 +204,7 @@ export default function OrderCleanupButton() {
                   <span>
                     {stats.needsCleanup?.pendingToCancel > 0
                       ? `Limpiar (${stats.needsCleanup.pendingToCancel})`
-                      : "Todo limpio ✅"}
+                      : 'Todo limpio ✅'}
                   </span>
                 </>
               )}

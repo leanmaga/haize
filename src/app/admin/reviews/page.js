@@ -1,13 +1,13 @@
-// app/admin/reviews/page (Con color #F6C343 y accesibilidad mejorada)
-"use client";
+// app/admin/reviews/page (Con color #000000 y accesibilidad mejorada)
+'use client';
 
-import React, { useState, useEffect, useCallback } from "react";
-import { useSession } from "next-auth/react";
-import { toast } from "react-hot-toast";
-import Image from "next/image";
-import Link from "next/link";
-import PropTypes from "prop-types";
-import StarRating from "@/components/ui/StarRating";
+import React, { useState, useEffect, useCallback } from 'react';
+import { useSession } from 'next-auth/react';
+import { toast } from 'react-hot-toast';
+import Image from 'next/image';
+import Link from 'next/link';
+import PropTypes from 'prop-types';
+import StarRating from '@/components/ui/StarRating';
 import {
   StarIcon,
   ChatBubbleLeftRightIcon,
@@ -18,21 +18,21 @@ import {
   MagnifyingGlassIcon,
   UserIcon,
   CalendarIcon,
-} from "@heroicons/react/24/outline";
+} from '@heroicons/react/24/outline';
 
 const AdminReviewsPage = () => {
   const { data: session } = useSession();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("ratings");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [ratingFilter, setRatingFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [sortBy, setSortBy] = useState("newest");
+  const [activeTab, setActiveTab] = useState('ratings');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [ratingFilter, setRatingFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(20);
   const [selectedReviews, setSelectedReviews] = useState(new Set());
-  const [bulkAction, setBulkAction] = useState("");
+  const [bulkAction, setBulkAction] = useState('');
 
   // Estados para estadísticas
   const [stats, setStats] = useState({
@@ -51,12 +51,12 @@ const AdminReviewsPage = () => {
       setLoading(true);
       const params = new URLSearchParams({
         type:
-          activeTab === "all"
-            ? ""
-            : activeTab === "ratings"
-            ? "rating"
-            : "question",
-        rating: ratingFilter === "all" ? "" : ratingFilter,
+          activeTab === 'all'
+            ? ''
+            : activeTab === 'ratings'
+            ? 'rating'
+            : 'question',
+        rating: ratingFilter === 'all' ? '' : ratingFilter,
         status: statusFilter,
         sort: sortBy,
         page: currentPage.toString(),
@@ -70,11 +70,11 @@ const AdminReviewsPage = () => {
         setReviews(data.reviews || []);
         setStats(data.stats || {});
       } else {
-        toast.error("Error al cargar reviews");
+        toast.error('Error al cargar reviews');
       }
     } catch (error) {
-      console.error("Error fetching reviews:", error);
-      toast.error("Error al cargar reviews");
+      console.error('Error fetching reviews:', error);
+      toast.error('Error al cargar reviews');
     } finally {
       setLoading(false);
     }
@@ -89,43 +89,43 @@ const AdminReviewsPage = () => {
 
   // ✅ Ahora el useEffect puede usar fetchReviews sin problemas
   useEffect(() => {
-    if (session?.user?.role === "admin") {
+    if (session?.user?.role === 'admin') {
       fetchReviews();
     }
   }, [session?.user?.role, fetchReviews]);
 
   const handleDeleteReview = async (reviewId) => {
-    if (!confirm("¿Estás seguro de que quieres eliminar esta review?")) {
+    if (!confirm('¿Estás seguro de que quieres eliminar esta review?')) {
       return;
     }
 
     try {
       const response = await fetch(`/api/admin/reviews/${reviewId}`, {
-        method: "DELETE",
+        method: 'DELETE',
       });
 
       const data = await response.json();
 
       if (data.success) {
-        toast.success("Review eliminada correctamente");
+        toast.success('Review eliminada correctamente');
         fetchReviews();
       } else {
-        toast.error(data.error || "Error al eliminar review");
+        toast.error(data.error || 'Error al eliminar review');
       }
     } catch (error) {
-      console.error("Error deleting review:", error);
-      toast.error("Error al eliminar review");
+      console.error('Error deleting review:', error);
+      toast.error('Error al eliminar review');
     }
   };
 
   const handleBulkAction = async () => {
     if (selectedReviews.size === 0) {
-      toast.error("Selecciona al menos una review");
+      toast.error('Selecciona al menos una review');
       return;
     }
 
     if (!bulkAction) {
-      toast.error("Selecciona una acción");
+      toast.error('Selecciona una acción');
       return;
     }
 
@@ -136,9 +136,9 @@ const AdminReviewsPage = () => {
     }
 
     try {
-      const response = await fetch("/api/admin/reviews/bulk", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/admin/reviews/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: bulkAction,
           reviewIds: Array.from(selectedReviews),
@@ -150,14 +150,14 @@ const AdminReviewsPage = () => {
       if (data.success) {
         toast.success(`Acción completada: ${data.affected} reviews afectadas`);
         setSelectedReviews(new Set());
-        setBulkAction("");
+        setBulkAction('');
         fetchReviews();
       } else {
-        toast.error(data.error || "Error en la acción masiva");
+        toast.error(data.error || 'Error en la acción masiva');
       }
     } catch (error) {
-      console.error("Error in bulk action:", error);
-      toast.error("Error en la acción masiva");
+      console.error('Error in bulk action:', error);
+      toast.error('Error en la acción masiva');
     }
   };
 
@@ -182,7 +182,7 @@ const AdminReviewsPage = () => {
   // Filtrar reviews según búsqueda
   const filteredReviews = reviews.filter((review) => {
     const matchesSearch =
-      searchTerm === "" ||
+      searchTerm === '' ||
       review.comment.toLowerCase().includes(searchTerm.toLowerCase()) ||
       review.user?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       review.product?.title.toLowerCase().includes(searchTerm.toLowerCase());
@@ -191,12 +191,12 @@ const AdminReviewsPage = () => {
   });
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString("es-ES", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+    return new Date(date).toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     });
   };
 
@@ -227,7 +227,7 @@ const AdminReviewsPage = () => {
       );
     }
 
-    if (review.type === "question" && review.response) {
+    if (review.type === 'question' && review.response) {
       badges.push(
         <span
           key="answered"
@@ -242,7 +242,7 @@ const AdminReviewsPage = () => {
     return badges;
   };
 
-  if (!session?.user || session.user.role !== "admin") {
+  if (!session?.user || session.user.role !== 'admin') {
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg p-4">
         <p className="text-red-800">
@@ -278,12 +278,12 @@ const AdminReviewsPage = () => {
 
           <div
             className="p-4 rounded-lg text-center"
-            style={{ backgroundColor: "rgba(246, 195, 67, 0.1)" }}
+            style={{ backgroundColor: 'rgba(246, 195, 67, 0.1)' }}
           >
-            <div className="text-2xl font-bold" style={{ color: "#F6C343" }}>
+            <div className="text-2xl font-bold" style={{ color: '#000000' }}>
               {stats.totalRatings || 0}
             </div>
-            <div className="text-sm" style={{ color: "#E5B63C" }}>
+            <div className="text-sm" style={{ color: '#E5B63C' }}>
               Calificaciones
             </div>
           </div>
@@ -297,7 +297,7 @@ const AdminReviewsPage = () => {
 
           <div className="bg-purple-50 p-4 rounded-lg text-center">
             <div className="text-2xl font-bold text-purple-600">
-              {stats.averageRating ? stats.averageRating.toFixed(1) : "0.0"}
+              {stats.averageRating ? stats.averageRating.toFixed(1) : '0.0'}
             </div>
             <div className="text-sm text-purple-800">Rating Promedio</div>
           </div>
@@ -341,7 +341,7 @@ const AdminReviewsPage = () => {
                       <div
                         className="h-full"
                         style={{
-                          backgroundColor: "#F6C343",
+                          backgroundColor: '#000000',
                           width:
                             stats.totalRatings > 0
                               ? `${
@@ -349,7 +349,7 @@ const AdminReviewsPage = () => {
                                     stats.totalRatings) *
                                   100
                                 }%`
-                              : "0%",
+                              : '0%',
                         }}
                         aria-label={`${
                           stats.ratingDistribution[stars - 1]
@@ -377,21 +377,21 @@ const AdminReviewsPage = () => {
           >
             <button
               onClick={() => {
-                setActiveTab("ratings");
+                setActiveTab('ratings');
                 setCurrentPage(1);
               }}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === "ratings"
-                  ? "text-yellow-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                activeTab === 'ratings'
+                  ? 'text-gray-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
               style={
-                activeTab === "ratings"
-                  ? { borderBottomColor: "#F6C343", color: "#F6C343" }
+                activeTab === 'ratings'
+                  ? { borderBottomColor: '#000000', color: '#000000' }
                   : {}
               }
               role="tab"
-              aria-selected={activeTab === "ratings"}
+              aria-selected={activeTab === 'ratings'}
               aria-controls="ratings-panel"
             >
               <StarIcon className="h-4 w-4 inline mr-1" />
@@ -399,16 +399,16 @@ const AdminReviewsPage = () => {
             </button>
             <button
               onClick={() => {
-                setActiveTab("questions");
+                setActiveTab('questions');
                 setCurrentPage(1);
               }}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === "questions"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                activeTab === 'questions'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
               role="tab"
-              aria-selected={activeTab === "questions"}
+              aria-selected={activeTab === 'questions'}
               aria-controls="questions-panel"
             >
               <ChatBubbleLeftRightIcon className="h-4 w-4 inline mr-1" />
@@ -416,21 +416,21 @@ const AdminReviewsPage = () => {
             </button>
             <button
               onClick={() => {
-                setActiveTab("all");
+                setActiveTab('all');
                 setCurrentPage(1);
               }}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === "all"
-                  ? ""
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                activeTab === 'all'
+                  ? ''
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
               style={
-                activeTab === "all"
-                  ? { borderBottomColor: "#F6C343", color: "#F6C343" }
+                activeTab === 'all'
+                  ? { borderBottomColor: '#000000', color: '#000000' }
                   : {}
               }
               role="tab"
-              aria-selected={activeTab === "all"}
+              aria-selected={activeTab === 'all'}
               aria-controls="all-panel"
             >
               Todas ({stats.totalReviews || 0})
@@ -454,12 +454,12 @@ const AdminReviewsPage = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:border-transparent"
               onFocus={(e) => {
-                e.target.style.borderColor = "#F6C343";
+                e.target.style.borderColor = '#000000';
                 e.target.style.boxShadow = `0 0 0 3px rgba(246, 195, 67, 0.1)`;
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = "#d1d5db";
-                e.target.style.boxShadow = "none";
+                e.target.style.borderColor = '#d1d5db';
+                e.target.style.boxShadow = 'none';
               }}
               aria-describedby="search-help"
             />
@@ -471,7 +471,7 @@ const AdminReviewsPage = () => {
 
           {/* Filtros */}
           <div className="flex gap-3">
-            {activeTab === "ratings" && (
+            {activeTab === 'ratings' && (
               <div>
                 <label htmlFor="rating-filter" className="sr-only">
                   Filtrar por número de estrellas
@@ -485,12 +485,12 @@ const AdminReviewsPage = () => {
                   }}
                   className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2"
                   onFocus={(e) => {
-                    e.target.style.borderColor = "#F6C343";
+                    e.target.style.borderColor = '#000000';
                     e.target.style.boxShadow = `0 0 0 3px rgba(246, 195, 67, 0.1)`;
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = "#d1d5db";
-                    e.target.style.boxShadow = "none";
+                    e.target.style.borderColor = '#d1d5db';
+                    e.target.style.boxShadow = 'none';
                   }}
                   aria-describedby="rating-filter-help"
                 >
@@ -520,12 +520,12 @@ const AdminReviewsPage = () => {
                 }}
                 className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2"
                 onFocus={(e) => {
-                  e.target.style.borderColor = "#F6C343";
+                  e.target.style.borderColor = '#000000';
                   e.target.style.boxShadow = `0 0 0 3px rgba(246, 195, 67, 0.1)`;
                 }}
                 onBlur={(e) => {
-                  e.target.style.borderColor = "#d1d5db";
-                  e.target.style.boxShadow = "none";
+                  e.target.style.borderColor = '#d1d5db';
+                  e.target.style.boxShadow = 'none';
                 }}
                 aria-describedby="status-filter-help"
               >
@@ -549,18 +549,18 @@ const AdminReviewsPage = () => {
                 onChange={(e) => setSortBy(e.target.value)}
                 className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2"
                 onFocus={(e) => {
-                  e.target.style.borderColor = "#F6C343";
+                  e.target.style.borderColor = '#000000';
                   e.target.style.boxShadow = `0 0 0 3px rgba(246, 195, 67, 0.1)`;
                 }}
                 onBlur={(e) => {
-                  e.target.style.borderColor = "#d1d5db";
-                  e.target.style.boxShadow = "none";
+                  e.target.style.borderColor = '#d1d5db';
+                  e.target.style.boxShadow = 'none';
                 }}
                 aria-describedby="sort-filter-help"
               >
                 <option value="newest">Más recientes</option>
                 <option value="oldest">Más antiguas</option>
-                {activeTab === "ratings" && (
+                {activeTab === 'ratings' && (
                   <>
                     <option value="highest">Mejor calificadas</option>
                     <option value="lowest">Peor calificadas</option>
@@ -580,15 +580,15 @@ const AdminReviewsPage = () => {
           <div
             className="rounded-lg p-4 mb-6"
             style={{
-              backgroundColor: "rgba(246, 195, 67, 0.1)",
-              borderColor: "rgba(246, 195, 67, 0.3)",
-              borderWidth: "1px",
+              backgroundColor: 'rgba(246, 195, 67, 0.1)',
+              borderColor: 'rgba(246, 195, 67, 0.3)',
+              borderWidth: '1px',
             }}
             role="region"
             aria-label="Acciones masivas"
           >
             <div className="flex items-center justify-between">
-              <span className="text-sm" style={{ color: "#E5B63C" }}>
+              <span className="text-sm" style={{ color: '#E5B63C' }}>
                 {selectedReviews.size} reviews seleccionadas
               </span>
               <div className="flex items-center space-x-3">
@@ -600,7 +600,7 @@ const AdminReviewsPage = () => {
                   value={bulkAction}
                   onChange={(e) => setBulkAction(e.target.value)}
                   className="px-3 py-1 border rounded text-sm"
-                  style={{ borderColor: "rgba(246, 195, 67, 0.5)" }}
+                  style={{ borderColor: 'rgba(246, 195, 67, 0.5)' }}
                   aria-describedby="bulk-action-help"
                 >
                   <option value="">Seleccionar acción...</option>
@@ -618,16 +618,16 @@ const AdminReviewsPage = () => {
                   disabled={!bulkAction}
                   className="px-3 py-1 text-white text-sm rounded transition-colors disabled:bg-gray-400"
                   style={{
-                    backgroundColor: !bulkAction ? "#9ca3af" : "#F6C343",
+                    backgroundColor: !bulkAction ? '#9ca3af' : '#000000',
                   }}
                   onMouseEnter={(e) => {
                     if (bulkAction) {
-                      e.target.style.backgroundColor = "#E5B63C";
+                      e.target.style.backgroundColor = '#E5B63C';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (bulkAction) {
-                      e.target.style.backgroundColor = "#F6C343";
+                      e.target.style.backgroundColor = '#000000';
                     }
                   }}
                   aria-describedby="apply-action-help"
@@ -637,7 +637,7 @@ const AdminReviewsPage = () => {
                 <div id="apply-action-help" className="sr-only">
                   {bulkAction
                     ? `Aplicar la acción ${bulkAction} a ${selectedReviews.size} reviews seleccionadas`
-                    : "Selecciona una acción primero"}
+                    : 'Selecciona una acción primero'}
                 </div>
                 <button
                   onClick={() => setSelectedReviews(new Set())}
@@ -669,13 +669,13 @@ const AdminReviewsPage = () => {
                   onChange={toggleSelectAll}
                   className="h-4 w-4 border-gray-300 rounded focus:ring-2"
                   style={{
-                    accentColor: "#F6C343",
+                    accentColor: '#000000',
                   }}
                   onFocus={(e) => {
                     e.target.style.boxShadow = `0 0 0 3px rgba(246, 195, 67, 0.1)`;
                   }}
                   onBlur={(e) => {
-                    e.target.style.boxShadow = "none";
+                    e.target.style.boxShadow = 'none';
                   }}
                   aria-describedby="select-all-help"
                 />
@@ -697,8 +697,8 @@ const AdminReviewsPage = () => {
               <div
                 className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-t-transparent"
                 style={{
-                  borderColor: "#F6C343",
-                  borderTopColor: "transparent",
+                  borderColor: '#000000',
+                  borderTopColor: 'transparent',
                 }}
                 role="status"
                 aria-label="Cargando reviews"
@@ -721,13 +721,13 @@ const AdminReviewsPage = () => {
                   <div
                     key={review._id}
                     className={`border rounded-lg p-4 hover:border-gray-300 transition-colors ${
-                      selectedReviews.has(review._id) ? "" : "border-gray-200"
+                      selectedReviews.has(review._id) ? '' : 'border-gray-200'
                     }`}
                     style={
                       selectedReviews.has(review._id)
                         ? {
-                            borderColor: "#F6C343",
-                            backgroundColor: "rgba(246, 195, 67, 0.05)",
+                            borderColor: '#000000',
+                            backgroundColor: 'rgba(246, 195, 67, 0.05)',
                           }
                         : {}
                     }
@@ -742,16 +742,16 @@ const AdminReviewsPage = () => {
                           onChange={() => toggleSelectReview(review._id)}
                           className="mt-1 h-4 w-4 border-gray-300 rounded focus:ring-2"
                           style={{
-                            accentColor: "#F6C343",
+                            accentColor: '#000000',
                           }}
                           onFocus={(e) => {
                             e.target.style.boxShadow = `0 0 0 3px rgba(246, 195, 67, 0.1)`;
                           }}
                           onBlur={(e) => {
-                            e.target.style.boxShadow = "none";
+                            e.target.style.boxShadow = 'none';
                           }}
                           aria-label={`Seleccionar review de ${
-                            review.user?.name || "usuario"
+                            review.user?.name || 'usuario'
                           }`}
                         />
 
@@ -762,9 +762,9 @@ const AdminReviewsPage = () => {
                         <div>
                           <div className="flex items-center space-x-2">
                             <span className="font-medium text-gray-900">
-                              {review.user?.name || "Usuario eliminado"}
+                              {review.user?.name || 'Usuario eliminado'}
                             </span>
-                            {review.type === "rating" && (
+                            {review.type === 'rating' && (
                               <StarRating rating={review.rating} size="sm" />
                             )}
                           </div>
@@ -798,7 +798,7 @@ const AdminReviewsPage = () => {
                             className="p-1 text-red-600 hover:text-red-800 hover:bg-red-50 rounded"
                             title="Eliminar"
                             aria-label={`Eliminar review de ${
-                              review.user?.name || "usuario"
+                              review.user?.name || 'usuario'
                             }`}
                           >
                             <TrashIcon className="h-4 w-4" />
@@ -811,8 +811,8 @@ const AdminReviewsPage = () => {
                     <div className="flex items-center space-x-3 mb-3 p-3 bg-gray-50 rounded-lg">
                       <div className="w-12 h-12 relative flex-shrink-0">
                         <Image
-                          src={review.product?.imageUrl || "/placeholder.jpg"}
-                          alt={review.product?.title || "Producto"}
+                          src={review.product?.imageUrl || '/placeholder.jpg'}
+                          alt={review.product?.title || 'Producto'}
                           fill
                           sizes="48px"
                           className="object-cover rounded-md"
@@ -820,12 +820,12 @@ const AdminReviewsPage = () => {
                       </div>
                       <div>
                         <div className="font-medium text-gray-900">
-                          {review.product?.title || "Producto eliminado"}
+                          {review.product?.title || 'Producto eliminado'}
                         </div>
                         <div className="text-sm text-gray-500">
-                          {review.type === "rating"
-                            ? "Calificación del producto"
-                            : "Pregunta sobre el producto"}
+                          {review.type === 'rating'
+                            ? 'Calificación del producto'
+                            : 'Pregunta sobre el producto'}
                         </div>
                       </div>
                     </div>
@@ -833,13 +833,11 @@ const AdminReviewsPage = () => {
                     {/* Contenido de la review */}
                     <div className="mb-4">
                       <h4 className="text-sm font-medium text-gray-700 mb-2">
-                        {review.type === "rating" ? "Comentario:" : "Pregunta:"}
+                        {review.type === 'rating' ? 'Comentario:' : 'Pregunta:'}
                       </h4>
                       <p
                         className={`${
-                          review.type === "rating"
-                            ? "bg-yellow-50"
-                            : "bg-blue-50"
+                          review.type === 'rating' ? 'bg-gray-50' : 'bg-blue-50'
                         } p-3 rounded-lg text-gray-900`}
                       >
                         {review.comment}
@@ -847,7 +845,7 @@ const AdminReviewsPage = () => {
                     </div>
 
                     {/* Respuesta si es pregunta */}
-                    {review.type === "question" && review.response && (
+                    {review.type === 'question' && review.response && (
                       <div className="bg-green-50 border-l-4 border-green-400 p-3">
                         <div className="flex items-center mb-1">
                           <CheckCircleIcon className="h-4 w-4 text-green-600 mr-2" />
@@ -903,16 +901,16 @@ const AdminReviewsPage = () => {
                     onClick={() => setCurrentPage(i + 1)}
                     className={`px-3 py-1 border rounded ${
                       currentPage === i + 1
-                        ? "text-white"
-                        : "bg-white text-gray-700 hover:bg-gray-50"
+                        ? 'text-white'
+                        : 'bg-white text-gray-700 hover:bg-gray-50'
                     }`}
                     style={
                       currentPage === i + 1
-                        ? { backgroundColor: "#F6C343" }
+                        ? { backgroundColor: '#000000' }
                         : {}
                     }
                     aria-label={`Ir a página ${i + 1}`}
-                    aria-current={currentPage === i + 1 ? "page" : undefined}
+                    aria-current={currentPage === i + 1 ? 'page' : undefined}
                   >
                     {i + 1}
                   </button>

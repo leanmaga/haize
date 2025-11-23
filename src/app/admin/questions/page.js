@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useSession } from "next-auth/react";
-import { toast } from "react-hot-toast";
-import Image from "next/image";
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useSession } from 'next-auth/react';
+import { toast } from 'react-hot-toast';
+import Image from 'next/image';
 import {
   ChatBubbleLeftRightIcon,
   ClockIcon,
@@ -11,19 +11,19 @@ import {
   UserIcon,
   PaperAirplaneIcon,
   MagnifyingGlassIcon,
-} from "@heroicons/react/24/outline";
+} from '@heroicons/react/24/outline';
 
 const AdminQuestionsPage = () => {
   const { data: session } = useSession();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ total: 0, pending: 0, answered: 0 });
-  const [filter, setFilter] = useState("all");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [respondingTo, setRespondingTo] = useState(null);
-  const [responseText, setResponseText] = useState("");
+  const [responseText, setResponseText] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   // Refs para evitar polling excesivo
@@ -33,13 +33,13 @@ const AdminQuestionsPage = () => {
 
   // Función auxiliar para verificar si el usuario es admin
   const isUserAdmin = () => {
-    return session?.user?.role === "admin";
+    return session?.user?.role === 'admin';
   };
 
   // Función auxiliar para obtener el estado de auto-refresh
   const getAutoRefreshStatus = () => {
-    if (!isActiveRef.current) return "Auto-refresh OFF";
-    return pollingIntervalRef.current ? "Auto-refresh ON" : "Auto-refresh OFF";
+    if (!isActiveRef.current) return 'Auto-refresh OFF';
+    return pollingIntervalRef.current ? 'Auto-refresh ON' : 'Auto-refresh OFF';
   };
 
   // Función auxiliar para verificar si debería mostrar loading
@@ -54,12 +54,12 @@ const AdminQuestionsPage = () => {
 
   // Función auxiliar para formatear fecha
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString("es-ES", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+    return new Date(date).toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     });
   };
 
@@ -76,15 +76,15 @@ const AdminQuestionsPage = () => {
   // Función auxiliar para obtener clases del botón de envío
   const getSubmitButtonClasses = () => {
     const baseClasses =
-      "inline-flex items-center px-3 py-2 text-white text-sm font-medium rounded-md transition-colors";
-    const disabledClasses = "disabled:bg-gray-400 disabled:cursor-not-allowed";
+      'inline-flex items-center px-3 py-2 text-white text-sm font-medium rounded-md transition-colors';
+    const disabledClasses = 'disabled:bg-gray-400 disabled:cursor-not-allowed';
     return `${baseClasses} ${disabledClasses}`;
   };
 
   // Función auxiliar para obtener el estilo del botón de envío
   const getSubmitButtonStyle = () => {
     return {
-      backgroundColor: canSubmitResponse() ? "#F6C343" : "#9ca3af",
+      backgroundColor: canSubmitResponse() ? '#000000' : '#9ca3af',
     };
   };
 
@@ -114,7 +114,7 @@ const AdminQuestionsPage = () => {
   const getFilteredQuestions = useCallback(() => {
     return questions.filter(
       (question) =>
-        searchTerm === "" ||
+        searchTerm === '' ||
         question.comment.toLowerCase().includes(searchTerm.toLowerCase()) ||
         question.user?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         question.product?.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -135,7 +135,7 @@ const AdminQuestionsPage = () => {
         const params = new URLSearchParams({
           status: filter,
           page: currentPage.toString(),
-          limit: "10",
+          limit: '10',
         });
 
         const response = await fetch(`/api/admin/questions?${params}`);
@@ -146,12 +146,12 @@ const AdminQuestionsPage = () => {
           setStats(data.stats);
           setTotalPages(data.pagination.total);
         } else {
-          console.error("❌ Error en respuesta:", data);
-          toast.error("Error al cargar preguntas");
+          console.error('❌ Error en respuesta:', data);
+          toast.error('Error al cargar preguntas');
         }
       } catch (error) {
-        console.error("❌ Error fetching questions:", error);
-        toast.error("Error al cargar preguntas");
+        console.error('❌ Error fetching questions:', error);
+        toast.error('Error al cargar preguntas');
       } finally {
         if (showLoading) setLoading(false);
       }
@@ -179,7 +179,7 @@ const AdminQuestionsPage = () => {
 
     if (shouldStartPolling) {
       pollingIntervalRef.current = setInterval(() => {
-        const isPageVisible = document.visibilityState === "visible";
+        const isPageVisible = document.visibilityState === 'visible';
         if (isActiveRef.current && isPageVisible) {
           fetchQuestions(false); // Sin loading spinner
         }
@@ -197,13 +197,13 @@ const AdminQuestionsPage = () => {
   // Effect para detectar cuando la página está activa/inactiva
   useEffect(() => {
     const handleVisibilityChange = () => {
-      isActiveRef.current = document.visibilityState === "visible";
+      isActiveRef.current = document.visibilityState === 'visible';
     };
 
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       isActiveRef.current = false;
     };
   }, []);
@@ -211,7 +211,7 @@ const AdminQuestionsPage = () => {
   // Función optimizada para responder
   const handleRespond = async (questionId) => {
     if (!isResponseValid(responseText)) {
-      toast.error("La respuesta debe tener al menos 10 caracteres");
+      toast.error('La respuesta debe tener al menos 10 caracteres');
       return;
     }
 
@@ -220,8 +220,8 @@ const AdminQuestionsPage = () => {
       const response = await fetch(
         `/api/admin/questions/${questionId}/respond`,
         {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ response: responseText.trim() }),
         }
       );
@@ -229,21 +229,21 @@ const AdminQuestionsPage = () => {
       const data = await response.json();
 
       if (data.success) {
-        toast.success("Respuesta enviada correctamente");
+        toast.success('Respuesta enviada correctamente');
         setRespondingTo(null);
-        setResponseText("");
+        setResponseText('');
 
         // Refrescar datos después de responder
         setTimeout(() => {
           fetchQuestions(false);
         }, 500);
       } else {
-        console.error("❌ Error en respuesta:", data);
-        toast.error(data.error || "Error al enviar respuesta");
+        console.error('❌ Error en respuesta:', data);
+        toast.error(data.error || 'Error al enviar respuesta');
       }
     } catch (error) {
-      console.error("❌ Error responding:", error);
-      toast.error("Error al enviar respuesta");
+      console.error('❌ Error responding:', error);
+      toast.error('Error al enviar respuesta');
     } finally {
       setSubmitting(false);
     }
@@ -252,7 +252,7 @@ const AdminQuestionsPage = () => {
   // Función para cancelar respuesta
   const handleCancelResponse = () => {
     setRespondingTo(null);
-    setResponseText("");
+    setResponseText('');
   };
 
   // Función para manejar eventos del mouse en botones
@@ -264,7 +264,7 @@ const AdminQuestionsPage = () => {
 
   // Renderizar indicador de estado del sistema
   const renderSystemStatus = () => {
-    const statusColor = isActiveRef.current ? "bg-green-500" : "bg-gray-400";
+    const statusColor = isActiveRef.current ? 'bg-green-500' : 'bg-gray-400';
 
     return (
       <div className="flex items-center space-x-2 text-sm text-gray-600">
@@ -280,8 +280,8 @@ const AdminQuestionsPage = () => {
       <output
         className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-t-transparent"
         style={{
-          borderColor: "#F6C343",
-          borderTopColor: "transparent",
+          borderColor: '#000000',
+          borderTopColor: 'transparent',
         }}
         aria-label="Cargando preguntas"
       ></output>
@@ -315,12 +315,12 @@ const AdminQuestionsPage = () => {
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:border-transparent"
           placeholder="Escribe tu respuesta aquí..."
           onFocus={(e) => {
-            e.target.style.borderColor = "#F6C343";
+            e.target.style.borderColor = '#000000';
             e.target.style.boxShadow = `0 0 0 3px rgba(246, 195, 67, 0.1)`;
           }}
           onBlur={(e) => {
-            e.target.style.borderColor = "#d1d5db";
-            e.target.style.boxShadow = "none";
+            e.target.style.borderColor = '#d1d5db';
+            e.target.style.boxShadow = 'none';
           }}
           aria-describedby={`response-help-${questionId}`}
           aria-invalid={!isResponseValid(responseText)}
@@ -339,10 +339,10 @@ const AdminQuestionsPage = () => {
           className={getSubmitButtonClasses()}
           style={getSubmitButtonStyle()}
           onMouseEnter={(e) =>
-            handleButtonMouseEvents(e, true, "#F6C343", "#E5B63C")
+            handleButtonMouseEvents(e, true, '#000000', '#E5B63C')
           }
           onMouseLeave={(e) =>
-            handleButtonMouseEvents(e, false, "#F6C343", "#E5B63C")
+            handleButtonMouseEvents(e, false, '#000000', '#E5B63C')
           }
           aria-describedby={`submit-help-${questionId}`}
         >
@@ -350,10 +350,10 @@ const AdminQuestionsPage = () => {
         </button>
         <output id={`submit-help-${questionId}`} className="sr-only">
           {submitting
-            ? "Enviando respuesta"
+            ? 'Enviando respuesta'
             : !isResponseValid(responseText)
-            ? "Necesitas escribir al menos 10 caracteres para enviar"
-            : "Presiona para enviar tu respuesta"}
+            ? 'Necesitas escribir al menos 10 caracteres para enviar'
+            : 'Presiona para enviar tu respuesta'}
         </output>
         <button
           onClick={handleCancelResponse}
@@ -426,12 +426,12 @@ const AdminQuestionsPage = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:border-transparent"
               onFocus={(e) => {
-                e.target.style.borderColor = "#F6C343";
+                e.target.style.borderColor = '#000000';
                 e.target.style.boxShadow = `0 0 0 3px rgba(246, 195, 67, 0.1)`;
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = "#d1d5db";
-                e.target.style.boxShadow = "none";
+                e.target.style.borderColor = '#d1d5db';
+                e.target.style.boxShadow = 'none';
               }}
               aria-describedby="search-help"
             />
@@ -454,12 +454,12 @@ const AdminQuestionsPage = () => {
               }}
               className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2"
               onFocus={(e) => {
-                e.target.style.borderColor = "#F6C343";
+                e.target.style.borderColor = '#000000';
                 e.target.style.boxShadow = `0 0 0 3px rgba(246, 195, 67, 0.1)`;
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = "#d1d5db";
-                e.target.style.boxShadow = "none";
+                e.target.style.borderColor = '#d1d5db';
+                e.target.style.boxShadow = 'none';
               }}
               aria-describedby="filter-help"
             >
@@ -500,7 +500,7 @@ const AdminQuestionsPage = () => {
                       </div>
                       <div>
                         <div className="font-medium text-gray-900">
-                          {question.user?.name || "Usuario eliminado"}
+                          {question.user?.name || 'Usuario eliminado'}
                         </div>
                         <div className="text-sm text-gray-500">
                           {question.user?.email}
@@ -532,8 +532,8 @@ const AdminQuestionsPage = () => {
                     <div className="flex items-center space-x-3 mb-3 p-3 bg-gray-50 rounded-lg">
                       <div className="w-12 h-12 relative flex-shrink-0">
                         <Image
-                          src={question.product.imageUrl || "/placeholder.jpg"}
-                          alt={question.product.title || "Producto"}
+                          src={question.product.imageUrl || '/placeholder.jpg'}
+                          alt={question.product.title || 'Producto'}
                           fill
                           sizes="48px"
                           className="object-cover rounded-md"
@@ -541,7 +541,7 @@ const AdminQuestionsPage = () => {
                       </div>
                       <div>
                         <div className="font-medium text-gray-900">
-                          {question.product.title || "Producto eliminado"}
+                          {question.product.title || 'Producto eliminado'}
                         </div>
                         <div className="text-sm text-gray-500">
                           Pregunta sobre este producto
@@ -584,15 +584,15 @@ const AdminQuestionsPage = () => {
                         <button
                           onClick={() => setRespondingTo(question._id)}
                           className="inline-flex items-center px-3 py-2 text-white text-sm font-medium rounded-md transition-colors"
-                          style={{ backgroundColor: "#F6C343" }}
+                          style={{ backgroundColor: '#000000' }}
                           onMouseEnter={(e) => {
-                            e.target.style.backgroundColor = "#E5B63C";
+                            e.target.style.backgroundColor = '#E5B63C';
                           }}
                           onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = "#F6C343";
+                            e.target.style.backgroundColor = '#000000';
                           }}
                           aria-label={`Responder pregunta de ${
-                            question.user?.name || "usuario"
+                            question.user?.name || 'usuario'
                           }`}
                         >
                           <ChatBubbleLeftRightIcon className="h-4 w-4 mr-2" />
@@ -605,7 +605,7 @@ const AdminQuestionsPage = () => {
                   {/* Información adicional */}
                   <div className="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500">
                     ID: {question._id.slice(-6)} |
-                    {question.verified && " Cliente verificado |"}
+                    {question.verified && ' Cliente verificado |'}
                     {question.helpful > 0 &&
                       ` ${question.helpful} votos útiles`}
                   </div>
@@ -639,12 +639,12 @@ const AdminQuestionsPage = () => {
                     onClick={() => setCurrentPage(page)}
                     className={`px-3 py-1 border rounded ${
                       isCurrentPage
-                        ? "text-white"
-                        : "bg-white text-gray-700 hover:bg-gray-50"
+                        ? 'text-white'
+                        : 'bg-white text-gray-700 hover:bg-gray-50'
                     }`}
-                    style={isCurrentPage ? { backgroundColor: "#F6C343" } : {}}
+                    style={isCurrentPage ? { backgroundColor: '#000000' } : {}}
                     aria-label={`Ir a página ${page}`}
-                    aria-current={isCurrentPage ? "page" : undefined}
+                    aria-current={isCurrentPage ? 'page' : undefined}
                   >
                     {page}
                   </button>

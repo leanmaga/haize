@@ -117,7 +117,7 @@ export default function CookiesPage() {
               eliminarlas, visite{' '}
               <a
                 href="http://www.allaboutcookies.org"
-                className="text-yellow-600 hover:text-yellow-700 transition-colors"
+                className="text-gray-600 hover:text-gray-700 transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -208,7 +208,7 @@ export default function CookiesPage() {
                     />
                     <div
                       className={`w-11 h-6 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all ${
-                        analyticalCookies ? 'bg-yellow-500' : 'bg-gray-200'
+                        analyticalCookies ? 'bg-gray-500' : 'bg-gray-200'
                       }`}
                     ></div>
                   </label>
@@ -232,7 +232,7 @@ export default function CookiesPage() {
                     />
                     <div
                       className={`w-11 h-6 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all ${
-                        marketingCookies ? 'bg-yellow-500' : 'bg-gray-200'
+                        marketingCookies ? 'bg-gray-500' : 'bg-gray-200'
                       }`}
                     ></div>
                   </label>
@@ -242,13 +242,13 @@ export default function CookiesPage() {
               <div className="mt-6 flex justify-end space-x-4">
                 <button
                   onClick={handleRejectAll}
-                  className="px-4 py-2 border border-yellow-500 text-yellow-600 rounded hover:bg-yellow-50 transition-colors"
+                  className="px-4 py-2 border border-gray-500 text-gray-600 rounded hover:bg-gray-50 transition-colors"
                 >
                   Rechazar todo
                 </button>
                 <button
                   onClick={handleSavePreferences}
-                  className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
+                  className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
                 >
                   Guardar preferencias
                 </button>
@@ -266,7 +266,7 @@ export default function CookiesPage() {
             <div className="overflow-x-auto mb-6">
               <table className="min-w-full border-collapse border border-gray-300">
                 <thead>
-                  <tr className="bg-yellow-100">
+                  <tr className="bg-gray-100">
                     <th className="border border-gray-300 p-3 text-left text-gray-800 font-bold">
                       Nombre de la Cookie
                     </th>

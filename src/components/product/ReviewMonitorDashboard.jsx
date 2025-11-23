@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useSession } from "next-auth/react";
+import React, { useState, useEffect, useRef } from 'react';
+import { useSession } from 'next-auth/react';
 import {
   ChartBarIcon,
   ClockIcon,
@@ -10,7 +10,7 @@ import {
   ArrowTrendingDownIcon,
   BellIcon,
   RefreshIcon,
-} from "@heroicons/react/24/outline";
+} from '@heroicons/react/24/outline';
 
 const ReviewMonitoringDashboard = () => {
   const { data: session } = useSession();
@@ -20,7 +20,7 @@ const ReviewMonitoringDashboard = () => {
       reviewsLastHour: 0,
       questionsLastHour: 0,
       avgResponseTime: 0,
-      systemHealth: "healthy",
+      systemHealth: 'healthy',
     },
     performance: {
       apiLatency: 0,
@@ -56,7 +56,7 @@ const ReviewMonitoringDashboard = () => {
 
   const fetchMetrics = async () => {
     try {
-      const response = await fetch("/api/admin/monitoring/reviews");
+      const response = await fetch('/api/admin/monitoring/reviews');
       const data = await response.json();
 
       if (data.success) {
@@ -66,7 +66,7 @@ const ReviewMonitoringDashboard = () => {
         });
       }
     } catch (error) {
-      console.error("Error fetching monitoring metrics:", error);
+      console.error('Error fetching monitoring metrics:', error);
       setMetrics((prev) => ({ ...prev, loading: false }));
     }
   };
@@ -76,19 +76,19 @@ const ReviewMonitoringDashboard = () => {
     value,
     change,
     icon: Icon,
-    status = "normal",
+    status = 'normal',
     description,
   }) => {
     const getStatusColor = () => {
       switch (status) {
-        case "good":
-          return "text-green-600 bg-green-50 border-green-200";
-        case "warning":
-          return "text-yellow-600 bg-yellow-50 border-yellow-200";
-        case "critical":
-          return "text-red-600 bg-red-50 border-red-200";
+        case 'good':
+          return 'text-green-600 bg-green-50 border-green-200';
+        case 'warning':
+          return 'text-gray-600 bg-gray-50 border-gray-200';
+        case 'critical':
+          return 'text-red-600 bg-red-50 border-red-200';
         default:
-          return "text-blue-600 bg-blue-50 border-blue-200";
+          return 'text-blue-600 bg-blue-50 border-blue-200';
       }
     };
 
@@ -108,7 +108,7 @@ const ReviewMonitoringDashboard = () => {
             <div className="flex items-center space-x-1">
               {getTrendIcon()}
               <span className="text-sm font-medium">
-                {change > 0 ? "+" : ""}
+                {change > 0 ? '+' : ''}
                 {change}%
               </span>
             </div>
@@ -128,12 +128,10 @@ const ReviewMonitoringDashboard = () => {
   const AlertItem = ({ alert }) => {
     const getAlertIcon = () => {
       switch (alert.severity) {
-        case "critical":
+        case 'critical':
           return <XCircleIcon className="h-5 w-5 text-red-500" />;
-        case "warning":
-          return (
-            <ExclamationTriangleIcon className="h-5 w-5 text-yellow-500" />
-          );
+        case 'warning':
+          return <ExclamationTriangleIcon className="h-5 w-5 text-gray-500" />;
         default:
           return <CheckCircleIcon className="h-5 w-5 text-blue-500" />;
       }
@@ -155,7 +153,7 @@ const ReviewMonitoringDashboard = () => {
     );
   };
 
-  const RealTimeChart = ({ data, title, color = "#3b82f6" }) => {
+  const RealTimeChart = ({ data, title, color = '#3b82f6' }) => {
     return (
       <div className="bg-white border rounded-lg p-6">
         <h3 className="text-lg font-semibold mb-4">{title}</h3>
@@ -185,28 +183,28 @@ const ReviewMonitoringDashboard = () => {
   const SystemHealthIndicator = ({ health }) => {
     const getHealthStatus = () => {
       switch (health) {
-        case "healthy":
+        case 'healthy':
           return {
-            color: "bg-green-500",
-            text: "Sistema Saludable",
+            color: 'bg-green-500',
+            text: 'Sistema Saludable',
             icon: CheckCircleIcon,
           };
-        case "degraded":
+        case 'degraded':
           return {
-            color: "bg-yellow-500",
-            text: "Rendimiento Degradado",
+            color: 'bg-gray-500',
+            text: 'Rendimiento Degradado',
             icon: ExclamationTriangleIcon,
           };
-        case "critical":
+        case 'critical':
           return {
-            color: "bg-red-500",
-            text: "Sistema Crítico",
+            color: 'bg-red-500',
+            text: 'Sistema Crítico',
             icon: XCircleIcon,
           };
         default:
           return {
-            color: "bg-gray-500",
-            text: "Estado Desconocido",
+            color: 'bg-gray-500',
+            text: 'Estado Desconocido',
             icon: ClockIcon,
           };
       }
@@ -229,7 +227,7 @@ const ReviewMonitoringDashboard = () => {
     );
   };
 
-  if (!session?.user || session.user.role !== "admin") {
+  if (!session?.user || session.user.role !== 'admin') {
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg p-4">
         <p className="text-red-800">
@@ -353,7 +351,7 @@ const ReviewMonitoringDashboard = () => {
             value={`${metrics.performance.apiLatency}ms`}
             change={-5.1}
             icon={ChartBarIcon}
-            status={metrics.performance.apiLatency > 500 ? "warning" : "good"}
+            status={metrics.performance.apiLatency > 500 ? 'warning' : 'good'}
             description="Tiempo respuesta promedio"
           />
 
@@ -362,7 +360,7 @@ const ReviewMonitoringDashboard = () => {
             value={`${metrics.performance.cacheHitRate}%`}
             change={3.2}
             icon={CheckCircleIcon}
-            status={metrics.performance.cacheHitRate > 80 ? "good" : "warning"}
+            status={metrics.performance.cacheHitRate > 80 ? 'good' : 'warning'}
             description="Eficiencia del cache"
           />
 
@@ -371,7 +369,7 @@ const ReviewMonitoringDashboard = () => {
             value={`${metrics.performance.errorRate}%`}
             change={1.1}
             icon={XCircleIcon}
-            status={metrics.performance.errorRate > 5 ? "critical" : "good"}
+            status={metrics.performance.errorRate > 5 ? 'critical' : 'good'}
             description="Errores por minuto"
           />
 
@@ -458,7 +456,7 @@ const ReviewMonitoringDashboard = () => {
           </div>
 
           <div className="text-center">
-            <div className="text-3xl font-bold text-yellow-600 mb-2">
+            <div className="text-3xl font-bold text-gray-600 mb-2">
               {metrics.trends.moderationLoad}
             </div>
             <div className="text-sm text-gray-600">Carga de Moderación</div>

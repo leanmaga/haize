@@ -174,7 +174,7 @@ const AdminQuestionsPage = () => {
               className="border rounded-lg p-3 flex items-center space-x-2"
               style={{ backgroundColor: '#FEF3E2', borderColor: '#FAC348' }}
             >
-              <BellIcon className="h-5 w-5 text-yellow-600" />
+              <BellIcon className="h-5 w-5 text-gray-600" />
               <span className="text-gray-700 font-medium">
                 {stats.pending} pregunta{stats.pending !== 1 ? 's' : ''}{' '}
                 pendiente{stats.pending !== 1 ? 's' : ''}
@@ -189,7 +189,7 @@ const AdminQuestionsPage = () => {
             className="p-4 rounded-lg text-center"
             style={{ backgroundColor: '#FEF3E2' }}
           >
-            <div className="text-2xl font-bold text-yellow-600">
+            <div className="text-2xl font-bold text-gray-600">
               {stats.total}
             </div>
             <div className="text-sm text-gray-700">Total Preguntas</div>
@@ -220,7 +220,7 @@ const AdminQuestionsPage = () => {
               placeholder="Buscar preguntas, usuarios o productos..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:border-yellow-500"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:border-gray-500"
               style={{ '--tw-ring-color': '#FAC348' }}
             />
           </div>
@@ -231,7 +231,7 @@ const AdminQuestionsPage = () => {
               setFilter(e.target.value);
               setCurrentPage(1);
             }}
-            className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:border-yellow-500"
+            className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:border-gray-500"
             style={{ '--tw-ring-color': '#FAC348' }}
           >
             <option value="all">Todas las preguntas</option>
@@ -274,7 +274,7 @@ const AdminQuestionsPage = () => {
 
           {loading ? (
             <div className="text-center py-8">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-yellow-400 border-t-transparent"></div>
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-400 border-t-transparent"></div>
               <p className="mt-2 text-gray-600">Cargando preguntas...</p>
             </div>
           ) : filteredQuestions.length === 0 ? (
@@ -364,7 +364,7 @@ const AdminQuestionsPage = () => {
                         Pregunta sobre este producto
                       </div>
                     </div>
-                    <button className="ml-auto text-yellow-600 hover:text-yellow-700 text-sm">
+                    <button className="ml-auto text-gray-600 hover:text-gray-700 text-sm">
                       <EyeIcon className="h-4 w-4" />
                     </button>
                   </div>
@@ -425,7 +425,7 @@ const AdminQuestionsPage = () => {
                               value={responseText}
                               onChange={(e) => setResponseText(e.target.value)}
                               rows="3"
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:border-yellow-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:border-gray-500"
                               style={{ '--tw-ring-color': '#FAC348' }}
                               placeholder="Escribe tu respuesta aquí..."
                             />
@@ -442,7 +442,7 @@ const AdminQuestionsPage = () => {
                             }}
                           >
                             <div className="flex items-start space-x-2">
-                              <ExclamationTriangleIcon className="h-4 w-4 text-yellow-600 mt-0.5" />
+                              <ExclamationTriangleIcon className="h-4 w-4 text-gray-600 mt-0.5" />
                               <div className="text-xs text-gray-700">
                                 <p className="font-medium">Recordatorio:</p>
                                 <p>

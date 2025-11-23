@@ -97,7 +97,7 @@ const MessagesPage = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-yellow-400 border-t-transparent mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-400 border-t-transparent mx-auto mb-4"></div>
           <p className="text-gray-600">Cargando tus mensajes...</p>
         </div>
       </div>
@@ -118,7 +118,7 @@ const MessagesPage = () => {
             <div className="flex items-center space-x-4">
               <Link
                 href="/"
-                className="flex items-center space-x-2 text-gray-600 hover:text-yellow-600 transition-colors"
+                className="flex items-center space-x-2 text-gray-600 hover:text-gray-600 transition-colors"
               >
                 <ArrowLeftIcon className="h-5 w-5" />
                 <span>Volver a la tienda</span>
@@ -126,7 +126,7 @@ const MessagesPage = () => {
             </div>
 
             <div className="flex items-center space-x-3">
-              <ChatBubbleLeftRightIcon className="h-6 w-6 text-yellow-500" />
+              <ChatBubbleLeftRightIcon className="h-6 w-6 text-gray-500" />
               <h1 className="text-xl font-semibold text-gray-800">
                 Mis Mensajes
               </h1>
@@ -146,8 +146,8 @@ const MessagesPage = () => {
                   {stats.total}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <ChatBubbleLeftRightIcon className="h-6 w-6 text-yellow-600" />
+              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                <ChatBubbleLeftRightIcon className="h-6 w-6 text-gray-600" />
               </div>
             </div>
             <p className="text-sm text-gray-500 mt-2">Preguntas realizadas</p>
@@ -217,7 +217,7 @@ const MessagesPage = () => {
                     }}
                     className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                       filter === filterOption.key
-                        ? 'text-gray-800 border border-yellow-400'
+                        ? 'text-gray-800 border border-gray-400'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-300'
                     }`}
                     style={
@@ -369,7 +369,7 @@ const MessagesPage = () => {
 
                       <Link
                         href={`/products/${message.product?._id}#reviews-section`}
-                        className="text-yellow-600 hover:text-yellow-700 text-sm font-medium transition-colors"
+                        className="text-gray-600 hover:text-gray-700 text-sm font-medium transition-colors"
                       >
                         Ver producto →
                       </Link>
@@ -460,7 +460,7 @@ const MessagesPage = () => {
           style={{ backgroundColor: '#FEF3E2', borderColor: '#FAC348' }}
         >
           <div className="flex items-start space-x-3">
-            <ChatBubbleLeftRightIcon className="h-5 w-5 text-yellow-600 mt-0.5" />
+            <ChatBubbleLeftRightIcon className="h-5 w-5 text-gray-600 mt-0.5" />
             <div className="text-sm text-gray-700">
               <p className="font-medium mb-1">💡 ¿Cómo funciona?</p>
               <ul className="list-disc list-inside space-y-1 text-xs">

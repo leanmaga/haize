@@ -1,15 +1,15 @@
 // app/profile/layout.jsx - CON CAMBIOS APLICADOS
-"use client";
+'use client';
 
-import { useSession } from "next-auth/react";
-import { useRouter, usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useSession } from 'next-auth/react';
+import { useRouter, usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import {
   ChatBubbleLeftRightIcon,
   InboxIcon,
   ArrowPathIcon,
-} from "@heroicons/react/24/outline";
+} from '@heroicons/react/24/outline';
 
 export default function ProfileLayout({ children }) {
   const { data: session, status } = useSession();
@@ -23,14 +23,14 @@ export default function ProfileLayout({ children }) {
   const [lastFetch, setLastFetch] = useState(null);
 
   useEffect(() => {
-    if (status === "unauthenticated") {
+    if (status === 'unauthenticated') {
       router.push(`/auth/login?redirect=${pathname}`);
     }
   }, [status, router, pathname]);
 
   // ✅ SIMPLE: Solo una carga inicial cuando se autentica
   useEffect(() => {
-    if (session?.user && status === "authenticated") {
+    if (session?.user && status === 'authenticated') {
       fetchUnreadCounts();
     }
   }, [session?.user?.id]); // ✅ Solo cuando cambia el ID del usuario
@@ -41,11 +41,11 @@ export default function ProfileLayout({ children }) {
 
     setLoading(true);
     try {
-      const response = await fetch("/api/messages/unread-count");
+      const response = await fetch('/api/messages/unread-count');
       if (response.ok) {
         const data = await response.json();
 
-        if (session.user.role === "admin") {
+        if (session.user.role === 'admin') {
           setUnreadQuestions(data.pendingQuestions || 0);
         } else {
           setUnreadMessages(data.unreadResponses || 0);
@@ -54,7 +54,7 @@ export default function ProfileLayout({ children }) {
         setLastFetch(new Date().toLocaleTimeString());
       }
     } catch (error) {
-      console.error("❌ Error fetching unread counts:", error);
+      console.error('❌ Error fetching unread counts:', error);
     } finally {
       setLoading(false);
     }
@@ -65,19 +65,19 @@ export default function ProfileLayout({ children }) {
     fetchUnreadCounts();
   };
 
-  if (status === "loading") {
+  if (status === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-400"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-400"></div>
       </div>
     );
   }
 
-  if (status === "unauthenticated") {
+  if (status === 'unauthenticated') {
     return null;
   }
 
-  const isAdmin = session?.user?.role === "admin";
+  const isAdmin = session?.user?.role === 'admin';
 
   return (
     <div className="bg-gray-50 min-h-screen py-12">
@@ -96,9 +96,9 @@ export default function ProfileLayout({ children }) {
               title="Actualizar contadores"
             >
               <ArrowPathIcon
-                className={`h-4 w-4 mr-1 ${loading ? "animate-spin" : ""}`}
+                className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`}
               />
-              {loading ? "Actualizando..." : "Actualizar"}
+              {loading ? 'Actualizando...' : 'Actualizar'}
             </button>
           </div>
 
@@ -110,9 +110,9 @@ export default function ProfileLayout({ children }) {
                   <Link
                     href="/profile"
                     className={`font-sora-regular block px-4 py-2 rounded-md text-sm font-medium ${
-                      pathname === "/profile"
-                        ? "bg-yellow-50 text-yellow-600"
-                        : "text-gray-700 hover:bg-gray-100"
+                      pathname === '/profile'
+                        ? 'bg-gray-50 text-gray-600'
+                        : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
                     Mi Perfil
@@ -123,10 +123,10 @@ export default function ProfileLayout({ children }) {
                     <Link
                       href="/profile/orders"
                       className={`font-sora-regular block px-4 py-2 rounded-md text-sm font-medium ${
-                        pathname === "/profile/orders" ||
-                        pathname.startsWith("/profile/orders/")
-                          ? "bg-yellow-50 text-yellow-600"
-                          : "text-gray-700 hover:bg-gray-100"
+                        pathname === '/profile/orders' ||
+                        pathname.startsWith('/profile/orders/')
+                          ? 'bg-gray-50 text-gray-600'
+                          : 'text-gray-700 hover:bg-gray-100'
                       }`}
                     >
                       Mis Pedidos
@@ -135,14 +135,14 @@ export default function ProfileLayout({ children }) {
 
                   {/* Sección de Mensajes */}
                   <Link
-                    href={isAdmin ? "/profile/questions" : "/profile/messages"}
+                    href={isAdmin ? '/profile/questions' : '/profile/messages'}
                     className={`font-sora-regular block px-4 py-2 rounded-md text-sm font-medium relative ${
-                      pathname === "/profile/messages" ||
-                      pathname === "/profile/questions" ||
-                      pathname.startsWith("/profile/messages/") ||
-                      pathname.startsWith("/profile/questions/")
-                        ? "bg-yellow-50 text-yellow-600"
-                        : "text-gray-700 hover:bg-gray-100"
+                      pathname === '/profile/messages' ||
+                      pathname === '/profile/questions' ||
+                      pathname.startsWith('/profile/messages/') ||
+                      pathname.startsWith('/profile/questions/')
+                        ? 'bg-gray-50 text-gray-600'
+                        : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -152,7 +152,7 @@ export default function ProfileLayout({ children }) {
                         ) : (
                           <ChatBubbleLeftRightIcon className="h-4 w-4 mr-2" />
                         )}
-                        {isAdmin ? "Preguntas" : "Mis Mensajes"}
+                        {isAdmin ? 'Preguntas' : 'Mis Mensajes'}
                       </div>
 
                       {/* Badge de notificaciones */}
@@ -161,10 +161,10 @@ export default function ProfileLayout({ children }) {
                         <span className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
                           {isAdmin
                             ? unreadQuestions > 99
-                              ? "99+"
+                              ? '99+'
                               : unreadQuestions
                             : unreadMessages > 99
-                            ? "99+"
+                            ? '99+'
                             : unreadMessages}
                         </span>
                       )}
@@ -174,9 +174,9 @@ export default function ProfileLayout({ children }) {
                   <Link
                     href="/profile/settings"
                     className={`font-sora-regular block px-4 py-2 rounded-md text-sm font-medium ${
-                      pathname === "/profile/settings"
-                        ? "bg-yellow-50 text-yellow-600"
-                        : "text-gray-700 hover:bg-gray-100"
+                      pathname === '/profile/settings'
+                        ? 'bg-gray-50 text-gray-600'
+                        : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
                     Configuración
@@ -214,7 +214,7 @@ export default function ProfileLayout({ children }) {
               <div className="mt-4 bg-white rounded-lg shadow-sm p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm font-semibold text-gray-800">
-                    {isAdmin ? "Actividad Reciente" : "Estado"}
+                    {isAdmin ? 'Actividad Reciente' : 'Estado'}
                   </h3>
 
                   {/* ✅ Mini botón de refresh */}
@@ -225,7 +225,7 @@ export default function ProfileLayout({ children }) {
                     title="Actualizar"
                   >
                     <ArrowPathIcon
-                      className={`h-3 w-3 ${loading ? "animate-spin" : ""}`}
+                      className={`h-3 w-3 ${loading ? 'animate-spin' : ''}`}
                     />
                   </button>
                 </div>
@@ -240,8 +240,8 @@ export default function ProfileLayout({ children }) {
                         <span
                           className={`font-medium ${
                             unreadQuestions > 0
-                              ? "text-red-600"
-                              : "text-green-600"
+                              ? 'text-red-600'
+                              : 'text-green-600'
                           }`}
                         >
                           {unreadQuestions}
@@ -255,8 +255,8 @@ export default function ProfileLayout({ children }) {
                         <span
                           className={`font-medium ${
                             unreadMessages > 0
-                              ? "text-blue-600"
-                              : "text-gray-500"
+                              ? 'text-blue-600'
+                              : 'text-gray-500'
                           }`}
                         >
                           {unreadMessages}

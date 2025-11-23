@@ -132,7 +132,7 @@ export default function SettingsPage() {
                 value={passwordData.currentPassword}
                 onChange={handlePasswordChange}
                 required
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:border-yellow-500"
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:border-gray-500"
                 style={{ '--tw-ring-color': '#FAC348' }}
               />
             </div>
@@ -151,7 +151,7 @@ export default function SettingsPage() {
                 value={passwordData.newPassword}
                 onChange={handlePasswordChange}
                 required
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:border-yellow-500"
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:border-gray-500"
                 style={{ '--tw-ring-color': '#FAC348' }}
               />
             </div>
@@ -170,7 +170,7 @@ export default function SettingsPage() {
                 value={passwordData.confirmPassword}
                 onChange={handlePasswordChange}
                 required
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:border-yellow-500"
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:border-gray-500"
                 style={{ '--tw-ring-color': '#FAC348' }}
               />
             </div>
