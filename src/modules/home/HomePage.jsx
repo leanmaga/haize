@@ -16,11 +16,20 @@ export default async function Home() {
     <>
       <div className="relative w-full h-[120vh] min-h-200">
         <Image
-          src="/assets/portada.jpg"
+          src="https://res.cloudinary.com/dz7fsiwnu/image/upload/portada"
           alt="Home background"
           fill
           priority
-          className="object-cover object-top"
+          className="hidden md:block object-cover object-top"
+        />
+
+        {/* Imagen Mobile (oculta en desktop) */}
+        <Image
+          src="https://res.cloudinary.com/dz7fsiwnu/image/upload/portadaMobil"
+          alt="Home background mobile"
+          fill
+          priority
+          className="block md:hidden object-cover object-center"
         />
 
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-10 text-white text-center font-primary">

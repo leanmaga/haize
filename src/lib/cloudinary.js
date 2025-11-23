@@ -37,4 +37,23 @@ export const deleteImage = async (publicId) => {
   }
 };
 
+// lib/cloudinary.js
+export const getCloudinaryUrl = (publicId, transformations = {}) => {
+  const cloudName = 'dz7fsiwnu';
+
+  const transforms = [];
+
+  if (transformations.width) transforms.push(`w_${transformations.width}`);
+  if (transformations.height) transforms.push(`h_${transformations.height}`);
+  if (transformations.crop) transforms.push(`c_${transformations.crop}`);
+  if (transformations.quality) transforms.push(`q_${transformations.quality}`);
+  if (transformations.format) transforms.push(`f_${transformations.format}`);
+
+  const transformString =
+    transforms.length > 0 ? `${transforms.join(',')}/` : '';
+
+  // Sin carpeta, solo el publicId
+  return `https://res.cloudinary.com/${cloudName}/image/upload/${transformString}${publicId}`;
+};
+
 export default cloudinary;

@@ -1,5 +1,7 @@
-// Configuración de contacto y redes sociales de HAIZE
+// Configuración de contacto de HAIZE
 // Actualizar estos valores con tus datos reales
+
+import { socialMediaConfig } from './socialMediaConfig';
 
 export const contactConfig = {
   // WhatsApp
@@ -11,25 +13,8 @@ export const contactConfig = {
   // Email
   email: 'info@haize.com.ar',
 
-  // Redes Sociales
-  socialMedia: {
-    instagram: {
-      url: 'https://www.instagram.com/haize',
-      username: '@haize',
-    },
-    facebook: {
-      url: 'https://www.facebook.com/haize',
-      name: 'HAIZE',
-    },
-    tiktok: {
-      url: 'https://www.tiktok.com/@haize',
-      username: '@haize',
-    },
-    youtube: {
-      url: 'https://www.youtube.com/@haize',
-      name: 'HAIZE',
-    },
-  },
+  // Redes Sociales (importadas desde socialMediaConfig)
+  socialMedia: socialMediaConfig,
 
   // Horarios de atención (opcional)
   businessHours: {
