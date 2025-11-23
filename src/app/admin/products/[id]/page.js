@@ -1,14 +1,14 @@
-import { notFound } from "next/navigation";
-import { getProductById } from "@/lib/data";
-import ProductForm from "@/components/admin/ProductForm";
-import PropTypes from "prop-types";
+import { notFound } from 'next/navigation';
+import { getProductById } from '@/lib/data';
+import ProductForm from '@/modules/products/form/ProductForm';
+import PropTypes from 'prop-types';
 
 export async function generateMetadata({ params }) {
   const product = await getProductById(params.id);
 
   if (!product) {
     return {
-      title: "Producto no encontrado | TiendaOnline",
+      title: 'Producto no encontrado | TiendaOnline',
     };
   }
 
