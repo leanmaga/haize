@@ -15,6 +15,7 @@ import {
 } from '@heroicons/react/24/outline';
 import AuthModal from '@/modules/auth/modal/AuthModal';
 import CategoriesDropdown from './CategoriesDropdown';
+import SearchDropdown from '../../modules/products/search/SearchDropdown';
 import Image from 'next/image';
 
 const Navbar = () => {
@@ -133,14 +134,9 @@ const Navbar = () => {
           {/* Navegación derecha - Desktop */}
           <div className="hidden md:flex items-center">
             <ul className="flex gap-6 items-center font-mono text-white text-sm">
+              {/* Componente de búsqueda */}
               <li>
-                <Link
-                  href="/search"
-                  className="hover:text-gray-300 transition flex items-center gap-1"
-                >
-                  <MagnifyingGlassIcon className="h-5 w-5" />
-                  BUSCAR
-                </Link>
+                <SearchDropdown />
               </li>
 
               {!session ? (
