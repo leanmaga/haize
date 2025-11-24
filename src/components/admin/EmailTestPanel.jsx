@@ -232,7 +232,7 @@ const EmailTestPanel = () => {
         <div className="flex items-center space-x-3 mb-4">
           <EnvelopeIcon className="h-8 w-8 text-blue-600" />
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-nexa-bold text-gray-900">
               Test de Emails Completo
             </h1>
             <p className="text-gray-600">
@@ -305,7 +305,7 @@ const EmailTestPanel = () => {
 
       {/* Email Testing */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">
+        <h2 className="text-xl font-sora-regular text-gray-900 mb-6">
           Probar Envío de Emails
         </h2>
 
@@ -525,19 +525,19 @@ const EmailTestPanel = () => {
                   <div className="mt-3 p-3 bg-white rounded border">
                     <div className="grid grid-cols-3 gap-4 text-xs">
                       <div className="text-center">
-                        <div className="font-bold text-lg">
+                        <div className="font-nexa-bold text-lg">
                           {results.summary.total}
                         </div>
                         <div className="text-gray-600">Total</div>
                       </div>
                       <div className="text-center">
-                        <div className="font-bold text-lg text-green-600">
+                        <div className="font-nexa-bold text-lg text-green-600">
                           {results.summary.success}
                         </div>
                         <div className="text-gray-600">Exitosos</div>
                       </div>
                       <div className="text-center">
-                        <div className="font-bold text-lg text-red-600">
+                        <div className="font-nexa-bold text-lg text-red-600">
                           {results.summary.errors}
                         </div>
                         <div className="text-gray-600">Errores</div>
@@ -561,7 +561,7 @@ const EmailTestPanel = () => {
             </h3>
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <h4 className="font-semibold text-blue-800 mb-2">
+                <h4 className="font-sora-regular text-blue-800 mb-2">
                   📧 Tipos Disponibles:
                 </h4>
                 <ul className="text-sm text-blue-800 space-y-1">
@@ -575,7 +575,7 @@ const EmailTestPanel = () => {
                 </ul>
               </div>
               <div>
-                <h4 className="font-semibold text-blue-800 mb-2">
+                <h4 className="font-sora-regular text-blue-800 mb-2">
                   ⚙️ Configuración:
                 </h4>
                 <ul className="text-sm text-blue-800 space-y-1">

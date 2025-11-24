@@ -140,7 +140,7 @@ export default function AdminContactos() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-nexa-bold text-gray-900">
           Consultas de Contacto
         </h1>
         <p className="text-sm text-gray-500 mt-1">
@@ -159,7 +159,7 @@ export default function AdminContactos() {
                 : 'border-gray-200 bg-white hover:border-gray-300'
             }`}
           >
-            <p className="text-2xl font-bold">{counts.total}</p>
+            <p className="text-2xl font-nexa-bold">{counts.total}</p>
             <p className="text-sm">Total</p>
           </button>
 
@@ -173,7 +173,7 @@ export default function AdminContactos() {
                   : 'border-gray-200 bg-white hover:border-gray-300'
               }`}
             >
-              <p className="text-2xl font-bold">{counts[key] || 0}</p>
+              <p className="text-2xl font-nexa-bold">{counts[key] || 0}</p>
               <p className="text-sm">{config.label}</p>
             </button>
           ))}
@@ -264,7 +264,7 @@ export default function AdminContactos() {
               {/* Header del detalle */}
               <div className="flex items-start justify-between mb-6">
                 <div>
-                  <h2 className="text-lg font-bold text-gray-900">
+                  <h2 className="text-lg font-nexa-bold text-gray-900">
                     {selectedContact.nombreApellido}
                   </h2>
                   <span

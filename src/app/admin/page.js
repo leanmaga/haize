@@ -174,7 +174,7 @@ export default function AdminDashboard() {
   return (
     <div className="border border-gray-200 p-6 ">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold">Dashboard</h1>
+        <h1 className="text-2xl font-nexa-bold">Dashboard</h1>
         <button
           onClick={handleLogout}
           className="px-4 py-2 text-white transition rounded-md"
@@ -192,7 +192,7 @@ export default function AdminDashboard() {
 
       {/* Información del administrador */}
       <div className="bg-white p-4 border border-gray-200 mb-6">
-        <h2 className="text-lg font-medium text-gray-800 mb-2">
+        <h2 className="text-lg font-sora-regular text-gray-800 mb-2">
           Admin: {session.user.name}
         </h2>
         <p className="text-gray-600">{session.user.email}</p>
@@ -210,10 +210,10 @@ export default function AdminDashboard() {
       {/* Órdenes Recientes */}
       <div className="bg-white border border-gray-200 p-6 mb-8">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Pedidos Recientes</h2>
+          <h2 className="text-xl font-sora-regular">Pedidos Recientes</h2>
           <Link
             href="/admin/orders"
-            className="text-sm font-medium transition-colors hover:underline"
+            className="text-sm font-sora-regular transition-colors hover:underline"
             style={{ color: '#000000' }}
             onMouseEnter={(e) => {
               e.target.style.color = '#E5B63C';
@@ -290,7 +290,7 @@ export default function AdminDashboard() {
                         );
                         return (
                           <span
-                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${className}`}
+                            className={`px-2 inline-flex text-xs leading-5 font-nexa-bold rounded-full ${className}`}
                             style={style}
                           >
                             {order.status

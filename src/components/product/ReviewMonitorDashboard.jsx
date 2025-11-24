@@ -116,8 +116,8 @@ const ReviewMonitoringDashboard = () => {
         </div>
 
         <div className="mb-2">
-          <div className="text-2xl font-bold">{value}</div>
-          <div className="text-sm opacity-75">{title}</div>
+          <div className="text-2xl font-nexa-bold">{value}</div>
+          <div className="text-sm opacity-75 font-nexa-bold">{title}</div>
         </div>
 
         {description && <div className="text-xs opacity-60">{description}</div>}
@@ -156,7 +156,7 @@ const ReviewMonitoringDashboard = () => {
   const RealTimeChart = ({ data, title, color = '#3b82f6' }) => {
     return (
       <div className="bg-white border rounded-lg p-6">
-        <h3 className="text-lg font-semibold mb-4">{title}</h3>
+        <h3 className="text-lg font-nexa-bold mb-4">{title}</h3>
         <div className="h-32 flex items-end justify-between space-x-1">
           {data.map((point, index) => (
             <div
@@ -264,7 +264,7 @@ const ReviewMonitoringDashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-nexa-bold text-gray-900">
             Monitoreo en Tiempo Real - Reviews
           </h1>
           <p className="text-gray-600">
@@ -298,7 +298,7 @@ const ReviewMonitoringDashboard = () => {
 
       {/* Métricas en Tiempo Real */}
       <div>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <h2 className="text-lg font-sora-regular text-gray-900 mb-4">
           Métricas en Tiempo Real
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -342,7 +342,7 @@ const ReviewMonitoringDashboard = () => {
 
       {/* Métricas de Performance */}
       <div>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <h2 className="text-lg font-sora-regular text-gray-900 mb-4">
           Performance del Sistema
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -403,7 +403,7 @@ const ReviewMonitoringDashboard = () => {
       <div className="bg-white border rounded-lg">
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-lg font-sora-regular text-gray-900">
               Alertas Recientes
             </h3>
             <span className="text-sm text-gray-500">
@@ -431,12 +431,12 @@ const ReviewMonitoringDashboard = () => {
 
       {/* Métricas de Tendencias */}
       <div className="bg-white border rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <h3 className="text-lg font-sora-regular text-gray-900 mb-4">
           Tendencias (7 días)
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="text-center">
-            <div className="text-3xl font-bold text-blue-600 mb-2">
+            <div className="text-3xl font-nexa-bold text-blue-600 mb-2">
               +{metrics.trends.reviewGrowth}%
             </div>
             <div className="text-sm text-gray-600">Crecimiento de Reviews</div>
@@ -446,7 +446,7 @@ const ReviewMonitoringDashboard = () => {
           </div>
 
           <div className="text-center">
-            <div className="text-3xl font-bold text-green-600 mb-2">
+            <div className="text-3xl font-nexa-bold text-green-600 mb-2">
               {metrics.trends.engagementRate}%
             </div>
             <div className="text-sm text-gray-600">Tasa de Engagement</div>
@@ -456,7 +456,7 @@ const ReviewMonitoringDashboard = () => {
           </div>
 
           <div className="text-center">
-            <div className="text-3xl font-bold text-gray-600 mb-2">
+            <div className="text-3xl font-nexa-bold text-gray-600 mb-2">
               {metrics.trends.moderationLoad}
             </div>
             <div className="text-sm text-gray-600">Carga de Moderación</div>
@@ -467,7 +467,7 @@ const ReviewMonitoringDashboard = () => {
 
       {/* Acciones Rápidas */}
       <div className="bg-gray-50 border rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <h3 className="text-lg font-sora-regular text-gray-900 mb-4">
           Acciones Rápidas
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

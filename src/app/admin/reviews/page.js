@@ -258,7 +258,7 @@ const AdminReviewsPage = () => {
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-nexa-bold text-gray-900">
               Gestión de Reviews y Calificaciones
             </h1>
             <p className="text-gray-600 mt-1">
@@ -270,7 +270,7 @@ const AdminReviewsPage = () => {
         {/* Estadísticas Rápidas */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
           <div className="bg-blue-50 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-blue-600">
+            <div className="text-2xl font-nexa-bold text-blue-600">
               {stats.totalReviews || 0}
             </div>
             <div className="text-sm text-blue-800">Total Reviews</div>
@@ -280,7 +280,10 @@ const AdminReviewsPage = () => {
             className="p-4 rounded-lg text-center"
             style={{ backgroundColor: 'rgba(246, 195, 67, 0.1)' }}
           >
-            <div className="text-2xl font-bold" style={{ color: '#000000' }}>
+            <div
+              className="text-2xl font-nexa-bold"
+              style={{ color: '#000000' }}
+            >
               {stats.totalRatings || 0}
             </div>
             <div className="text-sm" style={{ color: '#E5B63C' }}>
@@ -289,28 +292,28 @@ const AdminReviewsPage = () => {
           </div>
 
           <div className="bg-green-50 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl font-nexa-bold text-green-600">
               {stats.totalQuestions || 0}
             </div>
             <div className="text-sm text-green-800">Preguntas</div>
           </div>
 
           <div className="bg-purple-50 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-purple-600">
+            <div className="text-2xl font-nexa-bold text-purple-600">
               {stats.averageRating ? stats.averageRating.toFixed(1) : '0.0'}
             </div>
             <div className="text-sm text-purple-800">Rating Promedio</div>
           </div>
 
           <div className="bg-emerald-50 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-emerald-600">
+            <div className="text-2xl font-nexa-bold text-emerald-600">
               {stats.verifiedCount || 0}
             </div>
             <div className="text-sm text-emerald-800">Verificadas</div>
           </div>
 
           <div className="bg-red-50 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-red-600">
+            <div className="text-2xl font-nexa-bold text-red-600">
               {stats.reportedCount || 0}
             </div>
             <div className="text-sm text-red-800">Reportadas</div>
@@ -656,7 +659,7 @@ const AdminReviewsPage = () => {
       <div className="bg-white rounded-lg shadow">
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-sora-regular text-gray-900">
               Reviews ({filteredReviews.length})
             </h2>
 

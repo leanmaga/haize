@@ -103,7 +103,7 @@ export default function ProfileOrdersPage() {
 
   return (
     <div>
-      <h2 className="font-sora-extralight text-xl font-semibold mb-6 text-gray-800">
+      <h2 className="font-nexa-bold text-xl font-semibold mb-6 text-gray-800">
         Mis Pedidos
       </h2>
 

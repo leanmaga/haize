@@ -101,13 +101,13 @@ export default function SettingsPage() {
 
   return (
     <div>
-      <h2 className="font-sora-extralight text-xl font-semibold mb-6 text-gray-800">
+      <h2 className="font-sora-extralight text-xl font-nexa-bold mb-6 text-gray-800">
         Configuración de la cuenta
       </h2>
 
       {/* Cambiar contraseña */}
       <div className="mb-8">
-        <h3 className="font-sora-extralight text-lg font-medium mb-4 text-gray-800">
+        <h3 className="font-sora-extralight text-lg font-sora-regular mb-4 text-gray-800">
           Cambiar contraseña
         </h3>
 
@@ -121,7 +121,7 @@ export default function SettingsPage() {
             <div>
               <label
                 htmlFor="currentPassword"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-sora-regular text-gray-700"
               >
                 Contraseña actual
               </label>
@@ -140,7 +140,7 @@ export default function SettingsPage() {
             <div>
               <label
                 htmlFor="newPassword"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-sora-regular text-gray-700"
               >
                 Nueva contraseña
               </label>
@@ -159,7 +159,7 @@ export default function SettingsPage() {
             <div>
               <label
                 htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-sora-regular text-gray-700"
               >
                 Confirmar nueva contraseña
               </label>
@@ -191,7 +191,7 @@ export default function SettingsPage() {
 
       {/* Opciones de notificaciones */}
       <div className="mb-8">
-        <h3 className="font-sora-extralight text-lg font-medium mb-4 text-gray-800">
+        <h3 className="font-sora-extralight text-lg font-sora-regular mb-4 text-gray-800">
           Notificaciones
         </h3>
 
@@ -232,7 +232,7 @@ export default function SettingsPage() {
 
       {/* Eliminar cuenta */}
       <div className="pt-6 border-t border-gray-200">
-        <h3 className="text-lg font-medium mb-4 text-red-600">
+        <h3 className="text-lg font-sora-regular mb-4 text-red-600">
           Eliminar cuenta
         </h3>
 
@@ -251,13 +251,13 @@ export default function SettingsPage() {
           </div>
         ) : (
           <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-            <p className="font-medium text-red-600 mb-4">
+            <p className="font-sora-regular text-red-600 mb-4">
               ¿Estás seguro de que deseas eliminar tu cuenta?
             </p>
             <p className="text-gray-700 mb-4">
               Por favor, ingresa tu dirección de correo electrónico (
-              <span className="font-medium">{session?.user?.email}</span>) para
-              confirmar:
+              <span className="font-sora-regular">{session?.user?.email}</span>)
+              para confirmar:
             </p>
 
             <input

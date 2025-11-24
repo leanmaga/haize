@@ -21,7 +21,7 @@ export default function CheckoutSuccessPage() {
             <CheckCircleIcon className="h-16 w-16 text-green-500" />
           </div>
 
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl font-nexa-bold text-gray-900 mb-2">
             ¡Pago Exitoso!
           </h1>
 

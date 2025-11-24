@@ -218,7 +218,7 @@ export default function ProfilePage() {
   if (isAdmin) {
     return (
       <div>
-        <h2 className="font-sora-extralight text-2xl font-bold mb-8 text-gray-800">
+        <h2 className="font-sora-regular text-2xl font-bold mb-8 text-gray-800">
           Mi Perfil (Administrador)
         </h2>
 
@@ -616,7 +616,7 @@ export default function ProfilePage() {
           <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
             {/* Contenido para usuario normal... */}
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-              <h3 className="font-sora-extralight text-lg font-semibold text-gray-800">
+              <h3 className="font-sora-regular text-lg font-semibold text-gray-800">
                 Información Personal
               </h3>
               {!isEditing && (
@@ -821,7 +821,7 @@ export default function ProfilePage() {
           {/* Actividad Reciente - Solo para usuarios normales */}
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-              <h3 className="font-sora-extralight text-lg font-semibold text-gray-800">
+              <h3 className="font-sora-regular text-lg font-semibold text-gray-800">
                 Mis Pedidos Recientes
               </h3>
               <Link
@@ -895,7 +895,7 @@ export default function ProfilePage() {
           {/* Estado de la cuenta */}
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100">
-              <h3 className="font-sora-extralight text-lg font-semibold text-gray-800">
+              <h3 className="font-sora-regular text-lg font-semibold text-gray-800">
                 Estado de la Cuenta
               </h3>
             </div>
@@ -928,7 +928,7 @@ export default function ProfilePage() {
           {/* Accesos rápidos */}
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100">
-              <h3 className="font-sora-extralight text-lg font-semibold text-gray-800">
+              <h3 className="font-sora-regular text-lg font-semibold text-gray-800">
                 Accesos Rápidos
               </h3>
             </div>

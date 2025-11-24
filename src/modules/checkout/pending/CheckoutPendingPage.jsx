@@ -39,7 +39,7 @@ function CheckoutPendingContent() {
             <ClockIcon className="h-10 w-10 text-gray-600" />
           </div>
 
-          <h1 className="text-3xl font-bold mb-4 text-gray-800">
+          <h1 className="text-3xl font-nexa-bold mb-4 text-gray-800">
             Pago en Proceso
           </h1>
 

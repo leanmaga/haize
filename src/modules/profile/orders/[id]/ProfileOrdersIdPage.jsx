@@ -261,7 +261,7 @@ Fecha: ${formatDate(order.createdAt)}
               <div className="p-6 border-b border-gray-100">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
                   <div>
-                    <h1 className="text-2xl font-bold text-gray-800 mb-1">
+                    <h1 className="text-2xl font-nexa-bold text-gray-800 mb-1">
                       Pedido #{order._id.substring(0, 8)}
                     </h1>
                     <p className="text-gray-500 text-sm">
@@ -372,7 +372,7 @@ Fecha: ${formatDate(order.createdAt)}
                 <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
                   <div className="px-6 py-4 border-b border-gray-100 flex items-center">
                     <ShoppingBagIcon className="h-5 w-5 text-gray-500 mr-2" />
-                    <h2 className="text-lg font-semibold text-gray-800">
+                    <h2 className="text-lg font-nexa-bold text-gray-800">
                       Productos
                     </h2>
                   </div>
@@ -422,7 +422,7 @@ Fecha: ${formatDate(order.createdAt)}
                     </div>
                     <div className="border-t border-gray-200 mt-4 pt-4">
                       <div className="flex justify-between items-center">
-                        <span className="font-semibold text-gray-800">
+                        <span className="font-nexa-bold text-gray-800">
                           Total
                         </span>
                         <span className="font-bold text-lg text-gray-800">
@@ -439,7 +439,7 @@ Fecha: ${formatDate(order.createdAt)}
                 {/* Información de envío */}
                 <div className="bg-white rounded-xl shadow-sm overflow-hidden">
                   <div className="px-6 py-4 border-b border-gray-100">
-                    <h2 className="text-lg font-semibold text-gray-800">
+                    <h2 className="text-lg font-nexa-bold text-gray-800">
                       Información de Envío
                     </h2>
                   </div>
@@ -481,7 +481,7 @@ Fecha: ${formatDate(order.createdAt)}
                 {/* Información de pago */}
                 <div className="bg-white rounded-xl shadow-sm overflow-hidden">
                   <div className="px-6 py-4 border-b border-gray-100">
-                    <h2 className="text-lg font-semibold text-gray-800">
+                    <h2 className="text-lg font-nexa-bold text-gray-800">
                       Método de Pago
                     </h2>
                   </div>
@@ -557,7 +557,7 @@ Fecha: ${formatDate(order.createdAt)}
                 {/* Acciones del pedido */}
                 <div className="bg-white rounded-xl shadow-sm overflow-hidden">
                   <div className="px-6 py-4 border-b border-gray-100">
-                    <h2 className="text-lg font-semibold text-gray-800">
+                    <h2 className="text-lg font-nexa-bold text-gray-800">
                       Acciones
                     </h2>
                   </div>
@@ -659,7 +659,7 @@ Fecha: ${formatDate(order.createdAt)}
                 />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold mb-2 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-2 text-gray-800">
               Pedido no encontrado
             </h2>
             <p className="text-gray-500 mb-6">

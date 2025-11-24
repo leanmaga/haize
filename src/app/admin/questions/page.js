@@ -383,7 +383,7 @@ const AdminQuestionsPage = () => {
       {/* Header y Estadísticas */}
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-nexa-bold text-gray-900">
             Gestión de Preguntas
           </h1>
           {renderSystemStatus()}
@@ -392,19 +392,19 @@ const AdminQuestionsPage = () => {
         {/* Estadísticas */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="bg-blue-50 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-blue-600">
+            <div className="text-2xl font-nexa-bold text-blue-600">
               {stats.total}
             </div>
             <div className="text-sm text-blue-800">Total Preguntas</div>
           </div>
           <div className="bg-orange-50 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-orange-600">
+            <div className="text-2xl font-nexa-bold text-orange-600">
               {stats.pending}
             </div>
             <div className="text-sm text-orange-800">Pendientes Respuesta</div>
           </div>
           <div className="bg-green-50 p-4 rounded-lg text-center">
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl font-nexa-bold text-green-600">
               {stats.answered}
             </div>
             <div className="text-sm text-green-800">Respondidas</div>
@@ -477,7 +477,7 @@ const AdminQuestionsPage = () => {
       {/* Lista de Preguntas */}
       <div className="bg-white rounded-lg shadow">
         <div className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          <h2 className="text-lg font-sora-regular text-gray-900 mb-4">
             Preguntas ({filteredQuestions.length})
           </h2>
 

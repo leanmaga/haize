@@ -41,7 +41,7 @@ const CartSummary = () => {
     <div className="bg-white border border-gray-300 sticky top-4">
       {/* Header */}
       <div className="p-6 border-b border-gray-200">
-        <h2 className="text-lg font-medium">RESUMEN DE COMPRA</h2>
+        <h2 className="text-lg font-sora-regular">RESUMEN DE COMPRA</h2>
         <p className="text-sm text-gray-600 mt-1">
           ({items.length} producto{items.length !== 1 ? 's' : ''})
         </p>
@@ -52,7 +52,7 @@ const CartSummary = () => {
         {/* Subtotal */}
         <div className="flex justify-between items-center mb-3">
           <span className="text-gray-700">Subtotal</span>
-          <span className="font-medium">
+          <span className="font-sora-regular">
             ${subtotal.toLocaleString('es-AR')}
           </span>
         </div>
@@ -82,7 +82,7 @@ const CartSummary = () => {
         {/* Checkout button */}
         <button
           onClick={handleCheckout}
-          className="w-full bg-black text-white py-3 px-6 hover:bg-gray-800 transition-colors mb-6 font-medium"
+          className="w-full bg-black text-white py-3 px-6 hover:bg-gray-800 transition-colors mb-6 font-sora-regular"
           disabled={isEmpty}
         >
           Iniciar Compra
@@ -114,7 +114,7 @@ const CartSummary = () => {
           </div>
         ) : (
           <div className="mb-6 p-3 bg-green-50 border border-green-200">
-            <p className="text-sm text-green-800 font-medium">
+            <p className="text-sm text-green-800 font-sora-regular">
               ¡Tienes envío gratis! 🎉
             </p>
           </div>
@@ -122,7 +122,7 @@ const CartSummary = () => {
 
         {/* Discount code section */}
         <div className="border-t border-gray-200 pt-6">
-          <h3 className="font-medium mb-3">CÓDIGO DE DESCUENTO</h3>
+          <h3 className="font-sora-regular mb-3">CÓDIGO DE DESCUENTO</h3>
           <form onSubmit={handleApplyDiscount} className="space-y-3">
             <input
               type="text"
@@ -133,7 +133,7 @@ const CartSummary = () => {
             />
             <button
               type="submit"
-              className="w-full py-2 px-4 border border-black bg-white text-black hover:bg-gray-50 transition-colors font-medium"
+              className="w-full py-2 px-4 border border-black bg-white text-black hover:bg-gray-50 transition-colors font-sora-regular"
             >
               Ingresar
             </button>

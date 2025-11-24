@@ -107,19 +107,19 @@ export default function CustomersManagement() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="text-left py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="text-left py-4 px-6 text-xs font-sora-regular text-gray-500 uppercase tracking-wider">
                   Cliente
                 </th>
-                <th className="text-left py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="text-left py-4 px-6 text-xs font-sora-regular text-gray-500 uppercase tracking-wider">
                   Contacto
                 </th>
-                <th className="text-center py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="text-center py-4 px-6 text-xs font-sora-regular text-gray-500 uppercase tracking-wider">
                   Órdenes
                 </th>
-                <th className="text-left py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="text-left py-4 px-6 text-xs font-sora-regular text-gray-500 uppercase tracking-wider">
                   Registro
                 </th>
-                <th className="text-right py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="text-right py-4 px-6 text-xs font-sora-regular text-gray-500 uppercase tracking-wider">
                   Acción
                 </th>
               </tr>
@@ -144,7 +144,7 @@ export default function CustomersManagement() {
                         </div>
                       )}
                       <div>
-                        <p className="text-sm font-medium text-gray-900">
+                        <p className="text-sm font-sora-regular text-gray-900">
                           {customer.firstName} {customer.lastName}
                         </p>
                         <p className="text-xs text-gray-400">
@@ -166,7 +166,7 @@ export default function CustomersManagement() {
                     </div>
                   </td>
                   <td className="py-4 px-6 text-center">
-                    <span className="inline-flex items-center justify-center w-8 h-8 bg-gray-100 text-sm font-medium text-gray-700">
+                    <span className="inline-flex items-center justify-center w-8 h-8 bg-gray-100 text-sm font-sora-regular text-gray-700">
                       {customer.orders?.length || 0}
                     </span>
                   </td>
@@ -204,7 +204,7 @@ export default function CustomersManagement() {
           <div className="bg-white w-full max-w-lg max-h-[90vh] overflow-y-auto">
             {/* Header */}
             <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-              <h2 className="text-sm font-medium uppercase tracking-wider">
+              <h2 className="text-sm font-sora-regular uppercase tracking-wider">
                 Detalle del Cliente
               </h2>
               <button
@@ -230,7 +230,7 @@ export default function CustomersManagement() {
                   </div>
                 )}
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900">
+                  <h3 className="text-lg font-sora-regular text-gray-900">
                     {selectedCustomer.firstName} {selectedCustomer.lastName}
                   </h3>
                   <p className="text-sm text-gray-500">
@@ -250,7 +250,7 @@ export default function CustomersManagement() {
 
               {/* Contact */}
               <div className="border-t border-gray-100 pt-6">
-                <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-4">
+                <h4 className="text-xs font-sora-regular text-gray-500 uppercase tracking-wider mb-4">
                   Contacto
                 </h4>
                 <div className="space-y-3">
@@ -280,7 +280,7 @@ export default function CustomersManagement() {
 
               {/* Stats */}
               <div className="border-t border-gray-100 pt-6">
-                <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-4">
+                <h4 className="text-xs font-sora-regular text-gray-500 uppercase tracking-wider mb-4">
                   Actividad
                 </h4>
                 <div className="grid grid-cols-3 gap-4">

@@ -35,11 +35,15 @@ export default function AdminSettingsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold mb-6">Configuración del Sistema</h1>
+      <h1 className="text-2xl font-nexa-bold mb-6">
+        Configuración del Sistema
+      </h1>
 
       <div className="space-y-8">
         <section>
-          <h2 className="text-xl font-medium mb-4">Pagos y Facturación</h2>
+          <h2 className="text-xl font-sora-regular mb-4">
+            Pagos y Facturación
+          </h2>
           <div className="bg-white p-6 rounded-lg shadow-md">
             <MercadoPagoLinkButton />
           </div>

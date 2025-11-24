@@ -117,7 +117,7 @@ const Navbar = () => {
 
           {/* Logo Central - HAIZE */}
           <h1
-            className={`text-4xl font-bold transition-transform duration-300 text-white font-serif ${
+            className={`text-4xl font-nexa-bold transition-transform duration-300 text-white ${
               shouldScaleLogo ? 'md:scale-150 md:translate-y-8' : 'scale-100'
             }`}
           >
@@ -209,7 +209,9 @@ const Navbar = () => {
                       {isProfileDropdownOpen && (
                         <div className="absolute right-0 mt-3 w-60 bg-black text-white border border-white/20 rounded-lg shadow-lg overflow-hidden">
                           <div className="p-3 border-b border-white/10 bg-white/5">
-                            <p className="font-medium">{session.user.name}</p>
+                            <p className="font-nexa-bold">
+                              {session.user.name}
+                            </p>
                             <p className="text-xs text-gray-400 truncate mt-1">
                               {session.user.email}
                             </p>
@@ -306,7 +308,7 @@ const Navbar = () => {
         <div className="h-full flex flex-col text-white">
           {/* Header */}
           <div className="border-b border-white/20 py-4 px-4 flex justify-between items-center">
-            <h2 className="text-2xl font-bold font-serif">HAIZE</h2>
+            <h2 className="text-2xl font-bold font-nexa-bold">HAIZE</h2>
             <button
               onClick={() => setIsMobileMenuOpen(false)}
               className="p-2"
@@ -339,7 +341,7 @@ const Navbar = () => {
                     </div>
                   )}
                   <div className="ml-3">
-                    <p className="font-medium">{session.user.name}</p>
+                    <p className="font-nexa-bold">{session.user.name}</p>
                     <p className="text-xs text-gray-400 truncate">
                       {session.user.email}
                     </p>
@@ -362,7 +364,7 @@ const Navbar = () => {
                     }`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <span className="text-sm font-medium">INICIO</span>
+                    <span className="text-sm font-nexa-bold">INICIO</span>
                   </Link>
                   <Link
                     href="/products"
@@ -373,7 +375,7 @@ const Navbar = () => {
                     }`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <span className="text-sm font-medium">CATEGORIAS</span>
+                    <span className="text-sm font-nexa-bold">CATEGORIAS</span>
                   </Link>
                   <Link
                     href="/cart"
@@ -383,7 +385,7 @@ const Navbar = () => {
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <ShoppingCartIcon className="h-5 w-5 mr-3" />
-                    <span className="text-sm font-medium">CARRITO</span>
+                    <span className="text-sm font-nexa-bold">CARRITO</span>
                     {cartItemsCount > 0 && (
                       <span className="ml-auto bg-white text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                         {cartItemsCount}
@@ -410,7 +412,7 @@ const Navbar = () => {
                         }`}
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
-                        <span className="text-sm font-medium">ADMIN</span>
+                        <span className="text-sm font-nexa-bold">ADMIN</span>
                       </Link>
                     )}
                     <Link
@@ -422,7 +424,7 @@ const Navbar = () => {
                       }`}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      <span className="text-sm font-medium">MI PERFIL</span>
+                      <span className="text-sm font-nexa-bold">MI PERFIL</span>
                     </Link>
                     <Link
                       href="/profile/orders"
@@ -433,7 +435,9 @@ const Navbar = () => {
                       }`}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      <span className="text-sm font-medium">MIS PEDIDOS</span>
+                      <span className="text-sm font-nexa-bold">
+                        MIS PEDIDOS
+                      </span>
                     </Link>
                     <Link
                       href="/profile/settings"
@@ -444,7 +448,9 @@ const Navbar = () => {
                       }`}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      <span className="text-sm font-medium">CONFIGURACIÓN</span>
+                      <span className="text-sm font-nexa-bold">
+                        CONFIGURACIÓN
+                      </span>
                     </Link>
                   </div>
                 </div>
@@ -457,7 +463,7 @@ const Navbar = () => {
             {session ? (
               <button
                 onClick={handleSignOut}
-                className="w-full py-2.5 px-4 rounded-lg border border-white/30 text-sm font-medium hover:bg-white/10 transition"
+                className="w-full py-2.5 px-4 rounded-lg border border-white/30 text-sm font-nexa-bold hover:bg-white/10 transition"
               >
                 CERRAR SESIÓN
               </button>
@@ -465,13 +471,13 @@ const Navbar = () => {
               <div className="space-y-3">
                 <button
                   onClick={openLoginModal}
-                  className="w-full py-2.5 px-4 rounded-lg border border-white/30 text-sm font-medium hover:bg-white/10 transition"
+                  className="w-full py-2.5 px-4 rounded-lg border border-white/30 text-sm font-nexa-bold hover:bg-white/10 transition"
                 >
                   INICIAR SESIÓN
                 </button>
                 <button
                   onClick={openRegisterModal}
-                  className="w-full py-2.5 px-4 rounded-lg bg-white text-black text-sm font-medium hover:bg-gray-200 transition"
+                  className="w-full py-2.5 px-4 rounded-lg bg-white text-black text-sm font-nexa-bold hover:bg-gray-200 transition"
                 >
                   REGISTRARSE
                 </button>

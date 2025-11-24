@@ -60,7 +60,7 @@ export default function OrderSummaryPage() {
               />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold mb-2">No encontrado</h1>
+          <h1 className="text-2xl font-nexa-bold mb-2">No encontrado</h1>
           <p className="text-gray-600 mb-6">
             {error || 'Pedido no encontrado o expirado'}
           </p>
@@ -100,7 +100,7 @@ export default function OrderSummaryPage() {
           <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-green-100 mb-4">
             <FaCheck className="h-8 w-8 text-green-600" />
           </div>
-          <h1 className="font-sora-thin text-3xl font-bold mb-2">
+          <h1 className="font-sora-thin text-3xl font-nexa-bold mb-2">
             ¡Pedido enviado con éxito!
           </h1>
           <p className="font-sora-extralight text-gray-600">
@@ -114,7 +114,7 @@ export default function OrderSummaryPage() {
           <div className="border-b p-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
               <div>
-                <h2 className="font-sora-regular text-2xl font-bold mb-1">
+                <h2 className="font-sora-regular text-2xl font-nexa-bold mb-1">
                   Resumen de Pedido
                 </h2>
                 {orderData.dbOrderId && (
@@ -134,7 +134,7 @@ export default function OrderSummaryPage() {
 
           {/* Productos */}
           <div className="p-6">
-            <h3 className="font-sora-regular text-lg font-bold mb-4 pb-2 border-b">
+            <h3 className="font-sora-regular text-lg font-nexa-bold mb-4 pb-2 border-b">
               Detalles del pedido
             </h3>
 
@@ -178,7 +178,7 @@ export default function OrderSummaryPage() {
                     </div>
                   </div>
 
-                  <div className="ml-4 text-right font-bold">
+                  <div className="ml-4 text-right font-nexa-bold">
                     ${(item.price * item.quantity).toFixed(2)}
                   </div>
                 </div>
@@ -196,7 +196,7 @@ export default function OrderSummaryPage() {
                   <span>Envío</span>
                   <span>A coordinar</span>
                 </div>
-                <div className="font-sora-bold flex justify-between font-bold text-black text-lg pt-2 border-t">
+                <div className="font-sora-bold flex justify-between font-nexa-bold text-black text-lg pt-2 border-t">
                   <span>Total</span>
                   <span>${orderData.total.toFixed(2)}</span>
                 </div>
@@ -206,7 +206,7 @@ export default function OrderSummaryPage() {
             {/* Datos de contacto */}
             {orderData.userData && (
               <div className="mt-10 pt-6 border-t">
-                <h3 className="font-sora-regular text-lg font-bold mb-4">
+                <h3 className="font-sora-regular text-lg font-nexa-bold mb-4">
                   Datos de contacto
                 </h3>
 

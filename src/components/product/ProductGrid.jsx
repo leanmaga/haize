@@ -27,7 +27,7 @@ const ProductGrid = ({ products }) => {
             </svg>
           </div>
 
-          <h2 className="text-2xl font-bold text-gray-900 mb-3">
+          <h2 className="text-2xl font-sora-regular text-gray-900 mb-3">
             No se encontraron productos
           </h2>
           <p className="text-gray-600 mb-6 leading-relaxed">

@@ -121,7 +121,7 @@ export default async function ProductDetails({ params }) {
           </div>
 
           {/* Título del producto */}
-          <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 uppercase tracking-wide">
+          <h1 className="text-3xl lg:text-4xl font-nexa-bold text-gray-900 mb-4 uppercase tracking-wide">
             {product.title}
           </h1>
 
@@ -140,7 +140,7 @@ export default async function ProductDetails({ params }) {
           {displayPrice > 0 && (
             <div className="mb-6">
               {/* Precio principal */}
-              <div className="text-4xl font-bold text-gray-900 mb-2">
+              <div className="text-4xl font-nexa-bold text-gray-900 mb-2">
                 ${displayPrice.toFixed(2)}
               </div>
 
@@ -164,7 +164,7 @@ export default async function ProductDetails({ params }) {
                   <span className="text-lg text-gray-500 line-through">
                     ${normalPrice.toFixed(2)}
                   </span>
-                  <span className="bg-red-500 text-white px-2 py-1 text-xs font-bold rounded">
+                  <span className="bg-red-500 text-white px-2 py-1 text-xs font-nexa-bold rounded">
                     {discountPercentage}% OFF
                   </span>
                 </div>

@@ -1,9 +1,9 @@
-import { getAllUsers } from "@/lib/data";
-import UserTable from "@/components/admin/UserTable";
+import { getAllUsers } from '@/lib/data';
+import UserTable from '@/components/admin/UserTable';
 
 export const metadata = {
-  title: "Gestión de Usuarios | TiendaOnline",
-  description: "Administra los usuarios de tu tienda en línea.",
+  title: 'Gestión de Usuarios | TiendaOnline',
+  description: 'Administra los usuarios de tu tienda en línea.',
 };
 
 export default async function AdminUsersPage() {
@@ -11,7 +11,7 @@ export default async function AdminUsersPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold mb-6">Gestión de Usuarios</h1>
+      <h1 className="text-2xl font-nexa-bold mb-6">Gestión de Usuarios</h1>
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <UserTable users={users} />

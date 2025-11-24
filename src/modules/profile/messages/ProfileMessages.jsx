@@ -127,7 +127,7 @@ const MessagesPage = () => {
 
             <div className="flex items-center space-x-3">
               <ChatBubbleLeftRightIcon className="h-6 w-6 text-gray-500" />
-              <h1 className="text-xl font-semibold text-gray-800">
+              <h1 className="text-xl font-nexa-bold text-gray-800">
                 Mis Mensajes
               </h1>
             </div>

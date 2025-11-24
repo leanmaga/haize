@@ -42,7 +42,7 @@ const ContactPage = () => {
       <div className="max-w-6xl mx-auto px-6 py-16 md:py-24">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-wide mb-4">
+          <h1 className="text-3xl md:text-4xl font-nexa-bold text-gray-900 tracking-wide mb-4">
             CONTACTO
           </h1>
           <p className="text-gray-600 text-base md:text-lg max-w-2xl mx-auto">

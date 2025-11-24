@@ -28,11 +28,11 @@ export default function CookiesPage() {
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-sm border p-8">
           <div className="prose prose-lg max-w-none">
-            <h1 className="text-3xl font-bold mb-6 text-gray-800">
+            <h1 className="text-3xl font-nexa-bold mb-6 text-gray-800">
               CONFIGURACIÓN DE COOKIES
             </h1>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               1. ¿QUÉ SON LAS COOKIES?
             </h2>
             <p className="mb-4 text-gray-700">
@@ -43,10 +43,10 @@ export default function CookiesPage() {
               con los sitios.
             </p>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               2. TIPOS DE COOKIES QUE UTILIZAMOS
             </h2>
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               2.1. Cookies Esenciales
             </h3>
             <p className="mb-4 text-gray-700">
@@ -56,7 +56,7 @@ export default function CookiesPage() {
               podríamos proporcionar los servicios que usted solicita.
             </p>
 
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               2.2. Cookies de Preferencias
             </h3>
             <p className="mb-4 text-gray-700">
@@ -65,7 +65,7 @@ export default function CookiesPage() {
               idioma preferido o la región en la que se encuentra.
             </p>
 
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               2.3. Cookies Analíticas
             </h3>
             <p className="mb-4 text-gray-700">
@@ -75,7 +75,7 @@ export default function CookiesPage() {
               usuarios encuentren fácilmente lo que buscan.
             </p>
 
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               2.4. Cookies de Marketing
             </h3>
             <p className="mb-4 text-gray-700">
@@ -85,7 +85,7 @@ export default function CookiesPage() {
               para los editores y anunciantes terceros.
             </p>
 
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               2.5. Cookies de Redes Sociales
             </h3>
             <p className="mb-4 text-gray-700">
@@ -96,7 +96,7 @@ export default function CookiesPage() {
               de sus intereses.
             </p>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               3. COOKIES DE TERCEROS
             </h2>
             <p className="mb-4 text-gray-700">
@@ -107,7 +107,7 @@ export default function CookiesPage() {
               o personalizar sus ofertas.
             </p>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               4. GESTIÓN DE COOKIES
             </h2>
             <p className="mb-4 text-gray-700">
@@ -126,7 +126,7 @@ export default function CookiesPage() {
               .
             </p>
 
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               4.1. Cómo Deshabilitar las Cookies
             </h3>
             <p className="mb-4 text-gray-700">
@@ -144,7 +144,7 @@ export default function CookiesPage() {
               correctamente.
             </p>
 
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               4.2. Opciones Específicas del Navegador
             </h3>
             <p className="mb-4 text-gray-700">
@@ -171,14 +171,14 @@ export default function CookiesPage() {
 
             {/* Panel de configuración de cookies */}
             <div className="mt-8 mb-8 p-6 bg-gray-50 rounded-lg border">
-              <h3 className="text-lg font-bold mb-4 text-gray-800">
+              <h3 className="text-lg font-nexa-bold mb-4 text-gray-800">
                 Sus preferencias de cookies
               </h3>
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between border border-gray-300 p-4 rounded bg-white">
                   <div>
-                    <h4 className="font-bold text-gray-800">
+                    <h4 className="font-nexa-bold text-gray-800">
                       Cookies Esenciales
                     </h4>
                     <p className="text-sm text-gray-600">
@@ -192,7 +192,7 @@ export default function CookiesPage() {
 
                 <div className="flex items-center justify-between border border-gray-300 p-4 rounded bg-white">
                   <div>
-                    <h4 className="font-bold text-gray-800">
+                    <h4 className="font-nexa-bold text-gray-800">
                       Cookies Analíticas
                     </h4>
                     <p className="text-sm text-gray-600">
@@ -216,7 +216,7 @@ export default function CookiesPage() {
 
                 <div className="flex items-center justify-between border border-gray-300 p-4 rounded bg-white">
                   <div>
-                    <h4 className="font-bold text-gray-800">
+                    <h4 className="font-nexa-bold text-gray-800">
                       Cookies de Marketing
                     </h4>
                     <p className="text-sm text-gray-600">
@@ -255,7 +255,7 @@ export default function CookiesPage() {
               </div>
             </div>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               5. COOKIES UTILIZADAS EN NUESTRO SITIO WEB
             </h2>
             <p className="mb-4 text-gray-700">
@@ -267,16 +267,16 @@ export default function CookiesPage() {
               <table className="min-w-full border-collapse border border-gray-300">
                 <thead>
                   <tr className="bg-gray-100">
-                    <th className="border border-gray-300 p-3 text-left text-gray-800 font-bold">
+                    <th className="border border-gray-300 p-3 text-left text-gray-800 font-nexa-bold">
                       Nombre de la Cookie
                     </th>
-                    <th className="border border-gray-300 p-3 text-left text-gray-800 font-bold">
+                    <th className="border border-gray-300 p-3 text-left text-gray-800 font-nexa-bold">
                       Tipo
                     </th>
-                    <th className="border border-gray-300 p-3 text-left text-gray-800 font-bold">
+                    <th className="border border-gray-300 p-3 text-left text-gray-800 font-nexa-bold">
                       Propósito
                     </th>
-                    <th className="border border-gray-300 p-3 text-left text-gray-800 font-bold">
+                    <th className="border border-gray-300 p-3 text-left text-gray-800 font-nexa-bold">
                       Duración
                     </th>
                   </tr>
@@ -356,7 +356,7 @@ export default function CookiesPage() {
               </table>
             </div>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               6. CAMBIOS EN NUESTRA POLÍTICA DE COOKIES
             </h2>
             <p className="mb-4 text-gray-700">
@@ -366,7 +366,7 @@ export default function CookiesPage() {
               se le proporcionará un aviso más destacado.
             </p>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               7. CONTACTO
             </h2>
             <p className="mb-4 text-gray-700">

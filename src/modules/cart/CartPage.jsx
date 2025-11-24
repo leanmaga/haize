@@ -51,12 +51,12 @@ export default function CartPage() {
 
             {/* Empty state */}
             <div className="bg-white p-12 text-center">
-              <h2 className="text-2xl font-medium mb-8">
+              <h2 className="text-2xl font-sora-regular mb-8">
                 No hay productos en tu carrito
               </h2>
               <Link
                 href="/products"
-                className="inline-block bg-black text-white px-8 py-3 hover:bg-gray-800 transition-colors"
+                className="font-sora-regular inline-block bg-black text-white px-8 py-3 hover:bg-gray-800 transition-colors"
               >
                 Explorar Productos
               </Link>
@@ -68,7 +68,7 @@ export default function CartPage() {
             <div className="lg:w-2/3 mb-8 lg:mb-0">
               {/* Header */}
               <div className="bg-white p-6 mb-6">
-                <h1 className="text-xl font-medium mb-4">
+                <h1 className="text-xl font-nexa-bold mb-4">
                   RESUMEN DE COMPRA ({items.length} producto
                   {items.length !== 1 ? 's' : ''})
                 </h1>

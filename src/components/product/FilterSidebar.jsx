@@ -140,7 +140,7 @@ const FilterSidebar = ({
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h2 className="text-sm uppercase font-medium tracking-wider">
+            <h2 className="text-sm uppercase font-nexa-bold tracking-wider">
               Filtros
             </h2>
             {hasActiveFilters && (
@@ -168,7 +168,7 @@ const FilterSidebar = ({
               onClick={() => toggleSection('categorias')}
               className="w-full flex items-center justify-between pb-3 hover:bg-gray-50 transition-colors cursor-pointer rounded px-2"
             >
-              <span className="font-medium text-sm uppercase tracking-wide">
+              <span className="font-nexa-bold text-sm uppercase tracking-wide">
                 Categorías
               </span>
               {expandedSection === 'categorias' ? (
@@ -192,7 +192,7 @@ const FilterSidebar = ({
                     onClick={() => handleCategoryClick(category.key)}
                     className={`w-full text-left px-3 py-2.5 text-sm rounded transition-all ${
                       selectedCategory === category.key
-                        ? 'bg-black text-white font-medium'
+                        ? 'bg-black text-white font-nexa-bold'
                         : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
@@ -209,7 +209,7 @@ const FilterSidebar = ({
               onClick={() => toggleSection('precio')}
               className="w-full flex items-center justify-between pb-3 hover:bg-gray-50 transition-colors cursor-pointer rounded px-2"
             >
-              <span className="font-medium text-sm uppercase tracking-wide">
+              <span className="font-nexa-bold text-sm uppercase tracking-wide">
                 Precio
               </span>
               {expandedSection === 'precio' ? (
@@ -229,7 +229,7 @@ const FilterSidebar = ({
             >
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs text-gray-500 mb-2 font-medium">
+                  <label className="block text-xs text-gray-500 mb-2 font-nexa-bold">
                     Mínimo
                   </label>
                   <div className="relative">
@@ -246,7 +246,7 @@ const FilterSidebar = ({
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-2 font-medium">
+                  <label className="block text-xs text-gray-500 mb-2 font-nexa-bold">
                     Máximo
                   </label>
                   <div className="relative">
@@ -272,7 +272,7 @@ const FilterSidebar = ({
               onClick={() => toggleSection('talle')}
               className="w-full flex items-center justify-between pb-3 hover:bg-gray-50 transition-colors rounded px-2"
             >
-              <span className="font-medium text-sm uppercase tracking-wide">
+              <span className="font-nexa-bold text-sm uppercase tracking-wide">
                 Talle
               </span>
               {expandedSection === 'talle' ? (
@@ -295,7 +295,7 @@ const FilterSidebar = ({
                     key={size}
                     onClick={() => toggleSize(size)}
                     className={`
-                        py-2.5 border text-sm font-medium transition-all rounded
+                        py-2.5 border text-sm font-nexa-bold transition-all rounded
                         ${
                           selectedSizes.includes(size)
                             ? 'border-black bg-black text-white'
@@ -317,7 +317,7 @@ const FilterSidebar = ({
                 onClick={() => toggleSection('color')}
                 className="w-full flex items-center justify-between pb-3 hover:bg-gray-50 transition-colors rounded px-2"
               >
-                <span className="font-medium text-sm uppercase tracking-wide">
+                <span className="font-nexa-bold text-sm uppercase tracking-wide">
                   Color
                 </span>
                 {expandedSection === 'color' ? (
@@ -368,7 +368,7 @@ const FilterSidebar = ({
         <div className="sticky bottom-0 bg-white pt-6 pb-2 border-t border-gray-200 mt-6">
           <button
             onClick={applyFilters}
-            className="w-full bg-black text-white py-3 px-4 text-sm font-medium hover:bg-gray-800 transition-colors rounded"
+            className="w-full bg-black text-white py-3 px-4 text-sm font-nexa-bold hover:bg-gray-800 transition-colors rounded"
           >
             Aplicar filtros
           </button>

@@ -91,7 +91,7 @@ export default function RegisterForm({ switchToLogin, afterRegister }) {
   return (
     // Your existing JSX return...
     <div className="w-full max-w-md mx-auto p-6">
-      <h2 className="font-bold text-center text-2xl mb-6">CREAR CUENTA</h2>
+      <h2 className="font-nexa-bold text-center text-2xl mb-6">CREAR CUENTA</h2>
 
       {redirectTo.includes('/checkout') && (
         <div className="mb-6 bg-blue-50 p-4 rounded-md">

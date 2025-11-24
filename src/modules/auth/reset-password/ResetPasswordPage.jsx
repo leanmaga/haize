@@ -78,7 +78,7 @@ export default function ResetPasswordPage({
               </svg>
             </div>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-nexa-bold text-gray-900">
             Revisa tu correo
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
@@ -129,7 +129,7 @@ export default function ResetPasswordPage({
       }
     >
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        <h2 className="mt-6 text-center text-3xl font-nexa-bold text-gray-900">
           Recupera tu contraseña
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">

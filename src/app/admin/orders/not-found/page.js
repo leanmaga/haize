@@ -1,6 +1,6 @@
 // app/admin/orders/not-found.js
-import Link from "next/link";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import Link from 'next/link';
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 export default function OrderNotFound() {
   return (
@@ -22,7 +22,7 @@ export default function OrderNotFound() {
               />
             </svg>
           </div>
-          <h1 className="mt-4 text-2xl font-bold text-gray-900">
+          <h1 className="mt-4 text-2xl font-nexa-bold text-gray-900">
             Pedido no encontrado
           </h1>
           <p className="mt-2 text-gray-600">

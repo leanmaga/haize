@@ -71,7 +71,7 @@ const ContactForm = () => {
   return (
     <div className="border border-gray-200 rounded-sm p-8 md:p-12">
       {/* Título */}
-      <h2 className="text-xl md:text-2xl font-bold text-gray-900 tracking-wide mb-3">
+      <h2 className="text-xl md:text-2xl font-nexa-bold text-gray-900 tracking-wide mb-3">
         Formulario de Contacto
       </h2>
 

@@ -57,7 +57,7 @@ function OrderConfirmationContent() {
             <CheckCircleIcon className="h-10 w-10 text-green-600" />
           </div>
 
-          <h1 className="text-3xl font-bold mb-4 text-gray-800">
+          <h1 className="text-3xl font-nexa-bold mb-4 text-gray-800">
             ¡Orden Confirmada!
           </h1>
 

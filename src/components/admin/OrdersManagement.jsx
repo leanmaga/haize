@@ -227,7 +227,7 @@ export default function OrdersManagement() {
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
-              <h2 className="text-xl font-bold">
+              <h2 className="text-xl font-sora-regular">
                 Orden #{selectedOrder.orderNumber}
               </h2>
               <button
@@ -305,7 +305,7 @@ export default function OrdersManagement() {
                     <span>Impuestos:</span>
                     <span>${selectedOrder.taxPrice?.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-lg font-bold pt-2 border-t">
+                  <div className="flex justify-between text-lg font-sora-regular pt-2 border-t">
                     <span>Total:</span>
                     <span>${selectedOrder.totalPrice?.toFixed(2)}</span>
                   </div>

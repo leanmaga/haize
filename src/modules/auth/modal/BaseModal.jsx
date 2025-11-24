@@ -1,8 +1,8 @@
-"use client";
-import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
-import { XMarkIcon } from "@heroicons/react/24/outline";
-import { useRouter } from "next/navigation";
+'use client';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { XMarkIcon } from '@heroicons/react/24/outline';
+import { useRouter } from 'next/navigation';
 
 const Modal = ({
   isOpen,
@@ -10,7 +10,7 @@ const Modal = ({
   children,
   title,
   redirectOnClose = false,
-  redirectPath = "/", // Nueva prop para personalizar la ruta de redirección
+  redirectPath = '/', // Nueva prop para personalizar la ruta de redirección
   preventRedirect = false, // Nueva prop para prevenir redirección en casos especiales
 }) => {
   const [mounted, setMounted] = useState(false);
@@ -20,11 +20,11 @@ const Modal = ({
     setMounted(true);
 
     if (isOpen) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = 'hidden';
     }
 
     return () => {
-      document.body.style.overflow = "auto";
+      document.body.style.overflow = 'auto';
     };
   }, [isOpen]);
 
@@ -64,7 +64,7 @@ const Modal = ({
         {/* Título opcional */}
         {title && (
           <div className="border-b border-gray-200 p-6">
-            <h2 className="text-xl font-semibold text-center">{title}</h2>
+            <h2 className="text-xl font-nexa-bold text-center">{title}</h2>
           </div>
         )}
 

@@ -1,17 +1,17 @@
 // components/LegalModal.js
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 
 const LegalModal = ({ isOpen, onClose, title, content }) => {
   // Prevenir scroll del body cuando el modal está abierto
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = "auto";
+      document.body.style.overflow = 'auto';
     }
 
     return () => {
-      document.body.style.overflow = "auto";
+      document.body.style.overflow = 'auto';
     };
   }, [isOpen]);
 
@@ -22,7 +22,7 @@ const LegalModal = ({ isOpen, onClose, title, content }) => {
       <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white rounded-lg shadow-xl">
         {/* Header del modal */}
         <div className="sticky top-0 z-10 flex items-center justify-between p-4 border-b bg-white">
-          <h2 className="text-xl font-bold font-drop text-gray-800">{title}</h2>
+          <h2 className="text-xl font-nexa-bold text-gray-800">{title}</h2>
         </div>
 
         {/* Contenido del modal */}
@@ -35,7 +35,7 @@ const LegalModal = ({ isOpen, onClose, title, content }) => {
           <button
             onClick={onClose}
             className="px-4 py-2 text-sm font-medium text-white rounded-md hover:opacity-90 focus:outline-none font-drop transition-opacity"
-            style={{ backgroundColor: "#FAC348" }}
+            style={{ backgroundColor: '#FAC348' }}
           >
             Cerrar
           </button>

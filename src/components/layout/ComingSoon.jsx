@@ -15,7 +15,7 @@ export default function ComingSoon() {
       <div className="text-center text-white z-10 px-6 animate-fade-in max-w-4xl">
         {/* Logo grande */}
         <h1
-          className="text-8xl md:text-9xl font-bold mb-8 tracking-wider"
+          className="text-8xl md:text-9xl font-nexa-bold mb-8 tracking-wider"
           style={{ fontFamily: 'var(--font-geist-sans)' }}
         >
           HAIZE

@@ -260,7 +260,7 @@ export default async function OrderDetailPage({ params }) {
 
         <div className="flex flex-col lg:flex-row justify-between items-start mb-6 gap-4">
           <div>
-            <h1 className="text-2xl font-semibold">
+            <h1 className="text-2xl font-nexa-bold">
               Pedido #{order._id.substring(0, 8)}
             </h1>
             <p className="text-gray-500">
@@ -276,7 +276,7 @@ export default async function OrderDetailPage({ params }) {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg shadow overflow-hidden">
               <div className="px-6 py-4 border-b">
-                <h2 className="text-lg font-semibold">Productos</h2>
+                <h2 className="text-lg font-sora-regular">Productos</h2>
               </div>
 
               <div className="divide-y divide-gray-200">
@@ -307,7 +307,7 @@ export default async function OrderDetailPage({ params }) {
 
                       {/* Información del producto */}
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-sm font-medium text-gray-900 truncate">
+                        <h3 className="text-sm font-nexa-bold text-gray-900 truncate">
                           {item.name || item.title}
                         </h3>
                         <p className="text-sm text-gray-500">
@@ -316,7 +316,7 @@ export default async function OrderDetailPage({ params }) {
                       </div>
 
                       {/* Subtotal */}
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="text-sm font-nexa-bold text-gray-900">
                         ${(item.price * item.quantity).toFixed(2)}
                       </div>
                     </div>
@@ -331,7 +331,7 @@ export default async function OrderDetailPage({ params }) {
               {/* Total */}
               <div className="px-6 py-4 bg-gray-50 border-t">
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-medium text-gray-900">
+                  <span className="text-lg font-nexa-bold text-gray-900">
                     Total:
                   </span>
                   <span className="text-lg font-bold text-gray-900">
@@ -346,10 +346,10 @@ export default async function OrderDetailPage({ params }) {
           <div className="space-y-6">
             {/* Estado */}
             <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold mb-4">Estado del Pedido</h3>
+              <h3 className="text-lg font-nexa-bold mb-4">Estado del Pedido</h3>
               <div>
                 <span
-                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-nexa-bold"
                   style={{
                     backgroundColor: `${statusStyle.color}20`,
                     color: statusStyle.color,
@@ -362,13 +362,13 @@ export default async function OrderDetailPage({ params }) {
 
             {/* Información del cliente */}
             <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold mb-4">
+              <h3 className="text-lg font-nexa-bold mb-4">
                 Información del Cliente
               </h3>
               {order.shippingInfo ? (
                 <div className="space-y-3">
                   <div>
-                    <span className="text-sm font-medium text-gray-500">
+                    <span className="text-sm font-nexa-bold text-gray-500">
                       Nombre:
                     </span>
                     <p className="text-sm text-gray-900">
@@ -376,7 +376,7 @@ export default async function OrderDetailPage({ params }) {
                     </p>
                   </div>
                   <div>
-                    <span className="text-sm font-medium text-gray-500">
+                    <span className="text-sm font-nexa-bold text-gray-500">
                       Email:
                     </span>
                     <p className="text-sm text-gray-900">
@@ -384,7 +384,7 @@ export default async function OrderDetailPage({ params }) {
                     </p>
                   </div>
                   <div>
-                    <span className="text-sm font-medium text-gray-500">
+                    <span className="text-sm font-nexa-bold text-gray-500">
                       Teléfono:
                     </span>
                     <p className="text-sm text-gray-900">
@@ -392,7 +392,7 @@ export default async function OrderDetailPage({ params }) {
                     </p>
                   </div>
                   <div>
-                    <span className="text-sm font-medium text-gray-500">
+                    <span className="text-sm font-nexa-bold text-gray-500">
                       Dirección:
                     </span>
                     <p className="text-sm text-gray-900">
@@ -412,12 +412,12 @@ export default async function OrderDetailPage({ params }) {
 
             {/* Información de pago */}
             <div className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-lg font-semibold mb-4">
+              <h3 className="text-lg font-nexa-bold mb-4">
                 Información de Pago
               </h3>
               <div className="space-y-3">
                 <div>
-                  <span className="text-sm font-medium text-gray-500">
+                  <span className="text-sm font-nexa-bold text-gray-500">
                     Método:
                   </span>
                   <p className="text-sm text-gray-900">
@@ -426,7 +426,7 @@ export default async function OrderDetailPage({ params }) {
                 </div>
                 {order.paymentId && (
                   <div>
-                    <span className="text-sm font-medium text-gray-500">
+                    <span className="text-sm font-nexa-bold text-gray-500">
                       ID de Pago:
                     </span>
                     <p className="text-sm text-gray-900 font-mono">
@@ -435,7 +435,7 @@ export default async function OrderDetailPage({ params }) {
                   </div>
                 )}
                 <div>
-                  <span className="text-sm font-medium text-gray-500">
+                  <span className="text-sm font-nexa-bold text-gray-500">
                     Fecha:
                   </span>
                   <p className="text-sm text-gray-900">
@@ -456,13 +456,13 @@ export default async function OrderDetailPage({ params }) {
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-            <h1 className="text-lg font-medium text-red-800 mb-2">
+            <h1 className="text-lg font-nexa-bold text-red-800 mb-2">
               Error al cargar el pedido
             </h1>
             <p className="text-red-600 mb-4">{error.message}</p>
             <Link
               href="/admin/orders"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-nexa-bold rounded-md text-white bg-red-600 hover:bg-red-700"
             >
               <ArrowLeftIcon className="h-4 w-4 mr-2" />
               Volver a la lista de pedidos

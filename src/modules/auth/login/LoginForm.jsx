@@ -141,7 +141,7 @@ export default function LoginForm({
 
   return (
     <div className="w-full max-w-md mx-auto p-6">
-      <h2 className="font-bold text-center text-2xl font-semibold mb-6">
+      <h2 className="font-nexa-bold text-center text-2xl  mb-6">
         INICIAR SESIÓN
       </h2>
 

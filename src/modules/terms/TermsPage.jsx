@@ -8,11 +8,11 @@ export default function TermsPage() {
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-sm border p-8">
           <div className="prose prose-lg max-w-none">
-            <h1 className="text-3xl font-bold mb-6 text-gray-800">
+            <h1 className="text-3xl font-nexa-bold mb-6 text-gray-800">
               TÉRMINOS Y CONDICIONES DE USO
             </h1>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               1. INTRODUCCIÓN
             </h2>
             <p className="mb-4 text-gray-700">
@@ -24,7 +24,7 @@ export default function TermsPage() {
               le rogamos que no utilice nuestro sitio web.
             </p>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               2. DEFINICIONES
             </h2>
             <ul className="mb-4 list-disc pl-5 text-gray-700">
@@ -51,10 +51,10 @@ export default function TermsPage() {
               </li>
             </ul>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               3. USO DEL SITIO WEB
             </h2>
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               3.1. Elegibilidad
             </h3>
             <p className="mb-4 text-gray-700">
@@ -63,7 +63,7 @@ export default function TermsPage() {
               padre o tutor legal.
             </p>
 
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               3.2. Cuenta de Usuario
             </h3>
             <p className="mb-4 text-gray-700">
@@ -74,7 +74,7 @@ export default function TermsPage() {
               las actividades que ocurran bajo su cuenta.
             </p>
 
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               3.3. Restricción de Venta
             </h3>
             <p className="mb-4 text-gray-700">
@@ -85,7 +85,7 @@ export default function TermsPage() {
               fines está estrictamente prohibido.
             </p>
 
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               3.4. Conducta del Usuario
             </h3>
             <p className="mb-2 text-gray-700">
@@ -112,10 +112,10 @@ export default function TermsPage() {
               </li>
             </ul>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               4. PRODUCTOS Y SERVICIOS
             </h2>
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               4.1. Disponibilidad de Productos
             </h3>
             <p className="mb-4 text-gray-700">
@@ -124,7 +124,7 @@ export default function TermsPage() {
               productos mostrados estén disponibles en todo momento.
             </p>
 
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               4.2. Descripción de Productos
             </h3>
             <p className="mb-4 text-gray-700">
@@ -134,10 +134,10 @@ export default function TermsPage() {
               dispositivo sea exacta.
             </p>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               5. PRECIOS Y PAGOS
             </h2>
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               5.1. Precios
             </h3>
             <p className="mb-4 text-gray-700">
@@ -146,7 +146,7 @@ export default function TermsPage() {
               precios en cualquier momento sin previo aviso.
             </p>
 
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               5.2. Métodos de Pago
             </h3>
             <p className="mb-4 text-gray-700">
@@ -155,7 +155,7 @@ export default function TermsPage() {
               de crédito a través de nuestro sitio web.
             </p>
 
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               5.3. Seguridad en los Pagos
             </h3>
             <p className="mb-4 text-gray-700">
@@ -164,10 +164,10 @@ export default function TermsPage() {
               al comprador según sus políticas vigentes.
             </p>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               6. ENVÍOS Y ENTREGAS
             </h2>
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               6.1. Política de Envíos
             </h3>
             <p className="mb-4 text-gray-700">
@@ -176,7 +176,7 @@ export default function TermsPage() {
               se realizan dentro del territorio nacional argentino.
             </p>
 
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               6.2. Costos de Envío
             </h3>
             <p className="mb-4 text-gray-700">
@@ -185,7 +185,7 @@ export default function TermsPage() {
               de entrega.
             </p>
 
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               6.3. Plazos de Entrega
             </h3>
             <p className="mb-4 text-gray-700">
@@ -194,10 +194,10 @@ export default function TermsPage() {
               terceros encargados del transporte.
             </p>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               7. POLÍTICA DE DEVOLUCIONES Y GARANTÍA
             </h2>
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               7.1. Garantía
             </h3>
             <p className="mb-4 text-gray-700">
@@ -205,7 +205,7 @@ export default function TermsPage() {
               defectos de fabricación o desperfectos técnicos.
             </p>
 
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               7.2. Devoluciones
             </h3>
             <p className="mb-4 text-gray-700">
@@ -216,7 +216,7 @@ export default function TermsPage() {
               de contacto.
             </p>
 
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               7.3. Condiciones para la Devolución
             </h3>
             <p className="mb-4 text-gray-700">
@@ -225,7 +225,7 @@ export default function TermsPage() {
               los costos de envío para la devolución del producto.
             </p>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               8. PROPIEDAD INTELECTUAL
             </h2>
             <p className="mb-4 text-gray-700">
@@ -236,7 +236,7 @@ export default function TermsPage() {
               las leyes argentinas e internacionales de propiedad intelectual.
             </p>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               9. LIMITACIÓN DE RESPONSABILIDAD
             </h2>
             <p className="mb-4 text-gray-700">
@@ -247,7 +247,7 @@ export default function TermsPage() {
               uso, fondo de comercio u otras pérdidas intangibles.
             </p>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               10. LEGISLACIÓN APLICABLE Y JURISDICCIÓN
             </h2>
             <p className="mb-4 text-gray-700">
@@ -258,7 +258,7 @@ export default function TermsPage() {
               sede principal.
             </p>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               11. MODIFICACIONES A LOS TÉRMINOS
             </h2>
             <p className="mb-4 text-gray-700">
@@ -269,7 +269,7 @@ export default function TermsPage() {
               actualizaciones.
             </p>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               12. CONTACTO
             </h2>
             <p className="mb-4 text-gray-700">

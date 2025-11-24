@@ -12,7 +12,7 @@ export default function CheckoutFailurePage() {
             <XCircleIcon className="h-10 w-10 text-red-600" />
           </div>
 
-          <h1 className="text-3xl font-bold mb-4 text-gray-800">
+          <h1 className="text-3xl font-nexa-bold mb-4 text-gray-800">
             Error en el Pago
           </h1>
 

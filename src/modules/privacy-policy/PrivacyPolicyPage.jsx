@@ -8,11 +8,11 @@ export default function PrivacyPage() {
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-sm border p-8">
           <div className="prose prose-lg max-w-none">
-            <h1 className="text-3xl font-bold mb-6 text-gray-800">
+            <h1 className="text-3xl font-nexa-bold mb-6 text-gray-800">
               POLÍTICA DE PRIVACIDAD
             </h1>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               1. INTRODUCCIÓN
             </h2>
             <p className="mb-4 text-gray-700">
@@ -23,10 +23,10 @@ export default function PrivacyPage() {
               acepta las prácticas descritas en esta política.
             </p>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               2. INFORMACIÓN QUE RECOPILAMOS
             </h2>
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               2.1. Información Personal
             </h3>
             <p className="mb-2 text-gray-700">
@@ -46,7 +46,7 @@ export default function PrivacyPage() {
               </li>
             </ul>
 
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               2.2. Información de Uso
             </h3>
             <p className="mb-4 text-gray-700">
@@ -61,7 +61,7 @@ export default function PrivacyPage() {
               <li className="mb-1">Referencias y enlaces de salida</li>
             </ul>
 
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               2.3. Cookies y Tecnologías Similares
             </h3>
             <p className="mb-4 text-gray-700">
@@ -77,7 +77,7 @@ export default function PrivacyPage() {
               .
             </p>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               3. CÓMO UTILIZAMOS SU INFORMACIÓN
             </h2>
             <p className="mb-2 text-gray-700">
@@ -102,10 +102,10 @@ export default function PrivacyPage() {
               </li>
             </ul>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               4. COMPARTICIÓN DE INFORMACIÓN
             </h2>
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               4.1. Proveedores de Servicios
             </h3>
             <p className="mb-4 text-gray-700">
@@ -123,7 +123,7 @@ export default function PrivacyPage() {
               <li className="mb-1">Proveedores de servicios de análisis web</li>
             </ul>
 
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               4.2. Requisitos Legales
             </h3>
             <p className="mb-4 text-gray-700">
@@ -132,7 +132,7 @@ export default function PrivacyPage() {
               autoridades públicas.
             </p>
 
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               4.3. Transferencias Comerciales
             </h3>
             <p className="mb-4 text-gray-700">
@@ -141,10 +141,10 @@ export default function PrivacyPage() {
               transacción.
             </p>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               5. SEGURIDAD DE LA INFORMACIÓN
             </h2>
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               5.1. Medidas de Seguridad
             </h3>
             <p className="mb-4 text-gray-700">
@@ -155,7 +155,7 @@ export default function PrivacyPage() {
               electrónico puede garantizarse como 100% seguro.
             </p>
 
-            <h3 className="text-lg font-bold mb-2 text-gray-700">
+            <h3 className="text-lg font-nexa-bold mb-2 text-gray-700">
               5.2. Almacenamiento de Datos
             </h3>
             <p className="mb-4 text-gray-700">
@@ -167,7 +167,7 @@ export default function PrivacyPage() {
               garantizar la integridad de sus datos.
             </p>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               6. SUS DERECHOS
             </h2>
             <p className="mb-4 text-gray-700">
@@ -191,7 +191,7 @@ export default function PrivacyPage() {
               sección de contacto.
             </p>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               7. RETENCIÓN DE DATOS
             </h2>
             <p className="mb-4 text-gray-700">
@@ -201,7 +201,7 @@ export default function PrivacyPage() {
               informes.
             </p>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               8. MENORES DE EDAD
             </h2>
             <p className="mb-4 text-gray-700">
@@ -212,7 +212,7 @@ export default function PrivacyPage() {
               medidas para eliminar esa información.
             </p>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               9. ENLACES A SITIOS DE TERCEROS
             </h2>
             <p className="mb-4 text-gray-700">
@@ -223,7 +223,7 @@ export default function PrivacyPage() {
               sitio que visite.
             </p>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               10. CAMBIOS A ESTA POLÍTICA
             </h2>
             <p className="mb-4 text-gray-700">
@@ -234,7 +234,7 @@ export default function PrivacyPage() {
               cambio.
             </p>
 
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">
               11. CONTACTO
             </h2>
             <p className="mb-4 text-gray-700">

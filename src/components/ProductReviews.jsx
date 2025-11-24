@@ -438,12 +438,12 @@ const ProductReviews = ({ productId }) => {
       {/* Resumen de calificaciones */}
       {ratingStats.total > 0 && (
         <div className="bg-gray-50 p-6 rounded-lg">
-          <h2 className="text-xl font-bold mb-4 text-gray-800">
+          <h2 className="text-xl font-sora-regular mb-4 text-gray-800">
             Calificaciones de Clientes
           </h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div className="flex items-center gap-4">
-              <div className="text-3xl font-bold text-gray-800">
+              <div className="text-3xl font-sora-regular text-gray-800">
                 {ratingStats.average.toFixed(1)}
               </div>
               <div>

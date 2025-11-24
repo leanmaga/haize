@@ -231,7 +231,7 @@ export default function CheckoutPage() {
 
     return (
       <div className="bg-white p-8 border border-gray-200 rounded-lg">
-        <h1 className="text-2xl font-bold mb-6">Completar Pago</h1>
+        <h1 className="text-2xl font-nexa-bold mb-6">Completar Pago</h1>
 
         <div className="mb-6">
           <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
@@ -332,7 +332,7 @@ export default function CheckoutPage() {
   //     <div className="bg-white min-h-screen py-12">
   //       <div className="container mx-auto px-4 max-w-md">
   //         <div className="bg-white p-8 border border-gray-200">
-  //           <h1 className="text-2xl font-bold mb-6">Completar Pago</h1>
+  //           <h1 className="text-2xl font-nexa-bold mb-6">Completar Pago</h1>
   //           <p className="mb-6 text-gray-600">
   //             Tu orden ha sido creada. Por favor, haz clic en el botón a
   //             continuación para completar el pago con MercadoPago.
@@ -368,7 +368,7 @@ export default function CheckoutPage() {
   return (
     <div className="bg-white min-h-screen py-12">
       <div className="container mx-auto px-4">
-        <h1 className="text-2xl font-bold mb-8 text-center">
+        <h1 className="text-2xl font-nexa-bold mb-8 text-center">
           Finalizar Compra
         </h1>
 
@@ -376,7 +376,7 @@ export default function CheckoutPage() {
           {/* Formulario de Checkout */}
           <div className="lg:w-2/3 mb-8 lg:mb-0">
             <div className="bg-white border border-gray-200 p-6">
-              <h2 className="text-xl font-semibold mb-6 pb-4 border-b border-gray-200">
+              <h2 className="text-xl font-sora-regular mb-6 pb-4 border-b border-gray-200">
                 Información de Envío
               </h2>
 
@@ -519,7 +519,7 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                {/* <h2 className="text-xl font-semibold mb-6 pb-4 border-b border-gray-200">
+                {/* <h2 className="text-xl font-sora-regular mb-6 pb-4 border-b border-gray-200">
                   Método de Pago
                 </h2>
 
@@ -633,7 +633,7 @@ export default function CheckoutPage() {
           {/* Resumen de la Orden */}
           <div className="lg:w-1/3">
             <div className="bg-white border border-gray-200 p-6">
-              <h2 className="text-xl font-semibold mb-4 pb-4 border-b border-gray-200">
+              <h2 className="text-xl font-sora-regular mb-4 pb-4 border-b border-gray-200">
                 Resumen de la Orden
               </h2>
 
@@ -675,7 +675,7 @@ export default function CheckoutPage() {
                   <span>Por coordinar</span>
                 </div>
                 <div className="border-t border-gray-200 pt-3 mt-2">
-                  <div className="flex justify-between font-semibold text-lg">
+                  <div className="flex justify-between font-sora-regular text-lg">
                     <span>Total</span>
                     <span>${total.toFixed(2)}</span>
                   </div>

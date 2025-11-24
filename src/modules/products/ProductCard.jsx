@@ -43,7 +43,7 @@ export default function ProductCard({ product }) {
 
         {/* Información del producto */}
         <div className="p-4 flex justify-start items-start flex-wrap w-full">
-          <h2 className="text-sm mb-2 font-medium uppercase text-black line-clamp-2 group-hover:text-gray-700 transition-colors">
+          <h2 className="text-sm mb-2 font-sora-regular uppercase text-black line-clamp-2 group-hover:text-gray-700 transition-colors">
             {product.title}
           </h2>
 
@@ -66,12 +66,14 @@ export default function ProductCard({ product }) {
 
           {/* Stock info */}
           {product.stock <= 5 && product.stock > 0 && (
-            <p className="text-xs text-gray-600 font-medium mb-2">
+            <p className="text-xs text-gray-600 font-sora-regular mb-2">
               ⚠ Quedan {product.stock} unidades
             </p>
           )}
           {product.stock === 0 && (
-            <p className="text-xs text-red-600 font-medium mb-2">✕ Agotado</p>
+            <p className="text-xs text-red-600 font-sora-regular mb-2">
+              ✕ Agotado
+            </p>
           )}
 
           {/* Botón favoritos */}

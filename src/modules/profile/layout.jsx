@@ -84,9 +84,7 @@ export default function ProfileLayout({ children }) {
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="font-sora-extralight text-2xl font-bold">
-              Mi Cuenta
-            </h1>
+            <h1 className="font-nexa-bold text-2xl">Mi Cuenta</h1>
 
             {/* ✅ NUEVO: Botón de refresh manual */}
             <button

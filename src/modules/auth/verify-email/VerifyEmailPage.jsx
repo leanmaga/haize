@@ -64,7 +64,7 @@ export default function VerifyEmailPage() {
           <div className="flex justify-center">
             <div className="animate-spin h-10 w-10 border-4 border-gray-400 rounded-full border-t-transparent"></div>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-nexa-bold text-gray-900">
             Verificando tu correo electrónico
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
@@ -97,7 +97,7 @@ export default function VerifyEmailPage() {
               </svg>
             </div>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-nexa-bold text-gray-900">
             ¡Correo verificado!
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
@@ -148,7 +148,7 @@ export default function VerifyEmailPage() {
               </svg>
             </div>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-nexa-bold text-gray-900">
             Error de verificación
           </h2>
           <p className="mt-2 text-center text-sm text-red-600">{error}</p>

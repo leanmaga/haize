@@ -41,7 +41,7 @@ export default function RelatedProducts({ products = [] }) {
 
   return (
     <div className="mt-16">
-      <h2 className="text-2xl font-semibold mb-8">
+      <h2 className="text-2xl font-sora-regular mb-8">
         Comprados frecuentemente juntos
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -81,7 +81,7 @@ export default function RelatedProducts({ products = [] }) {
               <div className="mt-1">
                 {product.promoPrice > 0 ? (
                   <div className="flex items-center">
-                    <p className="text-black font-semibold">
+                    <p className="text-black font-sora-regular">
                       ${product.promoPrice.toFixed(2)}
                     </p>
                     <p className="ml-2 text-sm text-gray-500 line-through">
@@ -89,7 +89,7 @@ export default function RelatedProducts({ products = [] }) {
                     </p>
                   </div>
                 ) : (
-                  <p className="text-black font-semibold">
+                  <p className="text-black font-sora-regular">
                     ${(product.salePrice || product.price).toFixed(2)}
                   </p>
                 )}

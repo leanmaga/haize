@@ -80,7 +80,7 @@ const AdminSidebar = () => {
       {/* Logo/Brand */}
       <div className="px-6 py-8 border-b border-gray-800">
         <Link href="/admin" className="block">
-          <h1 className="text-white text-xl font-light tracking-[0.2em] uppercase">
+          <h1 className="text-white text-xl font-nexa-bold tracking-[0.2em] uppercase">
             HAIZE
           </h1>
           <span className="text-gray-500 text-xs tracking-widest uppercase mt-1 block">

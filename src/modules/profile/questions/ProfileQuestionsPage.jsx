@@ -160,7 +160,7 @@ const AdminQuestionsPage = () => {
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">
+            <h1 className="text-2xl font-nexa-bold text-gray-800">
               Gestión de Preguntas
             </h1>
             <p className="text-gray-600 mt-1">
@@ -247,7 +247,7 @@ const AdminQuestionsPage = () => {
       <div className="bg-white rounded-lg shadow">
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-800">
+            <h2 className="text-lg font-nexa-bold text-gray-800">
               Preguntas ({filteredQuestions.length})
             </h2>
 
