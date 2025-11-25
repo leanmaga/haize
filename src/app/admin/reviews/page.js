@@ -323,7 +323,7 @@ const AdminReviewsPage = () => {
         {/* Distribución de Calificaciones */}
         {stats.ratingDistribution &&
           stats.ratingDistribution.some((count) => count > 0) && (
-            <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="bg-white p-4 rounded-lg">
               <h3 className="text-sm font-medium text-gray-900 mb-3">
                 Distribución de Calificaciones
               </h3>

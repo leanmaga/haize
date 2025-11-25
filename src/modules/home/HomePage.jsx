@@ -37,15 +37,13 @@ export default async function Home() {
         <div className="absolute inset-0 bg-black/20 md:bg-transparent" />
 
         {/* Contenido Hero */}
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 md:translate-y-10 text-white text-center font-primary px-4 w-full">
-          <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 md:mb-0">
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 md:translate-y-10 text-white text-center px-4 w-full">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-nexa-bold mb-3 md:mb-0">
             PRIMAVERA VERANO 2026
           </h3>
-          <p className="my-3 md:my-5 text-base md:text-lg">
-            Moda que inspira tu estilo
-          </p>
-          <button className="cursor-pointer mt-2">
-            <CustomLink href="/shop">Explorar Tienda</CustomLink>
+
+          <button className="cursor-pointer mt-2 font-sora-regular">
+            <CustomLink href="/products">Explorar Tienda</CustomLink>
           </button>
         </div>
       </div>

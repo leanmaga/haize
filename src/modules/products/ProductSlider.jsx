@@ -47,7 +47,7 @@ export default function ProductSlider({ products = [] }) {
   }
 
   return (
-    <div className="p-5 relative bg-zinc-200">
+    <div className="p-5 relative ">
       {/* Left button */}
       <button
         aria-label="Scroll left"

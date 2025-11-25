@@ -329,7 +329,7 @@ export default async function OrderDetailPage({ params }) {
               </div>
 
               {/* Total */}
-              <div className="px-6 py-4 bg-gray-50 border-t">
+              <div className="px-6 py-4 bg-white border-t">
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-nexa-bold text-gray-900">
                     Total:
@@ -453,7 +453,7 @@ export default async function OrderDetailPage({ params }) {
 
     // En lugar de lanzar el error, mostrar una página de error personalizada
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-red-50 border border-red-200 rounded-lg p-6">
             <h1 className="text-lg font-nexa-bold text-red-800 mb-2">

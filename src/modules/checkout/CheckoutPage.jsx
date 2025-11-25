@@ -230,7 +230,7 @@ export default function CheckoutPage() {
     if (!preferenceId) return null;
 
     return (
-      <div className="bg-white p-8 border border-gray-200 rounded-lg">
+      <div className="bg-white p-8 mt-[80px] border border-gray-200 rounded-lg">
         <h1 className="text-2xl font-nexa-bold mb-6">Completar Pago</h1>
 
         <div className="mb-6">
@@ -366,7 +366,7 @@ export default function CheckoutPage() {
   // }
 
   return (
-    <div className="bg-white min-h-screen py-12">
+    <div className="bg-white min-h-screen py-12 mt-[80px]">
       <div className="container mx-auto px-4">
         <h1 className="text-2xl font-nexa-bold mb-8 text-center">
           Finalizar Compra
@@ -376,7 +376,7 @@ export default function CheckoutPage() {
           {/* Formulario de Checkout */}
           <div className="lg:w-2/3 mb-8 lg:mb-0">
             <div className="bg-white border border-gray-200 p-6">
-              <h2 className="text-xl font-sora-regular mb-6 pb-4 border-b border-gray-200">
+              <h2 className="text-xl font-nexa-bold mb-6 pb-4 border-b border-gray-200">
                 Información de Envío
               </h2>
 
@@ -633,7 +633,7 @@ export default function CheckoutPage() {
           {/* Resumen de la Orden */}
           <div className="lg:w-1/3">
             <div className="bg-white border border-gray-200 p-6">
-              <h2 className="text-xl font-sora-regular mb-4 pb-4 border-b border-gray-200">
+              <h2 className="text-xl font-nexa-bold mb-4 pb-4 border-b border-gray-200">
                 Resumen de la Orden
               </h2>
 

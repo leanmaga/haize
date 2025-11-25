@@ -150,7 +150,7 @@ export default async function RootLayout({ children }) {
           strategy="beforeInteractive"
         />
       </head>
-      <body className="min-h-screen flex flex-col bg-gray-50">
+      <body className="min-h-screen flex flex-col">
         <Providers session={session}>
           <Navbar />
           <main className="flex-grow">{children}</main>

@@ -529,7 +529,7 @@ const AdminQuestionsPage = () => {
 
                   {/* Información del producto */}
                   {question.product && (
-                    <div className="flex items-center space-x-3 mb-3 p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center space-x-3 mb-3 p-3 bg-white rounded-lg">
                       <div className="w-12 h-12 relative flex-shrink-0">
                         <Image
                           src={question.product.imageUrl || '/placeholder.jpg'}
