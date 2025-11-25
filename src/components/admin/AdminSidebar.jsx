@@ -161,7 +161,7 @@ const AdminSidebar = () => {
       </nav>
 
       {/* Footer */}
-      <div className="absolute bottom-0 left-0 right-0 px-6 py-4 border-t border-gray-800">
+      <div className="absolute bottom-0 left-0 right-0 px-6 py-4 border-t border-gray-800 max-md:hidden">
         <p className="text-gray-600 text-xs tracking-wider">© 2025 HAIZE</p>
       </div>
     </aside>

@@ -1,12 +1,10 @@
-import {
-  SiFacebook,
-  SiTiktok,
-  SiInstagram,
-  SiYoutube,
-} from '@icons-pack/react-simple-icons';
+import { SiTiktok, SiInstagram } from '@icons-pack/react-simple-icons';
 import CustomLink from './CustomLink';
+import { getSocialMediaUrls } from '@/config/socialMediaConfig';
 
 export default function Footer() {
+  const [instagram, tiktok] = getSocialMediaUrls();
+
   return (
     <footer className="flex flex-wrap justify-around bg-zinc-900 text-white pt-10 pb-5 text-center">
       <div className="flex flex-col items-start gap-6.5 max-md:gap-4 max-md:items-center">
@@ -19,24 +17,21 @@ export default function Footer() {
         </CustomLink>
       </div>
 
-      <div className="flex flex-col items-start gap-6.5 max-md:gap-4 max-md:order-1 max-md:flex-row max-md:mt-4">
+      <div className="flex flex-col justify-start items-start gap-6.5 max-md:gap-4 max-md:order-1 max-md:flex-row max-md:mt-4">
         <p className="text-xl font-bold max-md:hidden">SEGUINOS</p>
-        <CustomLink href="/">
-          <SiFacebook className="hidden max-md:inline-block" />
-          <span className="max-md:hidden">Facebook</span>
-        </CustomLink>
-        <CustomLink href="/">
-          <SiTiktok className="hidden max-md:inline-block" />
+        <CustomLink href={tiktok.url}>
           <span className="max-md:hidden">Tiktok</span>
         </CustomLink>
-        <CustomLink href="/">
-          <SiInstagram className="hidden max-md:inline-block" />
+        <a href={tiktok.url} className="hidden max-md:inline-block">
+          <SiTiktok />
+        </a>
+
+        <CustomLink href={instagram.url}>
           <span className="max-md:hidden">Instagram</span>
         </CustomLink>
-        <CustomLink href="/">
-          <SiYoutube className="hidden max-md:inline-block" />
-          <span className="max-md:hidden">Youtube</span>
-        </CustomLink>
+        <a href={instagram.url} className="hidden max-md:inline-block">
+          <SiInstagram />
+        </a>
       </div>
 
       <div className="text-left max-md:w-full max-md:px-8.5 max-md:mt-6 max-md:text-center">
