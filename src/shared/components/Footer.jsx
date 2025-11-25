@@ -1,6 +1,7 @@
 import { SiTiktok, SiInstagram } from '@icons-pack/react-simple-icons';
 import CustomLink from './CustomLink';
 import { getSocialMediaUrls } from '@/config/socialMediaConfig';
+import NewsletterForm from '@/modules/newsletter/components/NewsletterForm';
 
 export default function Footer() {
   const [instagram, tiktok] = getSocialMediaUrls();
@@ -34,22 +35,8 @@ export default function Footer() {
         </a>
       </div>
 
-      <div className="text-left max-md:w-full max-md:px-8.5 max-md:mt-6 max-md:text-center">
-        <p className="mb-5 text-xl font-bold max-md:mb-2.5">NEWSLETTER</p>
-
-        <p>10% OFF en tu primera compra</p>
-
-        <form className="mt-2 flex flex-col gap-2">
-          <input
-            type="email"
-            placeholder="Ingresa tu email"
-            className="my-1 rounded-md border border-zinc-500 p-2 text-white"
-          />
-          <button className="max-w-max py-2 px-5 rounded-md bg-zinc-100 text-black font-medium hover:bg-zinc-400 transition-all ease-in-out duration-200 max-md:max-w-full">
-            SUSCRIBIRSE
-          </button>
-        </form>
-      </div>
+      {/* Componente NewsletterForm reemplaza el formulario estático */}
+      <NewsletterForm />
 
       <div className="w-full mt-8 order-2 max-md:mt-4">
         <p className="mb-0.5">
