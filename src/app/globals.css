@@ -154,12 +154,3 @@ body {
   background-clip: text;
   position: relative;
 }
-
-.price-main::after {
-  content: '$';
-  position: absolute;
-  left: -16px;
-  top: 0;
-  font-size: 0.7em;
-  opacity: 0.6;
-}

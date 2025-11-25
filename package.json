@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:turbo": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -22,6 +23,7 @@
     "@commitlint/config-conventional": "20.0.0",
     "@formspree/react": "^3.0.0",
     "@heroicons/react": "^2.0.18",
+    "@icons-pack/react-simple-icons": "^13.8.0",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.41.3",
     "commitizen": "4.3.1",

@@ -134,7 +134,7 @@ const FilterSidebar = ({
         px-5 py-8 fixed top-0 left-0 h-full bg-white z-50
         transform transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        w-[320px] md:w-[400px] overflow-y-auto shadow-2xl
+        w-[320px] md:w-[400px] overflow-y-auto shadow-2xl max-md:w-full
       `}
       >
         {/* Header */}

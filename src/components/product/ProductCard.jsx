@@ -136,10 +136,10 @@ const ProductCard = ({ product }) => {
         {/* Precio y descuento */}
         <div className="flex items-end justify-between mb-8">
           <div className="price-container">
-            <div className="flex items-baseline space-x-2">
+            <div className="flex items-baseline space-x-2 max-xl:flex-wrap">
               {hasPromotion ? (
                 <>
-                  <span className="price-main text-4xl">
+                  <span className="price-main text-4xl max-xl:w-full max-xl:text-3xl max-xl:mb-2">
                     ${displayPrice.toFixed(2)}
                   </span>
                   <span className="text-gray-400 line-through text-sm">

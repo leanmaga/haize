@@ -14,7 +14,7 @@ import {
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 import AuthModal from '@/modules/auth/modal/AuthModal';
-import CategoriesDropdown from './CategoriesDropdown';
+import CategoriesDropdown from './CategoriesDropDown';
 import SearchDropdown from '../../modules/products/search/SearchDropdown';
 import Image from 'next/image';
 
@@ -102,23 +102,25 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 w-full transition-colors duration-300 ${
+        className={`px-15 w-full fixed top-0 left-0 transition-colors duration-300 ${
           shouldHaveBackground
             ? 'bg-black/60 backdrop-blur-sm'
             : 'bg-transparent'
-        }`}
+        } max-md:px-5`}
         style={{ zIndex: 50 }}
       >
-        <div className="container mx-auto px-4 flex items-center justify-between py-3">
+        <div className="container mx-auto px-4 py-6 flex items-center justify-between max-md:items-baseline">
           {/* Categorías - Desktop Left */}
-          <div className="hidden md:block text-white font-mono">
+          <div className="text-white font-mono max-md:hidden">
             <CategoriesDropdown />
           </div>
 
           {/* Logo Central - HAIZE */}
           <h1
-            className={`text-4xl font-nexa-bold transition-transform duration-300 text-white ${
-              shouldScaleLogo ? 'md:scale-150 md:translate-y-8' : 'scale-100'
+            className={`text-4xl font-nexa-bold transition-transform duration-300 text-white font-serif ${
+              shouldScaleLogo
+                ? 'md:scale-250 md:translate-y-30 md:translate-x-30'
+                : 'scale-100 translate-x-24 max-md:translate-x-0'
             }`}
           >
             <Link href="/">HAIZE</Link>
@@ -137,7 +139,7 @@ const Navbar = () => {
                   <li>
                     <button
                       onClick={openLoginModal}
-                      className="hover:text-gray-300 transition"
+                      className="hover:text-gray-300 transition cursor-pointer"
                     >
                       INICIAR SESIÓN
                     </button>
@@ -145,7 +147,7 @@ const Navbar = () => {
                   <li>
                     <button
                       onClick={openRegisterModal}
-                      className="hover:text-gray-300 transition"
+                      className="hover:text-gray-300 transition cursor-pointer"
                     >
                       REGISTRARSE
                     </button>
@@ -157,7 +159,7 @@ const Navbar = () => {
                     <li>
                       <Link
                         href="/admin"
-                        className="hover:text-gray-300 transition"
+                        className="hover:text-gray-300 transition cursor-pointer"
                       >
                         ADMIN
                       </Link>

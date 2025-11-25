@@ -1,9 +1,15 @@
+import {
+  SiFacebook,
+  SiTiktok,
+  SiInstagram,
+  SiYoutube,
+} from '@icons-pack/react-simple-icons';
 import CustomLink from './CustomLink';
 
 export default function Footer() {
   return (
     <footer className="flex flex-wrap justify-around bg-zinc-900 text-white pt-10 pb-5 text-center">
-      <div className="flex flex-col items-start gap-6.5">
+      <div className="flex flex-col items-start gap-6.5 max-md:gap-4 max-md:items-center">
         <p className="text-xl font-bold">TE AYUDAMOS</p>
         <CustomLink href="/contact">Contacto</CustomLink>
         <CustomLink href="/returns">Cambios y devoluciones</CustomLink>
@@ -13,16 +19,28 @@ export default function Footer() {
         </CustomLink>
       </div>
 
-      <div className="flex flex-col items-start gap-6.5">
-        <p className="text-xl font-bold">SEGUINOS</p>
-        <CustomLink href="/">Facebook</CustomLink>
-        <CustomLink href="/">Tiktok</CustomLink>
-        <CustomLink href="/">Instagram</CustomLink>
-        <CustomLink href="/">Youtube</CustomLink>
+      <div className="flex flex-col items-start gap-6.5 max-md:gap-4 max-md:order-1 max-md:flex-row max-md:mt-4">
+        <p className="text-xl font-bold max-md:hidden">SEGUINOS</p>
+        <CustomLink href="/">
+          <SiFacebook className="hidden max-md:inline-block" />
+          <span className="max-md:hidden">Facebook</span>
+        </CustomLink>
+        <CustomLink href="/">
+          <SiTiktok className="hidden max-md:inline-block" />
+          <span className="max-md:hidden">Tiktok</span>
+        </CustomLink>
+        <CustomLink href="/">
+          <SiInstagram className="hidden max-md:inline-block" />
+          <span className="max-md:hidden">Instagram</span>
+        </CustomLink>
+        <CustomLink href="/">
+          <SiYoutube className="hidden max-md:inline-block" />
+          <span className="max-md:hidden">Youtube</span>
+        </CustomLink>
       </div>
 
-      <div className="text-left">
-        <p className="mb-5 text-xl font-bold">NEWSLETTER</p>
+      <div className="text-left max-md:w-full max-md:px-8.5 max-md:mt-6 max-md:text-center">
+        <p className="mb-5 text-xl font-bold max-md:mb-2.5">NEWSLETTER</p>
 
         <p>10% OFF en tu primera compra</p>
 
@@ -32,13 +50,13 @@ export default function Footer() {
             placeholder="Ingresa tu email"
             className="my-1 rounded-md border border-zinc-500 p-2 text-white"
           />
-          <button className="max-w-max py-2 px-5 rounded-md bg-zinc-500 text-black font-medium hover:bg-zinc-600 hover:text-white transition-all ease-in-out duration-200">
+          <button className="max-w-max py-2 px-5 rounded-md bg-zinc-100 text-black font-medium hover:bg-zinc-400 transition-all ease-in-out duration-200 max-md:max-w-full">
             SUSCRIBIRSE
           </button>
         </form>
       </div>
 
-      <div className="w-full mt-8">
+      <div className="w-full mt-8 order-2 max-md:mt-4">
         <p className="mb-0.5">
           &copy; 2025{' '}
           <span className="italic">
