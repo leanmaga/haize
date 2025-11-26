@@ -16,13 +16,13 @@ const ProductForm = ({ product = null }) => {
   const [loading, setLoading] = useState(false);
   const [autoCalculateMargin, setAutoCalculateMargin] = useState(true);
   const [showFinancialInfo, setShowFinancialInfo] = useState(
-    !!(product?.cost || product?.profitMargin || product?.promoPrice)
+    !!(product?.cost || product?.profitMargin || product?.promoPrice),
   );
   const [showAdditionalInfo, setShowAdditionalInfo] = useState(
-    !!(product?.material || product?.brand || product?.origin)
+    !!(product?.material || product?.brand || product?.origin),
   );
   const [showVariants, setShowVariants] = useState(
-    !!(product?.sizes?.length > 0 || product?.colors?.length > 0)
+    !!(product?.sizes?.length > 0 || product?.colors?.length > 0),
   );
   const [validationErrors, setValidationErrors] = useState({});
 
@@ -35,7 +35,7 @@ const ProductForm = ({ product = null }) => {
       description: img.description || '',
       color: img.color || '',
       info: null,
-    })) || []
+    })) || [],
   );
 
   // Estados para variantes
@@ -44,7 +44,7 @@ const ProductForm = ({ product = null }) => {
       size: s.size,
       stock: s.stock,
       sku: s.sku || '',
-    })) || []
+    })) || [],
   );
   const [colors, setColors] = useState(
     product?.colors?.map((c) => ({
@@ -52,13 +52,13 @@ const ProductForm = ({ product = null }) => {
       hexCode: c.hexCode || '',
       stock: c.stock,
       imageUrl: c.imageUrl || '',
-    })) || []
+    })) || [],
   );
 
   // Estados para composición y cuidado
   const [composition, setComposition] = useState(product?.composition || []);
   const [careInstructions, setCareInstructions] = useState(
-    product?.careInstructions || []
+    product?.careInstructions || [],
   );
   const [tags, setTags] = useState(product?.tags || []);
 
@@ -356,7 +356,7 @@ const ProductForm = ({ product = null }) => {
       toast.success(
         product
           ? 'Producto actualizado correctamente'
-          : 'Producto creado correctamente'
+          : 'Producto creado correctamente',
       );
 
       router.push('/admin/products');
@@ -653,7 +653,7 @@ const ProductForm = ({ product = null }) => {
                         onChange={(e) =>
                           updateSize(index, 'size', e.target.value)
                         }
-                        className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                        className="max-sm:w-15 flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
                       >
                         <option value="">Seleccionar talle</option>
                         <optgroup label="Letras">
@@ -696,7 +696,7 @@ const ProductForm = ({ product = null }) => {
                         onChange={(e) =>
                           updateSize(index, 'stock', e.target.value)
                         }
-                        className="w-24 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                        className="w-24 max-sm:w-10 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
                       />
                       <input
                         type="text"
@@ -705,12 +705,12 @@ const ProductForm = ({ product = null }) => {
                         onChange={(e) =>
                           updateSize(index, 'sku', e.target.value)
                         }
-                        className="w-32 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                        className="w-32 max-sm:w-14 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
                       />
                       <button
                         type="button"
                         onClick={() => removeSize(index)}
-                        className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg"
+                        className="px-3 max-sm:px-0 py-2 text-red-600 hover:bg-red-50 rounded-lg"
                       >
                         ✕
                       </button>
@@ -741,7 +741,7 @@ const ProductForm = ({ product = null }) => {
                         onChange={(e) =>
                           updateColor(index, 'name', e.target.value)
                         }
-                        className="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                        className="max-sm:w-20 flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
                       />
                       <input
                         type="color"
@@ -759,7 +759,7 @@ const ProductForm = ({ product = null }) => {
                         onChange={(e) =>
                           updateColor(index, 'stock', e.target.value)
                         }
-                        className="w-24 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                        className="w-24 max-sm:w-10 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
                       />
                       <button
                         type="button"
@@ -936,7 +936,7 @@ const ProductForm = ({ product = null }) => {
                           removeFromArray(
                             setCareInstructions,
                             careInstructions,
-                            index
+                            index,
                           )
                         }
                         className="text-red-600 hover:text-red-800"

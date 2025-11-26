@@ -76,7 +76,7 @@ const AdminSidebar = () => {
   const isExactActive = (href) => pathname === href;
 
   return (
-    <aside className="w-full md:w-64 bg-gray-950 md:min-h-screen md:sticky md:top-0">
+    <aside className="w-full xl:w-64 bg-gray-950 xl:min-h-screen xl:sticky xl:top-0">
       {/* Logo/Brand */}
       <div className="px-6 py-8 border-b border-gray-800">
         <Link href="/admin" className="block">
@@ -159,11 +159,6 @@ const AdminSidebar = () => {
           })}
         </ul>
       </nav>
-
-      {/* Footer */}
-      <div className="absolute bottom-0 left-0 right-0 px-6 py-4 border-t border-gray-800 max-md:hidden">
-        <p className="text-gray-600 text-xs tracking-wider">© 2025 HAIZE</p>
-      </div>
     </aside>
   );
 };
