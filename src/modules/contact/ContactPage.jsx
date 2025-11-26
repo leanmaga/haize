@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import ContactForm from '@/components/contact/ContactForm';
+import ContactForm from './components/ContactForm';
 import { getSocialMediaList } from '@/config/socialMediaConfig';
 import {
   EnvelopeIcon,
@@ -29,16 +29,16 @@ const ContactPage = () => {
 
   const openWhatsApp = () => {
     const message = encodeURIComponent(
-      '¡Hola! Me gustaría hacer una consulta sobre HAIZE.'
+      '¡Hola! Me gustaría hacer una consulta sobre HAIZE.',
     );
     window.open(
       `https://wa.me/${contactInfo.whatsapp}?text=${message}`,
-      '_blank'
+      '_blank',
     );
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white mt-[80px]">
       <div className="max-w-6xl mx-auto px-6 py-16 md:py-24">
         {/* Header */}
         <div className="text-center mb-16">
@@ -142,7 +142,7 @@ const ContactPage = () => {
                 aria-label={social.name}
               >
                 {social.icon(
-                  'w-8 h-8 text-gray-900 group-hover:scale-110 transition-transform'
+                  'w-8 h-8 text-gray-900 group-hover:scale-110 transition-transform',
                 )}
                 <span className="text-xs text-gray-600">{social.name}</span>
               </a>

@@ -39,16 +39,16 @@ export default function Footer() {
       <NewsletterForm />
 
       <div className="w-full mt-8 order-2 max-md:mt-4">
-        <p className="mb-0.5">
+        <p className="mb-0.5 font-nexa-bold">
           &copy; 2025{' '}
-          <span className="italic">
+          <span className="font-nexa-bold uppercase">
             <CustomLink href="/">Haize</CustomLink>.{' '}
           </span>
           Todos los derechos reservados.
         </p>
-        <p>
+        <p className="mb-0.5">
           Desarrollado por{' '}
-          <span className="italic">
+          <span className="font-nexa-bold uppercase">
             <CustomLink href="https://patagoniascript.vercel.app/">
               Patagoniascript
             </CustomLink>

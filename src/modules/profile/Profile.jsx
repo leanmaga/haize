@@ -53,7 +53,7 @@ export default function ProfilePage() {
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(
-            errorData.message || 'Error al obtener datos del perfil'
+            errorData.message || 'Error al obtener datos del perfil',
           );
         }
 
@@ -75,7 +75,7 @@ export default function ProfilePage() {
           // Caso de respaldo: hacer una solicitud separada solo si es necesario
           try {
             const ordersResponse = await fetch(
-              '/api/users/orders?userOnly=true&limit=3'
+              '/api/users/orders?userOnly=true&limit=3',
             );
 
             // ✅ MEJOR MANEJO DE ERRORES
@@ -83,7 +83,7 @@ export default function ProfilePage() {
               // Si es 404, el endpoint no existe
               if (ordersResponse.status === 404) {
                 console.warn(
-                  'Endpoint de órdenes no encontrado, intentando ruta alternativa'
+                  'Endpoint de órdenes no encontrado, intentando ruta alternativa',
                 );
 
                 // Intentar con la ruta alternativa
@@ -91,7 +91,7 @@ export default function ProfilePage() {
                 if (altResponse.ok) {
                   const altData = await altResponse.json();
                   setRecentOrders(
-                    Array.isArray(altData) ? altData.slice(0, 3) : []
+                    Array.isArray(altData) ? altData.slice(0, 3) : [],
                   );
                 }
                 return;
@@ -105,7 +105,7 @@ export default function ProfilePage() {
 
               // Otros errores
               throw new Error(
-                `Error ${ordersResponse.status}: ${ordersResponse.statusText}`
+                `Error ${ordersResponse.status}: ${ordersResponse.statusText}`,
               );
             }
 
@@ -126,7 +126,7 @@ export default function ProfilePage() {
             } else {
               console.warn(
                 'Estructura de datos de órdenes inesperada:',
-                ordersData
+                ordersData,
               );
             }
           } catch (orderError) {
@@ -217,8 +217,8 @@ export default function ProfilePage() {
   // Contenido para administradores
   if (isAdmin) {
     return (
-      <div>
-        <h2 className="font-sora-regular text-2xl font-bold mb-8 text-gray-800">
+      <div className="min-h-screen bg-gray-50 mt-[80px] py-12 px-6">
+        <h2 className="font-nexa-bold text-2xl mb-8 text-gray-800 ">
           Mi Perfil (Administrador)
         </h2>
 
@@ -227,13 +227,13 @@ export default function ProfilePage() {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
               <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-800">
+                <h3 className="text-lg font-nexa-bold text-gray-800">
                   Información Personal
                 </h3>
                 {!isEditing && (
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors"
+                    className="flex items-center text-sm font-sora-regular text-gray-600 hover:text-gray-800 transition-colors"
                   >
                     <PencilIcon className="h-4 w-4 mr-1" />
                     Editar
@@ -263,34 +263,36 @@ export default function ProfilePage() {
                     {!isEditing ? (
                       <div className="space-y-4">
                         <div className="space-y-1">
-                          <p className="text-xs font-medium uppercase text-gray-500">
+                          <p className=" font-nexa-bold  text-gray-500">
                             Nombre
                           </p>
                           <div className="flex items-center">
                             <UserIcon className="h-5 w-5 text-gray-400 mr-2" />
-                            <p className="text-lg font-medium">
+                            <p className="md:text-md lg:text-lg font-sora-regular">
                               {userData.name || 'Usuario'}
                             </p>
                           </div>
                         </div>
 
                         <div className="space-y-1">
-                          <p className="text-xs font-medium uppercase text-gray-500">
+                          <p className=" font-nexa-bold  text-gray-500">
                             Email
                           </p>
                           <div className="flex items-center">
                             <EnvelopeIcon className="h-5 w-5 text-gray-400 mr-2" />
-                            <p className="text-lg">{userData.email}</p>
+                            <p className="md:text-md lg:text-lg font-sora-regular">
+                              {userData.email}
+                            </p>
                           </div>
                         </div>
 
                         <div className="space-y-1">
-                          <p className="text-xs font-medium uppercase text-gray-500">
+                          <p className="font-nexa-bold  text-gray-500">
                             Teléfono
                           </p>
                           <div className="flex items-center">
                             <PhoneIcon className="h-5 w-5 text-gray-400 mr-2" />
-                            <p className="text-lg">
+                            <p className="md:text-md lg:text-lg font-sora-regular">
                               {userData.phone || 'No especificado'}
                             </p>
                           </div>
@@ -301,7 +303,7 @@ export default function ProfilePage() {
                         <div>
                           <label
                             htmlFor="name"
-                            className="block text-xs font-medium uppercase text-gray-500 mb-1"
+                            className="block text-xs font-sora-regular uppercase text-gray-500 mb-1"
                           >
                             Nombre
                           </label>
@@ -320,7 +322,7 @@ export default function ProfilePage() {
                         <div>
                           <label
                             htmlFor="email"
-                            className="block text-xs font-medium uppercase text-gray-500 mb-1"
+                            className="block text-xs font-sora-regular uppercase text-gray-500 mb-1"
                           >
                             Email
                           </label>
@@ -339,7 +341,7 @@ export default function ProfilePage() {
                         <div>
                           <label
                             htmlFor="phone"
-                            className="block text-xs font-medium uppercase text-gray-500 mb-1"
+                            className="block text-xs font-sora-regular uppercase text-gray-500 mb-1"
                           >
                             Teléfono
                           </label>
@@ -358,7 +360,7 @@ export default function ProfilePage() {
                           <button
                             type="submit"
                             disabled={submitting}
-                            className="px-6 py-3 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition-colors font-medium flex items-center justify-center disabled:opacity-70"
+                            className="px-6 py-3 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition-colors font-sora-regular flex items-center justify-center disabled:opacity-70"
                           >
                             {submitting ? (
                               <>
@@ -382,7 +384,7 @@ export default function ProfilePage() {
                                 phone: userData.phone || '',
                               });
                             }}
-                            className="px-6 py-3 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors font-medium flex items-center justify-center"
+                            className="px-6 py-3 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors font-sora-regular flex items-center justify-center"
                           >
                             <XMarkIcon className="h-4 w-4 mr-2" />
                             <span>Cancelar</span>
@@ -419,7 +421,7 @@ export default function ProfilePage() {
                         fill="#EA4335"
                       />
                     </svg>
-                    <span className="text-sm text-gray-800 font-medium">
+                    <span className="text-sm text-gray-800 font-sora-regular">
                       Cuenta vinculada con Google
                     </span>
                   </div>
@@ -430,7 +432,7 @@ export default function ProfilePage() {
             {/* Panel de acceso rápido a funciones administrativas */}
             <div className="bg-white rounded-xl shadow-sm overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-100">
-                <h3 className="text-lg font-semibold text-gray-800">
+                <h3 className="font-nexa-bold text-gray-800">
                   Panel de Administración
                 </h3>
               </div>
@@ -444,7 +446,7 @@ export default function ProfilePage() {
                     <BuildingStorefrontIcon className="h-6 w-6 text-gray-600" />
                   </div>
                   <div>
-                    <p className="font-medium">Productos</p>
+                    <p className="font-sora-regular">Productos</p>
                     <p className="text-sm text-gray-500">Gestionar catálogo</p>
                   </div>
                 </Link>
@@ -457,7 +459,7 @@ export default function ProfilePage() {
                     <ClipboardDocumentListIcon className="h-6 w-6 text-amber-600" />
                   </div>
                   <div>
-                    <p className="font-medium">Pedidos</p>
+                    <p className="font-sora-regular">Pedidos</p>
                     <p className="text-sm text-gray-500">Gestionar pedidos</p>
                   </div>
                 </Link>
@@ -470,7 +472,7 @@ export default function ProfilePage() {
                     <UsersIcon className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
-                    <p className="font-medium">Usuarios</p>
+                    <p className="font-sora-regular">Usuarios</p>
                     <p className="text-sm text-gray-500">Gestionar usuarios</p>
                   </div>
                 </Link>
@@ -496,7 +498,7 @@ export default function ProfilePage() {
                     </svg>
                   </div>
                   <div>
-                    <p className="font-medium">Agregar Producto</p>
+                    <p className="font-sora-regular">Agregar Producto</p>
                     <p className="text-sm text-gray-500">Nuevo producto</p>
                   </div>
                 </Link>
@@ -505,9 +507,11 @@ export default function ProfilePage() {
               <div className="px-6 py-4 bg-gray-50 border-t border-gray-100">
                 <Link
                   href="/admin"
-                  className="flex items-center justify-center text-gray-600 font-medium hover:text-gray-800 transition-colors"
+                  className="flex items-center justify-center "
                 >
-                  <span>Ir al Dashboard</span>
+                  <span className="font-nexa-bold text-gray-600  hover:text-gray-800 transition-colors ">
+                    Ir al Dashboard
+                  </span>
                   <ChevronRightIcon className="h-5 w-5 ml-2" />
                 </Link>
               </div>
@@ -519,7 +523,7 @@ export default function ProfilePage() {
             {/* Estado de la cuenta - Admin */}
             <div className="bg-white rounded-xl shadow-sm overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-100">
-                <h3 className="text-lg font-semibold text-gray-800">
+                <h3 className=" font-nexa-bold text-gray-800">
                   Estado de la Cuenta
                 </h3>
               </div>
@@ -529,7 +533,7 @@ export default function ProfilePage() {
                     <ShieldCheckIcon className="h-5 w-5 text-purple-600" />
                   </div>
                   <div>
-                    <p className="font-medium">Cuenta Administrativa</p>
+                    <p className="font-sora-regular">Cuenta Administrativa</p>
                     <p className="text-sm text-gray-500">
                       Desde {formatDate(userData.createdAt)}
                     </p>
@@ -537,11 +541,11 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="mt-4 pt-4 border-t border-gray-100">
-                  <p className="text-xs uppercase font-medium text-gray-500 mb-2">
+                  <p className="text-xs uppercase font-sora-regular text-gray-500 mb-2">
                     Tipo de cuenta
                   </p>
                   <div className="flex items-center">
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                    <span className="px-3 py-1 rounded-full text-xs font-sora-regular bg-purple-100 text-purple-800">
                       Administrador
                     </span>
                   </div>
@@ -552,7 +556,7 @@ export default function ProfilePage() {
             {/* Accesos rápidos - Admin */}
             <div className="bg-white rounded-xl shadow-sm overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-100">
-                <h3 className="text-lg font-semibold text-gray-800">Ajustes</h3>
+                <h3 className="font-nexa-bold text-gray-800">Ajustes</h3>
               </div>
               <div>
                 <Link
@@ -563,7 +567,7 @@ export default function ProfilePage() {
                     <CogIcon className="h-5 w-5 text-gray-600" />
                   </div>
                   <div>
-                    <p className="font-medium">Configuración</p>
+                    <p className="font-sora-regular">Configuración</p>
                     <p className="text-sm text-gray-500">Ajustes de cuenta</p>
                   </div>
                   <ChevronRightIcon className="ml-auto h-5 w-5 text-gray-400" />
@@ -590,7 +594,7 @@ export default function ProfilePage() {
                     </svg>
                   </div>
                   <div>
-                    <p className="font-medium">Ir a la Tienda</p>
+                    <p className="font-sora-regular">Ir a la Tienda</p>
                     <p className="text-sm text-gray-500">Ver tienda pública</p>
                   </div>
                   <ChevronRightIcon className="ml-auto h-5 w-5 text-gray-400" />
@@ -622,7 +626,7 @@ export default function ProfilePage() {
               {!isEditing && (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors"
+                  className="flex items-center text-sm font-sora-regular text-gray-600 hover:text-gray-800 transition-colors"
                 >
                   <PencilIcon className="h-4 w-4 mr-1" />
                   Editar
@@ -654,19 +658,19 @@ export default function ProfilePage() {
                   {!isEditing ? (
                     <div className="space-y-4">
                       <div className="space-y-1">
-                        <p className="text-xs font-medium uppercase text-gray-500">
+                        <p className="text-xs font-sora-regular uppercase text-gray-500">
                           Nombre
                         </p>
                         <div className="flex items-center">
                           <UserIcon className="h-5 w-5 text-gray-400 mr-2" />
-                          <p className="text-lg font-medium">
+                          <p className="text-lg font-sora-regular">
                             {userData.name || 'Usuario'}
                           </p>
                         </div>
                       </div>
 
                       <div className="space-y-1">
-                        <p className="text-xs font-medium uppercase text-gray-500">
+                        <p className="text-xs font-sora-regular uppercase text-gray-500">
                           Email
                         </p>
                         <div className="flex items-center">
@@ -676,7 +680,7 @@ export default function ProfilePage() {
                       </div>
 
                       <div className="space-y-1">
-                        <p className="text-xs font-medium uppercase text-gray-500">
+                        <p className="text-xs font-sora-regular uppercase text-gray-500">
                           Teléfono
                         </p>
                         <div className="flex items-center">
@@ -692,7 +696,7 @@ export default function ProfilePage() {
                       <div>
                         <label
                           htmlFor="name"
-                          className="block text-xs font-medium uppercase text-gray-500 mb-1"
+                          className="block text-xs font-sora-regular uppercase text-gray-500 mb-1"
                         >
                           Nombre
                         </label>
@@ -711,7 +715,7 @@ export default function ProfilePage() {
                       <div>
                         <label
                           htmlFor="email"
-                          className="block text-xs font-medium uppercase text-gray-500 mb-1"
+                          className="block text-xs font-sora-regular uppercase text-gray-500 mb-1"
                         >
                           Email
                         </label>
@@ -730,7 +734,7 @@ export default function ProfilePage() {
                       <div>
                         <label
                           htmlFor="phone"
-                          className="block text-xs font-medium uppercase text-gray-500 mb-1"
+                          className="block text-xs font-sora-regular uppercase text-gray-500 mb-1"
                         >
                           Teléfono
                         </label>
@@ -749,7 +753,7 @@ export default function ProfilePage() {
                         <button
                           type="submit"
                           disabled={submitting}
-                          className="px-6 py-3 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition-colors font-medium flex items-center justify-center disabled:opacity-70"
+                          className="px-6 py-3 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition-colors font-sora-regular flex items-center justify-center disabled:opacity-70"
                         >
                           {submitting ? (
                             <>
@@ -773,7 +777,7 @@ export default function ProfilePage() {
                               phone: userData.phone || '',
                             });
                           }}
-                          className="px-6 py-3 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors font-medium flex items-center justify-center"
+                          className="px-6 py-3 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors font-sora-regular flex items-center justify-center"
                         >
                           <XMarkIcon className="h-4 w-4 mr-2" />
                           <span>Cancelar</span>
@@ -810,7 +814,7 @@ export default function ProfilePage() {
                       fill="#EA4335"
                     />
                   </svg>
-                  <span className="text-sm text-gray-800 font-medium">
+                  <span className="text-sm text-gray-800 font-sora-regular">
                     Cuenta vinculada con Google
                   </span>
                 </div>
@@ -826,7 +830,7 @@ export default function ProfilePage() {
               </h3>
               <Link
                 href="/profile/orders"
-                className="text-sm text-gray-600 hover:text-gray-800 font-medium flex items-center"
+                className="text-sm text-gray-600 hover:text-gray-800 font-sora-regular flex items-center"
               >
                 Ver todos
                 <ChevronRightIcon className="h-4 w-4 ml-1" />
@@ -845,7 +849,7 @@ export default function ProfilePage() {
                         <ShoppingBagIcon className="h-5 w-5 text-gray-600" />
                       </div>
                       <div>
-                        <p className="font-medium">
+                        <p className="font-sora-regular">
                           Pedido #{order._id.substring(0, 8)}
                         </p>
                         <p className="text-sm text-gray-500">
@@ -854,7 +858,7 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-medium">
+                      <p className="font-sora-regular">
                         ${order.totalAmount.toFixed(2)}
                       </p>
                       <Link
@@ -871,7 +875,7 @@ export default function ProfilePage() {
                   <div className="mx-auto bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
                     <ShoppingBagIcon className="h-8 w-8 text-gray-500" />
                   </div>
-                  <h4 className="text-gray-600 font-medium mb-2">
+                  <h4 className="text-gray-600 font-sora-regular mb-2">
                     No hay pedidos recientes
                   </h4>
                   <p className="text-gray-500 mb-4">
@@ -905,7 +909,7 @@ export default function ProfilePage() {
                   <CheckIcon className="h-5 w-5 text-green-600" />
                 </div>
                 <div>
-                  <p className="font-medium">Cuenta activa</p>
+                  <p className="font-sora-regular">Cuenta activa</p>
                   <p className="text-sm text-gray-500">
                     Desde {formatDate(userData.createdAt)}
                   </p>
@@ -913,11 +917,11 @@ export default function ProfilePage() {
               </div>
 
               <div className="mt-4 pt-4 border-t border-gray-100">
-                <p className="text-xs uppercase font-medium text-gray-500 mb-2">
+                <p className="text-xs uppercase font-sora-regular text-gray-500 mb-2">
                   Tipo de cuenta
                 </p>
                 <div className="flex items-center">
-                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  <span className="px-3 py-1 rounded-full text-xs font-sora-regular bg-blue-100 text-blue-800">
                     Usuario
                   </span>
                 </div>
@@ -941,7 +945,7 @@ export default function ProfilePage() {
                   <ShoppingBagIcon className="h-5 w-5 text-gray-600" />
                 </div>
                 <div>
-                  <p className="font-medium">Mis Pedidos</p>
+                  <p className="font-sora-regular">Mis Pedidos</p>
                   <p className="text-sm text-gray-500">Historial de compras</p>
                 </div>
                 <ChevronRightIcon className="ml-auto h-5 w-5 text-gray-400" />
@@ -962,7 +966,7 @@ export default function ProfilePage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="font-medium">Catálogo</p>
+                  <p className="font-sora-regular">Catálogo</p>
                   <p className="text-sm text-gray-500">Explorar productos</p>
                 </div>
                 <ChevronRightIcon className="ml-auto h-5 w-5 text-gray-400" />
@@ -987,7 +991,7 @@ export default function ProfilePage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="font-medium">Configuración</p>
+                  <p className="font-sora-regular">Configuración</p>
                   <p className="text-sm text-gray-500">
                     Preferencias de cuenta
                   </p>
