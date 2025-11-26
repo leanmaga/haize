@@ -10,6 +10,10 @@ body {
   background: rgb(var(--background-rgb));
 }
 
+body.no-scroll {
+  overflow: hidden;
+}
+
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -148,7 +152,11 @@ body {
 }
 
 .price-main {
-  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:
+    'SF Pro Display',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
   font-weight: 800;
   background: #000000;
   background-clip: text;

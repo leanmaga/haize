@@ -77,18 +77,20 @@ export default function ProductCard({ product }) {
           )}
 
           {/* Botón favoritos */}
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              // Aquí puedes agregar la lógica de favoritos
-              console.log('Agregar a favoritos:', product.id);
-            }}
-            className="mt-1 flex justify-center items-center uppercase text-black text-xs hover:text-red-600 transition-colors"
-          >
-            <HeartIcon className="mr-1 inline-block size-4 transition-all ease-in-out duration-200" />
-            Agregar a favoritos
-          </button>
+          {/* 
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Aquí puedes agregar la lógica de favoritos
+                console.log('Agregar a favoritos:', product.id);
+              }}
+              className="mt-1 flex justify-center items-center uppercase text-black text-xs hover:text-red-600 transition-colors"
+            >
+              <HeartIcon className="mr-1 inline-block size-4 transition-all ease-in-out duration-200" />
+              Agregar a favoritos
+            </button>
+          */}
         </div>
       </div>
     </Link>

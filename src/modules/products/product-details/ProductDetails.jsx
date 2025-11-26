@@ -90,7 +90,7 @@ export default async function ProductDetails({ params }) {
 
         {/* Columna Derecha - Detalles CENTRADO CON MAX 500PX */}
         <div className="flex flex-col pt-2 mx-auto w-full max-w-[500px]">
-          {/* Badge Nuevo y Botón Favorito en la misma línea */}
+          {/* Badge Nuevo y Botón Favorito (desactivado temporalmente) en la misma línea */}
           <div className="flex items-center justify-between mb-4">
             {/* Badge Nuevo (si el producto es destacado) */}
             {product.featured && (
@@ -100,24 +100,26 @@ export default async function ProductDetails({ params }) {
             )}
 
             {/* Botón Favorito */}
-            <button
-              className="w-10 h-10 bg-white rounded-full shadow-md hover:shadow-lg flex items-center justify-center transition-all hover:scale-110"
-              aria-label="Agregar a favoritos"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            {/* 
+              <button
+                className="w-10 h-10 bg-white rounded-full shadow-md hover:shadow-lg flex items-center justify-center transition-all hover:scale-110"
+                aria-label="Agregar a favoritos"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                ></path>
-              </svg>
-            </button>
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                  ></path>
+                </svg>
+              </button>
+            */}
           </div>
 
           {/* Título del producto */}

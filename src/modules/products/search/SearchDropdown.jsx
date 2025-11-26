@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { createPortal } from 'react-dom';
 
 const SearchDropdown = ({ isMobile = false }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +14,14 @@ const SearchDropdown = ({ isMobile = false }) => {
   const [hasSearched, setHasSearched] = useState(false);
   const dropdownRef = useRef(null);
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('no-scroll');
+    } else {
+      document.body.classList.remove('no-scroll');
+    }
+  }, [isOpen]);
 
   // Cerrar dropdown al hacer click fuera
   useEffect(() => {
@@ -54,7 +63,7 @@ const SearchDropdown = ({ isMobile = false }) => {
   const searchProducts = async (query) => {
     try {
       const response = await fetch(
-        `/api/products?search=${encodeURIComponent(query)}&limit=6`
+        `/api/products?search=${encodeURIComponent(query)}&limit=6`,
       );
       const data = await response.json();
       setProducts(data.products || []);
@@ -103,11 +112,11 @@ const SearchDropdown = ({ isMobile = false }) => {
           {!isMobile && 'BUSCAR'}
         </button>
       ) : (
-        <div className="fixed inset-0 z-[60] flex items-start justify-center pt-16 md:pt-20 bg-black/50 backdrop-blur-sm">
+        <div className="fixed top-0 left-0 inset-0 z-90 flex items-start justify-center bg-black/30 backdrop-blur-sm pt-16 md:pt-20">
           <div className="w-full max-w-2xl mx-4">
             {/* Input de búsqueda */}
-            <div className="bg-white rounded-lg shadow-2xl">
-              <div className="flex items-center gap-3 p-3 md:p-4 border-b border-gray-200">
+            <div className="bg-white rounded-lg shadow-2xl relative z-80">
+              <div className="flex items-center gap-3 p-3 md:p-4">
                 <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 flex-shrink-0" />
                 <input
                   ref={inputRef}
@@ -189,7 +198,7 @@ const SearchDropdown = ({ isMobile = false }) => {
                       {/* Ver más resultados */}
                       <Link
                         href={`/products?search=${encodeURIComponent(
-                          searchTerm
+                          searchTerm,
                         )}`}
                         onClick={handleClose}
                         className="block mt-2 md:mt-3 p-2.5 md:p-3 text-center text-xs md:text-sm text-gray-600 hover:text-black hover:bg-gray-50 rounded-lg transition"

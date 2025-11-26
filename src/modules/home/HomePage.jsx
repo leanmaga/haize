@@ -72,7 +72,7 @@ export default async function Home() {
       {/* Slider de Productos */}
       <HomeProductSlider>
         <HomeProduct
-          width="w-[80vw] md:w-[50vw]"
+          width="w-[100vw] md:w-[50vw]"
           imageSrc="/assets/clothes4.jpg"
           altText="Clothes 4"
           title="Camisa de mezclilla"
@@ -82,7 +82,7 @@ export default async function Home() {
         />
 
         <HomeProduct
-          width="w-[80vw] md:w-[50vw]"
+          width="w-[100vw] md:w-[50vw]"
           imageSrc="/assets/clothes3.jpg"
           altText="Clothes 3"
           title="Camisa de mezclilla"
@@ -92,7 +92,7 @@ export default async function Home() {
         />
 
         <HomeProduct
-          width="w-[80vw] md:w-[50vw]"
+          width="w-[100vw] md:w-[50vw]"
           imageSrc="/assets/clothes5.jpg"
           altText="Clothes 5"
           title="Camisa de rayas"
