@@ -20,17 +20,33 @@ export default function Footer() {
 
       <div className="flex flex-col justify-start items-start gap-6.5 max-md:gap-4 max-md:order-1 max-md:flex-row max-md:mt-4">
         <p className="text-xl font-bold max-md:hidden">SEGUINOS</p>
-        <CustomLink href={tiktok.url}>
+        <CustomLink href={tiktok.url} target="_blank" rel="noopener noreferrer">
           <span className="max-md:hidden">Tiktok</span>
         </CustomLink>
-        <a href={tiktok.url} className="hidden max-md:inline-block">
+        <a
+          href={tiktok.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hidden max-md:inline-block"
+          aria-label="Visitar TikTok de Haize"
+        >
           <SiTiktok />
         </a>
 
-        <CustomLink href={instagram.url}>
+        <CustomLink
+          href={instagram.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <span className="max-md:hidden">Instagram</span>
         </CustomLink>
-        <a href={instagram.url} className="hidden max-md:inline-block">
+        <a
+          href={instagram.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hidden max-md:inline-block"
+          aria-label="Visitar Instagram de Haize"
+        >
           <SiInstagram />
         </a>
       </div>
@@ -49,7 +65,11 @@ export default function Footer() {
         <p className="mb-0.5">
           Desarrollado por{' '}
           <span className="font-nexa-bold uppercase">
-            <CustomLink href="https://patagoniascript.vercel.app/">
+            <CustomLink
+              href="https://patagoniascript.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Patagoniascript
             </CustomLink>
           </span>
