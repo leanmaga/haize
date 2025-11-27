@@ -102,7 +102,7 @@ export default function ProfileOrdersPage() {
   }
 
   return (
-    <div lassName="mt-[80px]">
+    <div className="mt-[80px]">
       <h2 className="font-nexa-bold text-xl font-semibold mb-6 text-gray-800">
         Mis Pedidos
       </h2>
@@ -143,7 +143,7 @@ export default function ProfileOrdersPage() {
 
               <div className="p-6">
                 <div className="space-y-4">
-                  {/* Productos - mostraremos solo los primeros 2 */}
+                  {/* ✅ MOSTRAR PRODUCTOS CON VARIANTES */}
                   {order.items.slice(0, 2).map((item, idx) => (
                     <div key={idx} className="flex items-center space-x-4">
                       <div className="h-16 w-16 relative flex-shrink-0">
@@ -159,6 +159,16 @@ export default function ProfileOrdersPage() {
                         <p className="text-sm font-medium text-gray-800 truncate">
                           {item.title}
                         </p>
+
+                        {/* ✅ MOSTRAR TALLE Y COLOR */}
+                        {(item.size || item.color) && (
+                          <p className="text-xs text-gray-500 mt-1">
+                            {item.size && `Talle: ${item.size}`}
+                            {item.size && item.color && ' | '}
+                            {item.color && `Color: ${item.color}`}
+                          </p>
+                        )}
+
                         <p className="text-sm text-gray-500">
                           {item.quantity} x ${item.price.toFixed(2)}
                         </p>
