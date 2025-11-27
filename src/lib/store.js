@@ -1,39 +1,25 @@
-"use client";
+'use client';
 
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { toast } from "react-hot-toast";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { toast } from 'react-hot-toast';
 
 export const useCartStore = create(
   persist(
     (set, get) => ({
       items: [],
 
-      // Agregar un item al carrito
+      // ✅ SIMPLIFICADO: Buscar solo por ID único
       addItem: (item) => {
         const currentItems = get().items;
-
-        // Comprobar si el item ya existe, considerando variantes
-        const existingItem = currentItems.find(
-          (i) =>
-            i.id === item.id &&
-            // Si ambos tienen variante, verificar que sea la misma
-            ((!i.variant && !item.variant) || // Ambos sin variante
-              (i.variant &&
-                item.variant &&
-                i.variant.variantId === item.variant.variantId)) // Misma variante
-        );
+        const existingItem = currentItems.find((i) => i.id === item.id);
 
         if (existingItem) {
           // Si el item ya existe, actualizar la cantidad
           const updatedItems = currentItems.map((i) =>
-            i.id === item.id &&
-            ((!i.variant && !item.variant) ||
-              (i.variant &&
-                item.variant &&
-                i.variant.variantId === item.variant.variantId))
+            i.id === item.id
               ? { ...i, quantity: i.quantity + item.quantity }
-              : i
+              : i,
           );
           set({ items: updatedItems });
         } else {
@@ -43,54 +29,38 @@ export const useCartStore = create(
       },
 
       // Actualizar la cantidad de un item en el carrito
-      updateQuantity: (id, quantity, variantId = null) => {
+      updateQuantity: (id, quantity) => {
         const currentItems = get().items;
         if (quantity <= 0) {
           // Si la cantidad es 0 o menor, remover el item
-          set({
-            items: currentItems.filter(
-              (i) =>
-                i.id !== id ||
-                (variantId && i.variant && i.variant.variantId !== variantId)
-            ),
-          });
+          set({ items: currentItems.filter((i) => i.id !== id) });
         } else {
           // Actualizar la cantidad del item
           const updatedItems = currentItems.map((i) =>
-            i.id === id &&
-            ((!variantId && !i.variant) ||
-              (variantId && i.variant && i.variant.variantId === variantId))
-              ? { ...i, quantity }
-              : i
+            i.id === id ? { ...i, quantity } : i,
           );
           set({ items: updatedItems });
         }
       },
 
       // Remover un item del carrito
-      removeItem: (id, variantId = null) => {
+      removeItem: (id) => {
         const currentItems = get().items;
-        set({
-          items: currentItems.filter(
-            (i) =>
-              i.id !== id ||
-              (variantId && i.variant && i.variant.variantId !== variantId)
-          ),
-        });
-        toast.success("Producto eliminado del carrito");
+        set({ items: currentItems.filter((i) => i.id !== id) });
+        toast.success('Producto eliminado del carrito');
       },
 
       // Vaciar el carrito
       clearCart: () => {
         set({ items: [] });
-        toast.success("Carrito vaciado");
+        toast.success('Carrito vaciado');
       },
 
       // Calcular el total del carrito
       getTotal: () => {
         return get().items.reduce(
           (total, item) => total + item.price * item.quantity,
-          0
+          0,
         );
       },
 
@@ -100,7 +70,7 @@ export const useCartStore = create(
       },
     }),
     {
-      name: "cart-storage", // nombre para localStorage
-    }
-  )
+      name: 'cart-storage', // nombre para localStorage
+    },
+  ),
 );

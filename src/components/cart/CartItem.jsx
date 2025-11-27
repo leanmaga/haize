@@ -11,21 +11,15 @@ const CartItem = ({ item }) => {
   const handleQuantityChange = (e) => {
     const newQuantity = parseInt(e.target.value);
     if (newQuantity >= 1) {
-      updateQuantity(
-        item.id,
-        newQuantity,
-        item.variant ? item.variant.variantId : null,
-      );
+      updateQuantity(item.id, newQuantity); // ← Usar solo ID
     }
   };
 
   const handleRemove = () => {
-    removeItem(item.id, item.variant ? item.variant.variantId : null);
+    removeItem(item.id); // ← Usar solo ID
   };
 
   const itemTotal = item.price * item.quantity;
-  const taxRate = 0.21; // 21% IVA
-  const itemTotalWithoutTax = itemTotal / (1 + taxRate);
 
   return (
     <div className="border-b border-gray-200 p-6 flex gap-6">
@@ -101,13 +95,6 @@ const CartItem = ({ item }) => {
           <div className="text-base font-medium mb-1">
             ${itemTotal.toLocaleString('es-AR')}
           </div>
-          {/* <div className="text-sm text-gray-500">
-            Precio sin impuestos nacionales $
-            {itemTotalWithoutTax.toLocaleString('es-AR', {
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 0,
-            })}
-          </div> */}
         </div>
       </div>
     </div>

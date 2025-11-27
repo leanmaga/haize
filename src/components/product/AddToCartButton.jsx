@@ -59,8 +59,14 @@ export default function AddToCartButton({
 
     setIsAdding(true);
 
+    // ✅ CREAR ID ÚNICO PARA CADA VARIANTE
+    const uniqueId = hasVariants
+      ? `${product._id}-${selectedSize || 'no-size'}-${selectedColor || 'no-color'}`
+      : product._id;
+
     const cartItem = {
-      id: product._id,
+      id: uniqueId, // ← ID único por variante
+      productId: product._id, // ← ID original del producto
       title: product.title,
       price: price,
       image: product.imageUrl,
@@ -69,9 +75,7 @@ export default function AddToCartButton({
         variant: {
           size: selectedSize || undefined,
           color: selectedColor || undefined,
-          variantId: `${selectedSize || 'no-size'}-${
-            selectedColor || 'no-color'
-          }`,
+          variantId: `${selectedSize || 'no-size'}-${selectedColor || 'no-color'}`,
         },
       }),
     };
@@ -106,7 +110,7 @@ export default function AddToCartButton({
     const phone = '+5491125528131';
     const url = `https://wa.me/${phone.replace(
       /\D/g,
-      ''
+      '',
     )}?text=${encodeURIComponent(message)}`;
 
     window.open(url, '_blank');
@@ -176,8 +180,8 @@ export default function AddToCartButton({
             isAdding
               ? 'opacity-70 text-white bg-black border-black'
               : !hasStock || !canAddToCart
-              ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
-              : 'text-white bg-black border-black hover:bg-black/70'
+                ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
+                : 'text-white bg-black border-black hover:bg-black/70'
           }`}
       >
         {isAdding ? (
