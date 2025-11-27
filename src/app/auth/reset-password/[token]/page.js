@@ -1,5 +1,5 @@
+import NewPasswordPage from '@/modules/auth/reset-password/[token]/NewPasswordPage';
 import React from 'react';
-import NewPasswordPage from '@/modules/auth/NewPasswordPage';
 
 const page = ({ params }) => {
   return <NewPasswordPage token={params.token} />;

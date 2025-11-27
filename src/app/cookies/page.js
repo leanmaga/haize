@@ -1,5 +1,6 @@
 // app/cookies/page.js
-import CookiesPage from './CookiesPage';
+
+import CookiesPage from '@/modules/coockies/CoockiesPage';
 
 export const metadata = {
   title: 'Configuración de Cookies | HAIZE',
