@@ -1,0 +1,145 @@
+/* ============================
+   SORA
+============================ */
+
+@font-face {
+  font-family: 'Sora';
+  src: url('/fonts/Sora-Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sora';
+  src: url('/fonts/Sora-ExtraLight.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sora';
+  src: url('/fonts/Sora-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sora';
+  src: url('/fonts/Sora-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============================
+   NEXA — usando todos los .otf
+============================ */
+
+/* Thin */
+@font-face {
+  font-family: 'Nexa';
+  src: url('/fonts/Nexa/NexaThin.otf') format('opentype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Light */
+@font-face {
+  font-family: 'Nexa';
+  src: url('/fonts/Nexa/NexaLight.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Regular */
+@font-face {
+  font-family: 'Nexa';
+  src: url('/fonts/Nexa/NexaRegular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Book (medio entre 400 y 500) */
+@font-face {
+  font-family: 'Nexa';
+  src: url('/fonts/Nexa/NexaBook.otf') format('opentype');
+  font-weight: 450;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Bold */
+@font-face {
+  font-family: 'Nexa';
+  src: url('/fonts/Nexa/NexaBold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Extra Bold / XBold */
+@font-face {
+  font-family: 'Nexa';
+  src: url('/fonts/Nexa/NexaXBold.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* SORA */
+.font-sora-thin {
+  font-family: 'Sora', sans-serif;
+  font-weight: 100;
+}
+
+.font-sora-extralight {
+  font-family: 'Sora', sans-serif;
+  font-weight: 200;
+}
+
+.font-sora-regular {
+  font-family: 'Sora', sans-serif;
+  font-weight: 400;
+}
+
+.font-sora-bold {
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+}
+
+/* NEXA */
+.font-nexa-thin {
+  font-family: 'Nexa', sans-serif;
+  font-weight: 100;
+}
+
+.font-nexa-light {
+  font-family: 'Nexa', sans-serif;
+  font-weight: 300;
+}
+
+.font-nexa-regular {
+  font-family: 'Nexa', sans-serif;
+  font-weight: 400;
+}
+
+.font-nexa-book {
+  font-family: 'Nexa', sans-serif;
+  font-weight: 450;
+}
+
+.font-nexa-bold {
+  font-family: 'Nexa', sans-serif;
+  font-weight: 700;
+}
+
+.font-nexa-xbold {
+  font-family: 'Nexa', sans-serif;
+  font-weight: 800;
+}

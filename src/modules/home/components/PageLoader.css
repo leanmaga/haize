@@ -1,0 +1,13 @@
+@keyframes letterPulse {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-letter-pulse {
+  animation: letterPulse 1s ease-in-out infinite;
+}

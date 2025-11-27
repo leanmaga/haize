@@ -1,9 +1,8 @@
-import ComingSoon from '@/components/layout/ComingSoon';
+// src/app/page.js
+import HomePage from '@/modules/home/HomePage.jsx';
 
-export default function Home() {
-  return (
-    <div>
-      <ComingSoon />
-    </div>
-  );
-}
+const page = () => {
+  return <HomePage />;
+};
+
+export default page;

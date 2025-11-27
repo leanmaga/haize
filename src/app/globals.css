@@ -1,87 +1,164 @@
 @import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme {
-  --font-primary: sans-serif;
-  --font-secondary: monospace;
-  --font-tertiary: '';
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-html,
-body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 246, 248, 250;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
 }
 
-/* Animaciones para Coming Soon */
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0) translateX(0);
-  }
-  25% {
-    transform: translateY(-30px) translateX(20px);
-  }
-  50% {
-    transform: translateY(-50px) translateX(-20px);
-  }
-  75% {
-    transform: translateY(-30px) translateX(20px);
-  }
+body.no-scroll {
+  overflow: hidden;
 }
 
-@keyframes fade-in {
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Animaciones */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(30px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
-.animate-float {
-  animation: float 20s infinite ease-in-out;
+.slide-up {
+  animation: slideUp 0.3s ease-out;
 }
 
-.animate-float-delayed-2 {
-  animation: float 20s infinite ease-in-out 2s;
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
-.animate-float-delayed-4 {
-  animation: float 20s infinite ease-in-out 4s;
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
-.animate-float-delayed-6 {
-  animation: float 20s infinite ease-in-out 6s;
+.product-card {
+  transition: all 0.3s ease;
 }
 
-.animate-fade-in {
-  animation: fade-in 1s ease-in;
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Botones con animación drop personalizada */
+@layer components {
+  /* Botón original con amarillo */
+  .btn-drop {
+    background-color: #000000;
+    @apply relative text-white py-3 font-medium overflow-hidden transition-all duration-300 inline-block;
+  }
+
+  .btn-drop:before {
+    content: '';
+    background-color: #444;
+    @apply absolute bottom-0 right-0 w-2 h-2 transition-all duration-500 ease-out;
+    z-index: 1;
+  }
+
+  .btn-drop:hover:before {
+    @apply w-full h-full transform origin-bottom-right;
+  }
+
+  .btn-drop span {
+    @apply relative z-10 transition-colors duration-300;
+  }
+
+  .btn-drop:hover span {
+    @apply text-white;
+  }
+
+  .btn-drop svg {
+    @apply relative z-10 transition-colors duration-300;
+  }
+
+  .btn-drop:hover svg {
+    @apply text-white;
+  }
+
+  /* Nuevo botón con color personalizado #000000 */
+  .btn-drop-yellow {
+    background-color: #000000;
+    @apply relative text-white py-3 font-medium overflow-hidden transition-all duration-300 inline-block;
+  }
+
+  .btn-drop-yellow:before {
+    content: '';
+    background-color: #444;
+    @apply absolute bottom-0 right-0 w-2 h-2 transition-all duration-500 ease-out;
+    z-index: 1;
+  }
+
+  .btn-drop-yellow:hover:before {
+    @apply w-full h-full transform origin-bottom-right;
+  }
+
+  .btn-drop-yellow span {
+    @apply relative z-10 transition-colors duration-300;
+  }
+
+  .btn-drop-yellow:hover span {
+    @apply text-white;
+  }
+
+  .btn-drop-yellow svg {
+    @apply relative z-10 transition-colors duration-300;
+  }
+
+  .btn-drop-yellow:hover svg {
+    @apply text-white;
+  }
+}
+.price-container {
+  position: relative;
+}
+
+.price-main {
+  font-family:
+    'SF Pro Display',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  font-weight: 800;
+  background: #000000;
+  background-clip: text;
+  position: relative;
 }
