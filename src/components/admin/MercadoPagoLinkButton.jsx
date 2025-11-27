@@ -43,7 +43,7 @@ export default function MercadoPagoLinkButton() {
       // Mostrar alerta si el token está expirado
       if (data.isExpired) {
         toast.error(
-          'Tu token de MercadoPago ha expirado. Por favor, vuelve a conectar tu cuenta.'
+          'Tu token de MercadoPago ha expirado. Por favor, vuelve a conectar tu cuenta.',
         );
       }
     } catch (error) {
@@ -108,7 +108,7 @@ export default function MercadoPagoLinkButton() {
         }
         if (response.status === 404) {
           throw new Error(
-            'No hay configuración de MercadoPago para desvincular'
+            'No hay configuración de MercadoPago para desvincular',
           );
         }
         throw new Error(data.error || 'Error al desvincular cuenta');
@@ -166,8 +166,8 @@ export default function MercadoPagoLinkButton() {
             isConnected && !connectionDetails?.isExpired
               ? 'bg-green-500'
               : connectionDetails?.isExpired
-              ? 'bg-gray-500'
-              : 'bg-gray-300'
+                ? 'bg-gray-500'
+                : 'bg-gray-300'
           }`}
         />
       </div>

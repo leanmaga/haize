@@ -75,7 +75,7 @@ export default function Footer() {
           </span>
           Todos los derechos reservados.
         </p>
-        <p className="mb-0.5">
+        <p className="mb-0.5 text-xs">
           Desarrollado por{' '}
           <span className="font-nexa-bold uppercase">
             <a
