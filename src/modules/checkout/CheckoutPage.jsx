@@ -23,7 +23,7 @@ export default function CheckoutPage() {
   const [orderId, setOrderId] = useState(null);
   const orderCreatedRef = useRef(false);
   const idempotencyKey = useRef(
-    `order_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`
+    `order_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`,
   );
 
   const router = useRouter();
@@ -56,12 +56,12 @@ export default function CheckoutPage() {
           'Por favor, ingresa tu número de teléfono para completar tu perfil y continuar con la compra',
           {
             duration: 6000,
-            icon: '🔔', // O cualquier icono de información
+            icon: '🔔',
             style: {
               background: '#3498db',
               color: '#fff',
             },
-          }
+          },
         );
         // Hacer focus en el campo de teléfono
         setTimeout(() => {
@@ -114,7 +114,7 @@ export default function CheckoutPage() {
 
   const total = getTotal();
 
-  // Función onSubmit mejorada - solo la parte relevante
+  // ✅ FUNCIÓN MEJORADA CON SIZE Y COLOR
   const onSubmit = async (data) => {
     if (isSubmitting || orderCreatedRef.current) {
       return;
@@ -134,6 +134,9 @@ export default function CheckoutPage() {
           quantity: item.quantity,
           price: item.price,
           imageUrl: item.image,
+          // ✅ INCLUIR size y color
+          size: item.variant?.size || undefined,
+          color: item.variant?.color || undefined,
         })),
         totalAmount: total,
         paymentMethod: selectedPaymentMethod,
@@ -148,12 +151,14 @@ export default function CheckoutPage() {
         idempotencyKey: idempotencyKey.current,
       };
 
+      console.log('📦 Datos de la orden enviados:', orderData); // Para debug
+
       // Crear timeout para la solicitud
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
         controller.abort();
         toast.error(
-          'La solicitud está tardando demasiado. Por favor, inténtalo de nuevo.'
+          'La solicitud está tardando demasiado. Por favor, inténtalo de nuevo.',
         );
         setIsSubmitting(false);
       }, 30000);
@@ -314,7 +319,6 @@ export default function CheckoutPage() {
     );
   };
 
-  // En el return del componente, usar esta función:
   // Si ya tenemos preferenceId, mostrar solo el botón de MercadoPago
   if (preferenceId) {
     return (
@@ -325,45 +329,6 @@ export default function CheckoutPage() {
       </div>
     );
   }
-
-  // // Si ya tenemos preferenceId, mostrar solo el botón de MercadoPago
-  // if (preferenceId) {
-  //   return (
-  //     <div className="bg-white min-h-screen py-12">
-  //       <div className="container mx-auto px-4 max-w-md">
-  //         <div className="bg-white p-8 border border-gray-200">
-  //           <h1 className="text-2xl font-nexa-bold mb-6">Completar Pago</h1>
-  //           <p className="mb-6 text-gray-600">
-  //             Tu orden ha sido creada. Por favor, haz clic en el botón a
-  //             continuación para completar el pago con MercadoPago.
-  //           </p>
-
-  //           <div className="w-full items-center ">
-  //             <MercadoPagoButton
-  //               preferenceId={preferenceId}
-  //               fallbackUrl={mercadoPagoUrl}
-  //               buttonText="Pagar con MercadoPago"
-  //             />
-  //           </div>
-
-  //           <p className="text-sm text-gray-500 mt-6">
-  //             Serás redirigido a MercadoPago para completar tu pago. Tu carrito
-  //             se vaciará una vez completado el pago.
-  //           </p>
-
-  //           <div className="mt-8 border-t pt-6">
-  //             <Link
-  //               href="/profile/orders"
-  //               className="text-black hover:underline font-medium"
-  //             >
-  //               Ver mis pedidos
-  //             </Link>
-  //           </div>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
 
   return (
     <div className="bg-white min-h-screen py-12 mt-[80px]">
@@ -519,77 +484,6 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                {/* <h2 className="text-xl font-sora-regular mb-6 pb-4 border-b border-gray-200">
-                  Método de Pago
-                </h2>
-
-                <div className="mb-6">
-                  <div className="grid grid-cols-3 gap-4 mb-4">
-                    <div
-                      className={`border p-4 text-center cursor-pointer ${
-                        selectedPaymentMethod === "mercadopago"
-                          ? "border-black bg-gray-50"
-                          : "hover:border-gray-400"
-                      }`}
-                      onClick={() => setSelectedPaymentMethod("mercadopago")}
-                    >
-                      <div className="flex justify-center mb-2">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="h-8 w-8 text-black"
-                        >
-                          <path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
-                        </svg>
-                      </div>
-                      <p className="text-sm">MercadoPago</p>
-                    </div>
-
-                    <div
-                      className={`border p-4 text-center cursor-pointer ${
-                        selectedPaymentMethod === "credit_card"
-                          ? "border-black bg-gray-50"
-                          : "hover:border-gray-400"
-                      }`}
-                      onClick={() => setSelectedPaymentMethod("credit_card")}
-                    >
-                      <div className="flex justify-center mb-2">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="h-8 w-8 text-black"
-                        >
-                          <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z" />
-                        </svg>
-                      </div>
-                      <p className="text-sm">Tarjeta de Crédito</p>
-                    </div>
-
-                    <div
-                      className={`border p-4 text-center cursor-pointer ${
-                        selectedPaymentMethod === "debit_card"
-                          ? "border-black bg-gray-50"
-                          : "hover:border-gray-400"
-                      }`}
-                      onClick={() => setSelectedPaymentMethod("debit_card")}
-                    >
-                      <div className="flex justify-center mb-2">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="h-8 w-8 text-black"
-                        >
-                          <path d="M4 18v-7.5H2.5V9c0-1.1.9-2 2-2H20c1.1 0 2 .9 2 2v7c0 1.1-.9 2-2 2H4zm2-5.25h6.5v1.5H6v-1.5zm9 0H17v1.5h-2v-1.5z" />
-                        </svg>
-                      </div>
-                      <p className="text-sm">Tarjeta de Débito</p>
-                    </div>
-                  </div>
-                </div> */}
-
                 <div className="mt-8 space-y-4">
                   {/* Botón de MercadoPago */}
                   <button
@@ -610,16 +504,15 @@ export default function CheckoutPage() {
                     )}
                   </button>
 
-                  {/* Usar el componente WhatsAppButton pasando los datos del formulario */}
+                  {/* Botón de WhatsApp */}
                   <WhatsAppButton
-                    userData={watch()} // Pasar los datos actuales del formulario
+                    userData={watch()}
                     isDisabled={isSubmitting}
                     handleBeforeSubmit={() => {
-                      // Validar que el formulario sea correcto antes de continuar
                       const isValid = Object.keys(errors).length === 0;
                       if (!isValid) {
                         toast.error(
-                          'Por favor completa correctamente todos los campos'
+                          'Por favor completa correctamente todos los campos',
                         );
                       }
                       return isValid;
@@ -630,7 +523,7 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Resumen de la Orden */}
+          {/* Resumen de la Orden - ✅ MEJORADO CON SIZE Y COLOR */}
           <div className="lg:w-1/3">
             <div className="bg-white border border-gray-200 p-6">
               <h2 className="text-xl font-nexa-bold mb-4 pb-4 border-b border-gray-200">
@@ -638,9 +531,9 @@ export default function CheckoutPage() {
               </h2>
 
               <div className="max-h-80 overflow-y-auto mb-4">
-                {items.map((item) => (
+                {items.map((item, index) => (
                   <div
-                    key={item.id}
+                    key={`${item.id}-${item.variant?.variantId || index}`}
                     className="flex items-center py-3 border-b"
                   >
                     <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden">
@@ -654,7 +547,17 @@ export default function CheckoutPage() {
                     </div>
                     <div className="ml-4 flex-1">
                       <h3 className="text-sm font-medium">{item.title}</h3>
-                      <p className="text-sm text-gray-500">
+
+                      {/* ✅ MOSTRAR TALLA Y COLOR */}
+                      {item.variant && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          {item.variant.size && `Talle: ${item.variant.size}`}
+                          {item.variant.size && item.variant.color && ' | '}
+                          {item.variant.color && `Color: ${item.variant.color}`}
+                        </p>
+                      )}
+
+                      <p className="text-sm text-gray-500 mt-1">
                         {item.quantity} x ${item.price.toFixed(2)}
                       </p>
                     </div>

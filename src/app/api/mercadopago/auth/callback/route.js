@@ -14,11 +14,12 @@ export async function GET(request) {
     const error = searchParams.get('error'); // MercadoPago puede enviar errores
 
     // Obtener URL base
-    const baseUrl =
+    const baseUrl = (
       process.env.NEXT_PUBLIC_BASE_URL ||
       process.env.NEXT_PUBLIC_FRONTEND_URL ||
       process.env.NEXTAUTH_URL ||
-      'http://localhost:3000';
+      'http://localhost:3000'
+    ).replace(/\/$/, '');
 
     // Si MercadoPago envía un error (usuario canceló, etc.)
     if (error) {
@@ -132,11 +133,12 @@ export async function GET(request) {
   } catch (error) {
     console.error('Error en callback de MercadoPago:', error);
 
-    const baseUrl =
+    const baseUrl = (
       process.env.NEXT_PUBLIC_BASE_URL ||
       process.env.NEXT_PUBLIC_FRONTEND_URL ||
       process.env.NEXTAUTH_URL ||
-      'http://localhost:3000';
+      'http://localhost:3000'
+    ).replace(/\/$/, '');
 
     return NextResponse.redirect(
       `${baseUrl}/admin/settings?error=server_error&message=${encodeURIComponent(

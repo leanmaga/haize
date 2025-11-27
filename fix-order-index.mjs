@@ -31,14 +31,6 @@ const orderSchema = new mongoose.Schema(
           type: String,
           required: true,
         },
-        size: {
-          type: String,
-          required: false,
-        },
-        color: {
-          type: String,
-          required: false,
-        },
       },
     ],
     totalAmount: {
