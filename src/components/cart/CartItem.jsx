@@ -14,7 +14,7 @@ const CartItem = ({ item }) => {
       updateQuantity(
         item.id,
         newQuantity,
-        item.variant ? item.variant.variantId : null
+        item.variant ? item.variant.variantId : null,
       );
     }
   };
@@ -101,13 +101,13 @@ const CartItem = ({ item }) => {
           <div className="text-base font-medium mb-1">
             ${itemTotal.toLocaleString('es-AR')}
           </div>
-          <div className="text-sm text-gray-500">
+          {/* <div className="text-sm text-gray-500">
             Precio sin impuestos nacionales $
             {itemTotalWithoutTax.toLocaleString('es-AR', {
               minimumFractionDigits: 0,
               maximumFractionDigits: 0,
             })}
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

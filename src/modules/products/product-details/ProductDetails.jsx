@@ -147,18 +147,18 @@ export default async function ProductDetails({ params }) {
               </div>
 
               {/* Información de cuotas */}
-              <div className="text-sm text-gray-600">
+              {/* <div className="text-sm text-gray-600">
                 6 cuotas sin interés de{' '}
                 <strong className="text-gray-900">
                   ${(displayPrice / 6).toFixed(2)}*
                 </strong>
-              </div>
+              </div> */}
 
               {/* Precio sin impuestos (mockeado - 19% de impuestos) */}
-              <div className="text-xs text-gray-500 mt-1">
+              {/* <div className="text-xs text-gray-500 mt-1">
                 Precio sin impuestos nacionales{' '}
                 <strong>${(displayPrice * 0.81).toFixed(2)}</strong>
-              </div>
+              </div> */}
 
               {/* SOLO SI HAY DESCUENTO: mostrar precio original tachado y badge */}
               {hasDiscount && (

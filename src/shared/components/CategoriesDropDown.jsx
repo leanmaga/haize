@@ -154,7 +154,7 @@ const CategoriesDropdown = () => {
               <div className="flex-1">
                 {activeSection && (
                   //<div className="grid grid-cols-3 gap-x-8 gap-y-3">
-                  <div className="text-md pl-5 inline-grid grid-cols-1 justify-items-start gap-y-3">
+                  <div className="text-lg pl-5 inline-grid grid-cols-1 justify-items-start gap-y-3">
                     {categories[activeSection].items.map((item, index) => (
                       <CustomLink
                         key={index}

@@ -59,9 +59,9 @@ export default function ProductCard({ product }) {
                 </p>
               )}
             </div>
-            <p className="text-xs text-gray-600 mt-1">
+            {/* <p className="text-xs text-gray-600 mt-1">
               6 cuotas sin interés de ${(displayPrice / 6).toFixed(2)}
-            </p>
+            </p> */}
           </div>
 
           {/* Stock info */}
