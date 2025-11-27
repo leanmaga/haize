@@ -17,7 +17,7 @@ export default function OrderDetailsPage() {
     const fetchOrder = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/profile/orders/${params.id}`);
+        const response = await fetch(`/api/users/orders/${params.id}`);
 
         if (!response.ok) {
           const errorData = await response.json();
