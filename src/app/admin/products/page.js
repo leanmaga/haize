@@ -134,7 +134,7 @@ export default function ProductsAdminPage() {
 
   // Filtrar productos por búsqueda
   const filteredProducts = products.filter((product) =>
-    product.title.toLowerCase().includes(searchTerm.toLowerCase())
+    product.title.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   // Eliminar producto
@@ -233,16 +233,11 @@ export default function ProductsAdminPage() {
           }}
         >
           <option value="all">Todas las categorías</option>
-          <option value="pollos-enteros">Pollos Enteros</option>
-          <option value="cortes-pollo">Cortes de Pollo</option>
-          <option value="huevos">Huevos</option>
-          <option value="marinados">Marinados y Adobados</option>
-          <option value="embutidos">Embutidos y Chorizos</option>
-          <option value="menudencias">Menudencias</option>
-          <option value="productos-organicos">Productos Orgánicos</option>
-          <option value="preparados">Preparados y Listos</option>
-          <option value="promociones">Promociones</option>
-          <option value="otros">Otros</option>
+          <option value="camisas">Camisas</option>
+          <option value="-remeras">Remeras</option>
+          <option value="musculosas">Musculosas</option>
+          <option value="conjuntos">Conjuntos</option>
+          <option value="shorts">Shorts</option>
         </select>
       </div>
 
@@ -399,7 +394,7 @@ export default function ProductsAdminPage() {
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
                   className={`relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${getPaginationButtonClasses(
-                    currentPage === 1
+                    currentPage === 1,
                   )}`}
                 >
                   Anterior
@@ -408,7 +403,7 @@ export default function ProductsAdminPage() {
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
                   className={`relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium ${getPaginationButtonClasses(
-                    currentPage === totalPages
+                    currentPage === totalPages,
                   )}`}
                 >
                   Siguiente
@@ -438,7 +433,7 @@ export default function ProductsAdminPage() {
                       onClick={() => handlePageChange(currentPage - 1)}
                       disabled={currentPage === 1}
                       className={`rounded-l-md ${getNavigationButtonClasses(
-                        currentPage === 1
+                        currentPage === 1,
                       )}`}
                     >
                       <span className="sr-only">Anterior</span>
@@ -467,7 +462,7 @@ export default function ProductsAdminPage() {
                           onClick={() => handlePageChange(pageNumber)}
                           className={getPaginationButtonClasses(
                             false,
-                            isCurrentPage
+                            isCurrentPage,
                           )}
                           style={
                             isCurrentPage ? { backgroundColor: '#000000' } : {}
@@ -482,7 +477,7 @@ export default function ProductsAdminPage() {
                       onClick={() => handlePageChange(currentPage + 1)}
                       disabled={currentPage === totalPages}
                       className={`rounded-r-md ${getNavigationButtonClasses(
-                        currentPage === totalPages
+                        currentPage === totalPages,
                       )}`}
                     >
                       <span className="sr-only">Siguiente</span>
