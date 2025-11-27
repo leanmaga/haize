@@ -36,33 +36,29 @@ export async function sendOrderConfirmationToCustomer(order, user) {
       'https://www.haize.com.ar/_next/image?url=%2Fimages%2Flogo.jpeg&w=96&q=75';
     const orderUrl = `${baseUrl}/profile/orders/${order._id}`;
 
-    // Generar HTML de productos
+    // Generar HTML de productos - ✅ CON TALLE Y COLOR
     const itemsHtml = order.items
       .map(
         (item) => `
-      <tr>
-        <td style="padding: 15px; border-bottom: 1px solid #e5e5e5;">
-          <div style="display: flex; align-items: center;">
-            <img src="${item.imageUrl || ''}" alt="${item.title}" 
-                 style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; margin-right: 15px;">
-            <div>
-              <div style="font-weight: 600; color: #1a1a1a; margin-bottom: 4px;">${
-                item.title
-              }</div>
-              <div style="color: #666; font-size: 14px;">Cantidad: ${
-                item.quantity
-              }</div>
-              <div style="color: #666; font-size: 14px;">Precio: ${formatPrice(
-                item.price
-              )}</div>
-            </div>
-          </div>
-        </td>
-        <td style="padding: 15px; border-bottom: 1px solid #e5e5e5; text-align: right; font-weight: 600;">
-          ${formatPrice(item.price * item.quantity)}
-        </td>
-      </tr>
-    `
+  <tr>
+    <td style="padding: 15px; border-bottom: 1px solid #e5e5e5;">
+      <div style="display: flex; align-items: center;">
+        <img src="${item.imageUrl || ''}" alt="${item.title}" 
+             style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; margin-right: 15px;">
+        <div>
+          <div style="font-weight: 600; color: #1a1a1a; margin-bottom: 4px;">${item.title}</div>
+          ${item.size ? `<div style="color: #666; font-size: 13px;">Talle: ${item.size}</div>` : ''}
+          ${item.color ? `<div style="color: #666; font-size: 13px;">Color: ${item.color}</div>` : ''}
+          <div style="color: #666; font-size: 14px;">Cantidad: ${item.quantity}</div>
+          <div style="color: #666; font-size: 14px;">Precio: ${formatPrice(item.price)}</div>
+        </div>
+      </div>
+    </td>
+    <td style="padding: 15px; border-bottom: 1px solid #e5e5e5; text-align: right; font-weight: 600;">
+      ${formatPrice(item.price * item.quantity)}
+    </td>
+  </tr>
+`,
       )
       .join('');
 
@@ -121,7 +117,7 @@ export async function sendOrderConfirmationToCustomer(order, user) {
                     <tr>
                       <td style="padding: 8px 0;"><strong>Fecha:</strong></td>
                       <td style="padding: 8px 0; text-align: right;">${formatDate(
-                        order.createdAt
+                        order.createdAt,
                       )}</td>
                     </tr>
                     <tr>
@@ -237,15 +233,17 @@ export async function sendNewOrderNotificationToAdmin(order, user) {
     const itemsHtml = order.items
       .map(
         (item) => `
-      <tr>
-        <td style="padding: 10px; border-bottom: 1px solid #e5e5e5;">
-          ${item.title} (x${item.quantity})
-        </td>
-        <td style="padding: 10px; border-bottom: 1px solid #e5e5e5; text-align: right;">
-          ${formatPrice(item.price * item.quantity)}
-        </td>
-      </tr>
-    `
+  <tr>
+    <td style="padding: 10px; border-bottom: 1px solid #e5e5e5;">
+      ${item.title} (x${item.quantity})
+      ${item.size ? `<br><span style="color: #666; font-size: 13px;">Talle: ${item.size}</span>` : ''}
+      ${item.color ? `<br><span style="color: #666; font-size: 13px;">Color: ${item.color}</span>` : ''}
+    </td>
+    <td style="padding: 10px; border-bottom: 1px solid #e5e5e5; text-align: right;">
+      ${formatPrice(item.price * item.quantity)}
+    </td>
+  </tr>
+`,
       )
       .join('');
 
@@ -309,7 +307,7 @@ export async function sendNewOrderNotificationToAdmin(order, user) {
                   <tr style="background-color: #1f2937; color: white;">
                     <td style="padding: 15px; font-weight: 600;">TOTAL</td>
                     <td style="padding: 15px; text-align: right; font-weight: 600;">${formatPrice(
-                      order.totalAmount
+                      order.totalAmount,
                     )}</td>
                   </tr>
                 </table>
@@ -350,7 +348,7 @@ export async function sendNewOrderNotificationToAdmin(order, user) {
   } catch (error) {
     console.error(
       '❌ Error enviando notificación de nueva orden al admin:',
-      error
+      error,
     );
     return { success: false, error: error.message };
   }
@@ -360,7 +358,7 @@ export async function sendNewOrderNotificationToAdmin(order, user) {
 export async function sendPaymentConfirmationToCustomer(
   order,
   user,
-  paymentDetails = null
+  paymentDetails = null,
 ) {
   try {
     const baseUrl = getBaseUrl();
@@ -371,24 +369,24 @@ export async function sendPaymentConfirmationToCustomer(
     const itemsHtml = order.items
       .map(
         (item) => `
-      <tr>
-        <td style="padding: 15px; border-bottom: 1px solid #e5e5e5;">
-          <div style="display: flex; align-items: center;">
-            <img src="${item.imageUrl || ''}" alt="${item.title}" 
-                 style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; margin-right: 12px;">
-            <div>
-              <div style="font-weight: 600; color: #1a1a1a;">${item.title}</div>
-              <div style="color: #666; font-size: 14px;">Cantidad: ${
-                item.quantity
-              }</div>
-            </div>
-          </div>
-        </td>
-        <td style="padding: 15px; border-bottom: 1px solid #e5e5e5; text-align: right; font-weight: 600;">
-          ${formatPrice(item.price * item.quantity)}
-        </td>
-      </tr>
-    `
+  <tr>
+    <td style="padding: 15px; border-bottom: 1px solid #e5e5e5;">
+      <div style="display: flex; align-items: center;">
+        <img src="${item.imageUrl || ''}" alt="${item.title}" 
+             style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; margin-right: 12px;">
+        <div>
+          <div style="font-weight: 600; color: #1a1a1a;">${item.title}</div>
+          ${item.size ? `<div style="color: #666; font-size: 13px;">Talle: ${item.size}</div>` : ''}
+          ${item.color ? `<div style="color: #666; font-size: 13px;">Color: ${item.color}</div>` : ''}
+          <div style="color: #666; font-size: 14px;">Cantidad: ${item.quantity}</div>
+        </div>
+      </div>
+    </td>
+    <td style="padding: 15px; border-bottom: 1px solid #e5e5e5; text-align: right; font-weight: 600;">
+      ${formatPrice(item.price * item.quantity)}
+    </td>
+  </tr>
+`,
       )
       .join('');
 
@@ -443,13 +441,13 @@ export async function sendPaymentConfirmationToCustomer(
                     <tr>
                       <td style="padding: 5px 0;"><strong>Monto Pagado:</strong></td>
                       <td style="padding: 5px 0; text-align: right; font-weight: 600; color: #10b981;">${formatPrice(
-                        order.totalAmount
+                        order.totalAmount,
                       )}</td>
                     </tr>
                     <tr>
                       <td style="padding: 5px 0;"><strong>Fecha de Pago:</strong></td>
                       <td style="padding: 5px 0; text-align: right;">${formatDate(
-                        new Date()
+                        new Date(),
                       )}</td>
                     </tr>
                     ${
@@ -545,15 +543,35 @@ export async function sendPaymentConfirmationToCustomer(
   }
 }
 
-// EMAIL 4: Notificación de pago exitoso al administrador
+// EMAIL 4: Notificación de pago exitoso al administrador - ✅ ACTUALIZADO CON TALLES Y COLORES
 export async function sendPaymentNotificationToAdmin(
   order,
   user,
-  paymentDetails = null
+  paymentDetails = null,
 ) {
   try {
     const baseUrl = getBaseUrl();
     const adminOrderUrl = `${baseUrl}/admin/orders/${order._id}`;
+
+    // ✅ HTML DETALLADO DE PRODUCTOS CON TALLES Y COLORES
+    const itemsHtml = order.items
+      .map(
+        (item) => `
+      <tr>
+        <td style="padding: 12px; border-bottom: 1px solid #e5e5e5;">
+          <div style="font-weight: 600; color: #1a1a1a; margin-bottom: 6px;">${item.title}</div>
+          ${item.size ? `<div style="color: #666; font-size: 13px; margin-bottom: 3px;">📏 <strong>Talle:</strong> ${item.size}</div>` : ''}
+          ${item.color ? `<div style="color: #666; font-size: 13px; margin-bottom: 3px;">🎨 <strong>Color:</strong> ${item.color}</div>` : ''}
+          <div style="color: #666; font-size: 13px;">📦 <strong>Cantidad:</strong> ${item.quantity}</div>
+          <div style="color: #666; font-size: 13px;">💰 <strong>Precio unitario:</strong> ${formatPrice(item.price)}</div>
+        </td>
+        <td style="padding: 12px; border-bottom: 1px solid #e5e5e5; text-align: right; font-weight: 600; color: #10b981;">
+          ${formatPrice(item.price * item.quantity)}
+        </td>
+      </tr>
+    `,
+      )
+      .join('');
 
     const emailData = {
       to: process.env.ADMIN_EMAIL || process.env.EMAIL_USER,
@@ -575,7 +593,7 @@ export async function sendPaymentNotificationToAdmin(
               <td style="padding: 30px; text-align: center; background-color: #10b981; color: white;">
                 <h1 style="margin: 0; font-size: 24px;">💰 PAGO RECIBIDO</h1>
                 <p style="margin: 10px 0 0 0; font-size: 18px; font-weight: 600;">${formatPrice(
-                  order.totalAmount
+                  order.totalAmount,
                 )}</p>
               </td>
             </tr>
@@ -588,63 +606,89 @@ export async function sendPaymentNotificationToAdmin(
                     .substring(0, 8)} - PAGADA</h2>
                 </div>
                 
-                <h3>💳 Información del Pago:</h3>
-                <table width="100%" style="background-color: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                  <tr><td><strong>Monto:</strong></td><td style="text-align: right; color: #10b981; font-weight: 600;">${formatPrice(
-                    order.totalAmount
+                <h3 style="color: #1a1a1a; margin-bottom: 15px;">💳 Información del Pago:</h3>
+                <table width="100%" style="background-color: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+                  <tr><td style="padding: 5px 0;"><strong>Monto:</strong></td><td style="text-align: right; color: #10b981; font-weight: 600; padding: 5px 0;">${formatPrice(
+                    order.totalAmount,
                   )}</td></tr>
-                  <tr><td><strong>Fecha:</strong></td><td style="text-align: right;">${formatDate(
-                    new Date()
+                  <tr><td style="padding: 5px 0;"><strong>Fecha:</strong></td><td style="text-align: right; padding: 5px 0;">${formatDate(
+                    new Date(),
                   )}</td></tr>
                   ${
                     paymentDetails?.id
-                      ? `<tr><td><strong>ID de Pago:</strong></td><td style="text-align: right; font-family: monospace;">${paymentDetails.id}</td></tr>`
+                      ? `<tr><td style="padding: 5px 0;"><strong>ID de Pago:</strong></td><td style="text-align: right; font-family: monospace; padding: 5px 0;">${paymentDetails.id}</td></tr>`
                       : ''
                   }
                   ${
                     paymentDetails?.payment_method_id
-                      ? `<tr><td><strong>Método:</strong></td><td style="text-align: right;">${paymentDetails.payment_method_id}</td></tr>`
+                      ? `<tr><td style="padding: 5px 0;"><strong>Método:</strong></td><td style="text-align: right; padding: 5px 0;">${paymentDetails.payment_method_id}</td></tr>`
                       : ''
                   }
                 </table>
                 
-                <h3>👤 Cliente:</h3>
-                <table width="100%" style="margin-bottom: 20px;">
-                  <tr><td><strong>Nombre:</strong></td><td>${
+                <h3 style="color: #1a1a1a; margin-bottom: 15px;">🛍️ Productos Vendidos (Con Talles y Colores):</h3>
+                <table width="100%" cellpadding="0" cellspacing="0" style="border: 1px solid #e5e5e5; border-radius: 8px; overflow: hidden; margin-bottom: 25px;">
+                  ${itemsHtml}
+                  <tr style="background-color: #10b981;">
+                    <td style="padding: 15px; font-weight: 600; color: white;">
+                      TOTAL PAGADO
+                    </td>
+                    <td style="padding: 15px; text-align: right; font-weight: 600; color: white; font-size: 18px;">
+                      ${formatPrice(order.totalAmount)}
+                    </td>
+                  </tr>
+                </table>
+                
+                <h3 style="color: #1a1a1a; margin-bottom: 10px;">👤 Información del Cliente:</h3>
+                <table width="100%" style="background-color: #eff6ff; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+                  <tr><td style="padding: 5px 0;"><strong>Nombre:</strong></td><td style="padding: 5px 0;">${
                     user.name
                   }</td></tr>
-                  <tr><td><strong>Email:</strong></td><td>${
+                  <tr><td style="padding: 5px 0;"><strong>Email:</strong></td><td style="padding: 5px 0;">${
                     user.email
                   }</td></tr>
-                  <tr><td><strong>Teléfono:</strong></td><td>${
+                  <tr><td style="padding: 5px 0;"><strong>Teléfono:</strong></td><td style="padding: 5px 0;">${
                     order.shippingInfo.phone
                   }</td></tr>
                 </table>
                 
-                <h3>📦 Dirección de Envío:</h3>
-                <div style="background-color: #fef3c7; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                  <p style="margin: 0;"><strong>${
+                <h3 style="color: #1a1a1a; margin-bottom: 10px;">📦 Dirección de Envío:</h3>
+                <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #f59e0b;">
+                  <p style="margin: 0; font-weight: 600; font-size: 16px; color: #92400e;">${
                     order.shippingInfo.name
-                  }</strong></p>
-                  <p style="margin: 5px 0;">${order.shippingInfo.address}</p>
-                  <p style="margin: 5px 0;">${order.shippingInfo.city}, ${
-        order.shippingInfo.postalCode
-      }</p>
-                  <p style="margin: 5px 0;">Tel: ${order.shippingInfo.phone}</p>
+                  }</p>
+                  <p style="margin: 8px 0; color: #92400e;">${
+                    order.shippingInfo.address
+                  }</p>
+                  <p style="margin: 8px 0; color: #92400e;">${
+                    order.shippingInfo.city
+                  }, ${order.shippingInfo.postalCode}</p>
+                  <p style="margin: 8px 0; color: #92400e;">📱 Tel: ${
+                    order.shippingInfo.phone
+                  }</p>
                 </div>
                 
                 <div style="text-align: center; margin-top: 30px;">
                   <a href="${adminOrderUrl}" 
-                     style="display: inline-block; background-color: #10b981; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: 600;">
-                    VER ORDEN Y PROCESAR ENVÍO
+                     style="display: inline-block; background-color: #10b981; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                    📋 VER ORDEN Y PROCESAR ENVÍO
                   </a>
                 </div>
                 
-                <div style="background-color: #d1fae5; padding: 15px; border-radius: 8px; margin-top: 20px;">
-                  <p style="margin: 0; color: #047857;">
-                    <strong>✅ Acción requerida:</strong> El pago ha sido confirmado. Procesa el envío de la orden.
+                <div style="background-color: #d1fae5; padding: 20px; border-radius: 8px; margin-top: 25px; border-left: 4px solid #10b981;">
+                  <p style="margin: 0; color: #047857; font-weight: 600;">
+                    ✅ <strong>Acción requerida:</strong> El pago ha sido confirmado. Procesa el envío de la orden con los talles y colores especificados arriba.
                   </p>
                 </div>
+              </td>
+            </tr>
+            
+            <!-- Footer -->
+            <tr>
+              <td style="padding: 20px; text-align: center; background-color: #f7f7f7; border-top: 1px solid #e5e5e5;">
+                <p style="margin: 0; font-size: 14px; color: #999;">
+                  Panel de Administración - HAIZE © ${new Date().getFullYear()}
+                </p>
               </td>
             </tr>
           </table>
@@ -664,7 +708,7 @@ export async function sendPaymentNotificationToAdmin(
 export async function resendEmails(
   order,
   user,
-  emailTypes = ['customer', 'admin']
+  emailTypes = ['customer', 'admin'],
 ) {
   try {
     const results = [];
@@ -717,12 +761,12 @@ export async function sendPaymentConfirmedEmails(order, user, paymentDetails) {
     const customerResult = await sendPaymentConfirmationToCustomer(
       order,
       user,
-      paymentDetails
+      paymentDetails,
     );
     const adminResult = await sendPaymentNotificationToAdmin(
       order,
       user,
-      paymentDetails
+      paymentDetails,
     );
 
     return {
