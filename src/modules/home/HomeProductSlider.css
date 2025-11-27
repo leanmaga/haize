@@ -15,18 +15,11 @@
   animation: slider-animation 20s linear infinite;
 }
 
-/* Deshabilitar interacción táctil */
+/* Deshabilitar solo interacción horizontal */
 .slider-container {
-  overflow: hidden; /* Cambiar de overflow-x-auto a hidden */
-  touch-action: none; /* Deshabilita gestos táctiles */
-  pointer-events: none; /* Deshabilita interacción con el mouse/touch */
-  -webkit-user-select: none; /* Previene selección en iOS */
-  user-select: none; /* Previene selección */
-}
-
-/* Los elementos hijos sí deben ser clickeables */
-.slider-container * {
-  pointer-events: auto;
+  overflow: hidden; /* Previene scroll horizontal */
+  touch-action: pan-y pinch-zoom; /* Solo permite scroll vertical y zoom */
+  -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
 }
 
 /* Mejora para mobile */
