@@ -115,6 +115,7 @@ export default function CheckoutPage() {
   const total = getTotal();
 
   // ✅ FUNCIÓN MEJORADA CON SIZE Y COLOR
+  // ✅ FUNCIÓN CORREGIDA CON productId
   const onSubmit = async (data) => {
     if (isSubmitting || orderCreatedRef.current) {
       return;
@@ -129,7 +130,7 @@ export default function CheckoutPage() {
 
       const orderData = {
         items: items.map((item) => ({
-          product: item.id,
+          product: item.productId || item.id, // ✅ USAR productId primero
           title: item.title,
           quantity: item.quantity,
           price: item.price,
