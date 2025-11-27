@@ -102,7 +102,7 @@ export default function ProfileOrdersPage() {
   }
 
   return (
-    <div>
+    <div lassName="mt-[80px]">
       <h2 className="font-nexa-bold text-xl font-semibold mb-6 text-gray-800">
         Mis Pedidos
       </h2>
@@ -189,12 +189,12 @@ export default function ProfileOrdersPage() {
                       {order.paymentMethod === 'mercadopago'
                         ? 'MercadoPago'
                         : order.paymentMethod === 'credit_card'
-                        ? 'Tarjeta de Crédito'
-                        : order.paymentMethod === 'debit_card'
-                        ? 'Tarjeta de Débito'
-                        : order.paymentMethod === 'whatsapp'
-                        ? 'WhatsApp'
-                        : order.paymentMethod}
+                          ? 'Tarjeta de Crédito'
+                          : order.paymentMethod === 'debit_card'
+                            ? 'Tarjeta de Débito'
+                            : order.paymentMethod === 'whatsapp'
+                              ? 'WhatsApp'
+                              : order.paymentMethod}
                     </p>
                   </div>
                 </div>
