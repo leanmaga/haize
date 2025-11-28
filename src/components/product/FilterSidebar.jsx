@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronDown, ChevronUp, X } from 'lucide-react';
 
 const FilterSidebar = ({
@@ -8,27 +9,83 @@ const FilterSidebar = ({
   onFiltersApply,
   currentFilters = {},
 }) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [expandedSection, setExpandedSection] = useState(null);
+
   const [priceRange, setPriceRange] = useState(
-    currentFilters.priceRange || { min: 0, max: 100000 }
+    currentFilters.priceRange || { min: 0, max: 100000 },
   );
   const [selectedCategory, setSelectedCategory] = useState(
-    currentFilters.category || 'all'
+    currentFilters.category || 'all',
   );
   const [selectedSizes, setSelectedSizes] = useState(
-    currentFilters.sizes || []
+    currentFilters.sizes || [],
   );
   const [selectedColors, setSelectedColors] = useState(
-    currentFilters.colors || []
+    currentFilters.colors || [],
   );
-
   // Sincronizar con filtros externos cuando cambien
-  useEffect(() => {
+  /*useEffect(() => {
     if (currentFilters.category) setSelectedCategory(currentFilters.category);
     if (currentFilters.sizes) setSelectedSizes(currentFilters.sizes);
     if (currentFilters.colors) setSelectedColors(currentFilters.colors);
     if (currentFilters.priceRange) setPriceRange(currentFilters.priceRange);
-  }, [currentFilters]);
+  }, [currentFilters]);*/
+
+  useEffect(() => {
+    let appliedFromUrl = false;
+    const initialFilters = {
+      category: searchParams.get('category') || selectedCategory,
+      sizes:
+        searchParams.getAll('sizes').length > 0
+          ? searchParams.getAll('sizes')
+          : selectedSizes,
+      colors:
+        searchParams.getAll('colors').length > 0
+          ? searchParams.getAll('colors')
+          : selectedColors,
+      priceRange: {
+        min: Number(searchParams.get('minPrice')) || priceRange.min,
+        max: Number(searchParams.get('maxPrice')) || priceRange.max,
+      },
+    };
+
+    // Si la categoría de la URL es diferente a la inicial O si hay otros filtros
+    if (
+      initialFilters.category !== selectedCategory ||
+      initialFilters.sizes.length > 0 ||
+      initialFilters.colors.length > 0 ||
+      initialFilters.priceRange.min > priceRange.min ||
+      initialFilters.priceRange.max < priceRange.max
+    ) {
+      // Actualiza los estados internos
+      setSelectedCategory(initialFilters.category);
+      setSelectedSizes(initialFilters.sizes);
+      setSelectedColors(initialFilters.colors);
+      setPriceRange(initialFilters.priceRange);
+
+      // Aplica los filtros leídos de la URL
+      onFiltersApply(initialFilters);
+      appliedFromUrl = true;
+    }
+
+    if (
+      !appliedFromUrl &&
+      (selectedCategory ||
+        selectedSizes.length > 0 ||
+        selectedColors.length > 0 ||
+        priceRange.min > 0 ||
+        priceRange.max < 100000)
+    ) {
+      onFiltersApply({
+        category: selectedCategory,
+        priceRange,
+        sizes: selectedSizes,
+        colors: selectedColors,
+      });
+    }
+  }, [searchParams.toString()]);
 
   const categories = [
     { key: 'all', label: 'Todos' },
@@ -65,7 +122,7 @@ const FilterSidebar = ({
 
   const toggleSize = (size) => {
     setSelectedSizes((prev) =>
-      prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]
+      prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size],
     );
   };
 
@@ -73,7 +130,7 @@ const FilterSidebar = ({
     setSelectedColors((prev) =>
       prev.includes(colorName)
         ? prev.filter((c) => c !== colorName)
-        : [...prev, colorName]
+        : [...prev, colorName],
     );
   };
 
@@ -96,7 +153,48 @@ const FilterSidebar = ({
       colors: selectedColors,
     };
 
-    onFiltersApply(filters);
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (selectedCategory !== 'all') {
+      params.set('category', selectedCategory);
+    } else {
+      params.delete('category');
+    }
+
+    // --- PRECIO ---
+    // Usamos rangos específicos (asumiendo 0 y 100000 son los valores por defecto)
+    if (priceRange.min > 0 || priceRange.max < 100000) {
+      params.set('minPrice', priceRange.min.toString());
+      params.set('maxPrice', priceRange.max.toString());
+    } else {
+      params.delete('minPrice');
+      params.delete('maxPrice');
+    }
+
+    // --- TALLES y COLORES (manejo de arrays) ---
+    // Si hay selecciones, las unimos con coma. Si no, borramos el parámetro.
+    if (selectedSizes.length > 0) {
+      params.set('sizes', selectedSizes.join(','));
+    } else {
+      params.delete('sizes');
+    }
+
+    if (selectedColors.length > 0) {
+      params.set('colors', selectedColors.join(','));
+    } else {
+      params.delete('colors');
+    }
+
+    // 4. Actualiza la URL usando router.push()
+    // Obtenemos la ruta actual (pathname) y le concatenamos el nuevo query string.
+    router.push(`?${params.toString()}`);
+
+    // Opcional: Notificar al componente padre que los filtros han sido aplicados.
+    if (onFiltersApply) {
+      onFiltersApply(currentFilters);
+    }
+
+    //onFiltersApply(filters);
     onClose();
   };
 
@@ -105,6 +203,9 @@ const FilterSidebar = ({
     setPriceRange({ min: 0, max: 100000 });
     setSelectedSizes([]);
     setSelectedColors([]);
+
+    const params = new URLSearchParams();
+    router.push(`?${params.toString()}`);
 
     onFiltersApply({
       category: 'all',
