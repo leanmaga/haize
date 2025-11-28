@@ -29,6 +29,7 @@ const CategoriesDropdown = () => {
         { name: 'Shorts', value: 'shorts' },
         { name: 'Musculosas', value: 'musculosas' },
         { name: 'Conjuntos', value: 'conjuntos' },
+        { name: 'Todos', value: 'all' },
       ],
     },
     regalos: {
