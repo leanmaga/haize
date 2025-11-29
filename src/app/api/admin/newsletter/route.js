@@ -1,7 +1,7 @@
 // app/api/admin/newsletter/route.js
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
 import Newsletter from '@/models/Newsletter';
 
@@ -73,7 +73,7 @@ export async function GET(request) {
     console.error('Error al obtener suscriptores:', error);
     return NextResponse.json(
       { error: 'Error al obtener suscriptores' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -111,7 +111,7 @@ export async function POST(request) {
     console.error('Error en acción admin:', error);
     return NextResponse.json(
       { error: 'Error al procesar acción' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
