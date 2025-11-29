@@ -10,13 +10,13 @@ import Navbar from '@/shared/components/Navbar';
 export const metadata = {
   title: 'HAIZE | Moda Masculina Premium - Estilo Argentino',
   description:
-    'Descubrí moda masculina de alta calidad en HAIZE. Ropa exclusiva, diseño minimalista y envío express en 24hs a Belgrano, Palermo, Las Cañitas, Colegiales y Núñez. Elegancia urbana para el hombre moderno.',
+    'Descubrí moda masculina de alta calidad en HAIZE. Ropa exclusiva, diseño minimalista. Elegancia urbana para el hombre moderno. Envios a todo el país',
   keywords:
     'moda masculina, ropa hombre, indumentaria premium, moda argentina, estilo urbano, ropa elegante hombre, envío rápido CABA',
   authors: [{ name: 'HAIZE' }],
   creator: 'HAIZE',
   publisher: 'HAIZE',
-  metadataBase: new URL('https://haize.com.ar'), // Reemplaza con tu dominio real
+  metadataBase: new URL('https://haize.com.ar'),
   alternates: {
     canonical: '/',
   },
@@ -26,7 +26,7 @@ export const metadata = {
     url: '/',
     title: 'HAIZE | Moda Masculina Premium - Estilo Argentino',
     description:
-      'Ropa masculina de alta calidad con diseño minimalista. Envío express en 24hs a las mejores zonas de Buenos Aires.',
+      'Ropa masculina de alta calidad con diseño minimalista. Envío express en 24hs. Envíos a todo el país.',
     siteName: 'HAIZE',
     images: [
       {
@@ -108,7 +108,7 @@ export default async function RootLayout({ children }) {
     name: 'HAIZE',
     description:
       'Tienda de moda masculina premium con diseño minimalista y estilo argentino',
-    url: 'https://haize.com.ar', // Reemplaza con tu dominio real
+    url: 'https://haize.com.ar',
     logo: 'https://haize.com.ar/icono/haize_HZ_favicon_256.png',
     image: 'https://haize.com.ar/og-image.jpg',
     address: {
@@ -118,7 +118,7 @@ export default async function RootLayout({ children }) {
       addressLocality: 'Ciudad Autónoma de Buenos Aires',
     },
     priceRange: '$$',
-    areaServed: ['Belgrano', 'Palermo', 'Las Cañitas', 'Colegiales', 'Núñez'],
+    areaServed: ['Argentina'],
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
       name: 'Catálogo de Ropa Masculina',
