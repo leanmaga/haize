@@ -18,13 +18,15 @@ export default async function Home() {
       <PageLoader />
 
       {/* Hero Section */}
-      <div className="relative w-full h-[100vh] md:h-[120vh] min-h-[600px]">
+      <div className="relative w-screen h-[100vh] md:h-[120vh] min-h-[600px] ">
         {/* Imagen Desktop */}
         <Image
           src="https://res.cloudinary.com/dz7fsiwnu/image/upload/portada"
           alt="Home background"
           fill
           priority
+          sizes="100vw"
+          quality={90}
           className="hidden md:block object-cover object-top"
         />
 
@@ -34,6 +36,8 @@ export default async function Home() {
           alt="Home background mobile"
           fill
           priority
+          sizes="(max-width: 768px) 100vw, 0px"
+          quality={90}
           className="block md:hidden object-cover object-center"
         />
 
@@ -65,10 +69,10 @@ export default async function Home() {
         <HomeProduct
           imageSrc="/assets/clothes.jpg"
           altText="Clothes 1"
-          title="MUSCULOSA CALADA ARENA"
+          title="MUSCULOSA BEIGE"
           description="Tejido perforado. Cuello henley. Frescura y estilo en su máxima expresión."
           linkTitle="Descubrir Más"
-          link="/products"
+          link="/products/692a41f813ad12598ac559d8"
         />
 
         <HomeProduct
@@ -77,7 +81,7 @@ export default async function Home() {
           title="Camisa Negra"
           description="Algodón de alta densidad. Silueta relajada. Versatilidad absoluta."
           linkTitle="Ver Más"
-          link="/products"
+          link="/products/692872216e8daddf1277cb57"
         />
       </div>
 
@@ -87,30 +91,30 @@ export default async function Home() {
           width="w-[100vw] md:w-[50vw]"
           imageSrc="/assets/clothes4.jpg"
           altText="Clothes 4"
-          title="SET WAFFLE ESSENTIAL"
+          title="Conjunto Blanco"
           description="Textura diagonal. Silueta relajada. El uniforme del verano contemporáneo."
           linkTitle="Descubrir Más"
-          link="/products"
+          link="/products/692a46935f2af38e059f879e"
         />
 
         <HomeProduct
           width="w-[100vw] md:w-[50vw]"
           imageSrc="/assets/clothes3.jpg"
           altText="Clothes 3"
-          title="CAMISA CALADA CREMA"
+          title="CAMISA BEIGE"
           description="Algodón de alta densidad. Silueta relajada. Versatilidad absoluta."
           linkTitle="Descubrir Más"
-          link="/products"
+          link="/products/692a431013ad12598ac559fc"
         />
 
         <HomeProduct
           width="w-[100vw] md:w-[50vw]"
           imageSrc="/assets/clothes5.jpg"
           altText="Clothes 5"
-          title="REMERA OVERSIZED ESSENTIAL"
+          title="REMERA BLANCA"
           description="Algodón de alta densidad. Silueta relajada. Versatilidad absoluta."
           linkTitle="Ver Más"
-          link="/products"
+          link="/products/692a44d85f2af38e059f8755"
         />
       </HomeProductSlider>
 

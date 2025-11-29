@@ -18,6 +18,7 @@ export default function HomeProduct({
         src={imageSrc}
         alt={altText}
         fill
+        sizes="(max-width: 768px) 100vw, 50vw"
         className="object-cover object-top"
       />
 
