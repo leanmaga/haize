@@ -32,7 +32,7 @@ const AdminQuestionsPage = () => {
   const isActiveRef = useRef(true);
 
   // Función auxiliar para verificar si el usuario es admin
-  const isUserAdmin = () => {
+  const isAdmin = () => {
     return session?.user?.role === 'admin';
   };
 
@@ -117,7 +117,9 @@ const AdminQuestionsPage = () => {
         searchTerm === '' ||
         question.comment.toLowerCase().includes(searchTerm.toLowerCase()) ||
         question.user?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        question.product?.title.toLowerCase().includes(searchTerm.toLowerCase())
+        question.product?.title
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()),
     );
   }, [questions, searchTerm]);
 
@@ -127,7 +129,7 @@ const AdminQuestionsPage = () => {
       if (now - lastFetchRef.current < 2000) return;
 
       lastFetchRef.current = now;
-      if (!isUserAdmin()) return;
+      if (!isAdmin()) return;
 
       try {
         if (showLoading) setLoading(true);
@@ -156,18 +158,18 @@ const AdminQuestionsPage = () => {
         if (showLoading) setLoading(false);
       }
     },
-    [session, filter, currentPage]
+    [session, filter, currentPage],
   );
 
   useEffect(() => {
-    if (isUserAdmin()) {
+    if (isAdmin()) {
       fetchQuestions(true);
     }
   }, [session, filter, currentPage, fetchQuestions]);
 
   // Effect para polling automático (MUY REDUCIDO)
   useEffect(() => {
-    if (!isUserAdmin()) return;
+    if (!isAdmin()) return;
 
     // Limpiar intervalo anterior
     if (pollingIntervalRef.current) {
@@ -223,7 +225,7 @@ const AdminQuestionsPage = () => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ response: responseText.trim() }),
-        }
+        },
       );
 
       const data = await response.json();
@@ -352,8 +354,8 @@ const AdminQuestionsPage = () => {
           {submitting
             ? 'Enviando respuesta'
             : !isResponseValid(responseText)
-            ? 'Necesitas escribir al menos 10 caracteres para enviar'
-            : 'Presiona para enviar tu respuesta'}
+              ? 'Necesitas escribir al menos 10 caracteres para enviar'
+              : 'Presiona para enviar tu respuesta'}
         </output>
         <button
           onClick={handleCancelResponse}
@@ -366,7 +368,7 @@ const AdminQuestionsPage = () => {
     </div>
   );
 
-  if (!isUserAdmin()) {
+  if (!isAdmin()) {
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg p-4">
         <p className="text-red-800">
