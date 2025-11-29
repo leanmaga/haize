@@ -46,11 +46,10 @@ const NewsletterSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Índices para búsquedas rápidas
-NewsletterSchema.index({ email: 1 });
 NewsletterSchema.index({ status: 1 });
 NewsletterSchema.index({ confirmationToken: 1 });
 

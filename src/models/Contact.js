@@ -57,11 +57,9 @@ const ContactSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-// Índices para búsquedas eficientes
-ContactSchema.index({ email: 1 });
 ContactSchema.index({ estado: 1 });
 ContactSchema.index({ motivo: 1 });
 ContactSchema.index({ createdAt: -1 });
