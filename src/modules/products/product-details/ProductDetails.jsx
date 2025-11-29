@@ -3,12 +3,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getProductById } from '@/lib/data';
-import AddToCartButton from '@/components/product/AddToCartButton';
 import ProductReviews from '@/components/ProductReviews';
 import StarRating from '@/components/ui/StarRating';
 import RelatedProducts from '@/components/product/RelatedProducts';
 import ProductImageSlider from '@/components/product/ProductImageSlider';
-import VariantSelector from '@/components/product/VariantSelector'; // NUEVO
+import VariantSelector from '@/components/product/VariantSelector';
+import SameDayShipping from './components/SameDayShipping';
 
 export default async function ProductDetails({ params }) {
   // Extract id from params
@@ -245,10 +245,7 @@ export default async function ProductDetails({ params }) {
                     {product.category.charAt(0).toUpperCase() +
                       product.category.slice(1)}
                   </li>
-                  <li>
-                    Disponibilidad:{' '}
-                    {product.stock > 0 ? 'Disponible' : 'Agotado'}
-                  </li>
+
                   {product.material && <li>Material: {product.material}</li>}
                   {product.brand && <li>Marca: {product.brand}</li>}
                   {product.origin && <li>Origen: {product.origin}</li>}
@@ -301,14 +298,7 @@ export default async function ProductDetails({ params }) {
               </summary>
               <div className="pb-5 text-sm text-gray-600 leading-relaxed space-y-2">
                 <p>
-                  <strong>Tarjetas de crédito:</strong> Todas las tarjetas - 6
-                  cuotas sin interés
-                </p>
-                <p>
-                  <strong>Tarjetas de débito:</strong> Pago en una sola cuota
-                </p>
-                <p>
-                  <strong>Transferencia bancaria:</strong> 5% de descuento
+                  <strong>Tarjetas de crédito:</strong> Todas las tarjetas
                 </p>
                 <p className="text-xs text-gray-500 mt-3">
                   Promociones bancarias vigentes. Consultá por beneficios
@@ -352,18 +342,10 @@ export default async function ProductDetails({ params }) {
               </summary>
               <div className="pb-5 text-sm text-gray-600 leading-relaxed space-y-2">
                 <p>
-                  <strong>Tiempo de entrega:</strong> Máximo 24 horas
+                  <strong>Tiempo de entrega:</strong> Máximo 24 horas en CABA
                 </p>
                 <p>
-                  <strong>Zonas de cobertura:</strong> Belgrano, Palermo, Las
-                  Cañitas, Colegiales y Núñez
-                </p>
-                <p>
-                  <strong>Pedidos:</strong> Por WhatsApp (+54 9 11 2552-8131)
-                </p>
-                <p>
-                  <strong>Horarios:</strong> Lunes a Viernes 10:00-20:00,
-                  Sábados 10:00-14:00
+                  <strong>Zonas de cobertura:</strong> Envios a todo el país.
                 </p>
               </div>
             </details>
@@ -430,36 +412,7 @@ export default async function ProductDetails({ params }) {
           </div>
 
           {/* Información de Envío Same Day */}
-          <div className="mt-6 bg-gray-50 border border-gray-200 p-4 flex gap-3 items-start">
-            <svg
-              className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
-              ></path>
-            </svg>
-            <div className="text-sm">
-              <p className="font-semibold text-gray-900 mb-1">
-                Envío Same day.
-              </p>
-              <p className="text-gray-600">
-                Si vivís en CABA recibilo{' '}
-                <span className="text-green-600 font-semibold">mañana*</span>
-              </p>
-              <p className="text-xs text-gray-500 mt-1">
-                comprando dentro de las próximas{' '}
-                <span className="text-green-600 font-semibold">
-                  12 hs 48 min
-                </span>
-              </p>
-            </div>
-          </div>
+          <SameDayShipping />
         </div>
       </div>
 
