@@ -31,10 +31,8 @@ const AdminQuestionsPage = () => {
   const pollingIntervalRef = useRef(null);
   const isActiveRef = useRef(true);
 
-  // Función auxiliar para verificar si el usuario es admin
-  const isAdmin = () => {
-    return session?.user?.role === 'admin';
-  };
+  // ✅ CAMBIO: Calcular isAdmin directamente como una variable
+  const isAdmin = session?.user?.role === 'admin';
 
   // Función auxiliar para obtener el estado de auto-refresh
   const getAutoRefreshStatus = () => {
@@ -123,13 +121,14 @@ const AdminQuestionsPage = () => {
     );
   }, [questions, searchTerm]);
 
+  // ✅ CAMBIO: Agregar isAdmin como dependencia
   const fetchQuestions = useCallback(
     async (showLoading = true) => {
       const now = Date.now();
       if (now - lastFetchRef.current < 2000) return;
 
       lastFetchRef.current = now;
-      if (!isAdmin()) return;
+      if (!isAdmin) return;
 
       try {
         if (showLoading) setLoading(true);
@@ -158,18 +157,19 @@ const AdminQuestionsPage = () => {
         if (showLoading) setLoading(false);
       }
     },
-    [session, filter, currentPage],
+    [isAdmin, filter, currentPage], // ✅ CAMBIO: incluir isAdmin
   );
 
+  // ✅ CAMBIO: Agregar isAdmin como dependencia
   useEffect(() => {
-    if (isAdmin()) {
+    if (isAdmin) {
       fetchQuestions(true);
     }
-  }, [session, filter, currentPage, fetchQuestions]);
+  }, [isAdmin, filter, currentPage, fetchQuestions]); // ✅ CAMBIO: incluir isAdmin
 
-  // Effect para polling automático (MUY REDUCIDO)
+  // ✅ CAMBIO: Agregar isAdmin como dependencia
   useEffect(() => {
-    if (!isAdmin()) return;
+    if (!isAdmin) return;
 
     // Limpiar intervalo anterior
     if (pollingIntervalRef.current) {
@@ -194,7 +194,7 @@ const AdminQuestionsPage = () => {
         pollingIntervalRef.current = null;
       }
     };
-  }, [stats.pending, fetchQuestions, session?.user?.role]);
+  }, [isAdmin, stats.pending, fetchQuestions]); // ✅ CAMBIO: incluir isAdmin
 
   // Effect para detectar cuando la página está activa/inactiva
   useEffect(() => {
@@ -368,7 +368,8 @@ const AdminQuestionsPage = () => {
     </div>
   );
 
-  if (!isAdmin()) {
+  // ✅ CAMBIO: Usar isAdmin directamente en lugar de isAdmin()
+  if (!isAdmin) {
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg p-4">
         <p className="text-red-800">
@@ -382,6 +383,7 @@ const AdminQuestionsPage = () => {
 
   return (
     <div className="space-y-6">
+      {/* ... resto del JSX sin cambios ... */}
       {/* Header y Estadísticas */}
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex items-center justify-between mb-6">
