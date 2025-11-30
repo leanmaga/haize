@@ -36,12 +36,6 @@ export async function GET() {
       );
     }
 
-    console.log('Generando URL de autorización:', {
-      APP_ID,
-      REDIRECT_URI,
-      baseUrl,
-    });
-
     // Crear URL de autorización OAuth2
     const authUrl = new URL('https://auth.mercadopago.com.ar/authorization');
     authUrl.searchParams.append('client_id', APP_ID);

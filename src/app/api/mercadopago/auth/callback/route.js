@@ -44,8 +44,6 @@ export async function GET(request) {
       );
     }
 
-    console.log('Intercambiando código por token...');
-
     // Intercambiar código por token
     const tokenResponse = await fetch(
       'https://api.mercadopago.com/oauth/token',
@@ -84,8 +82,6 @@ export async function GET(request) {
       );
     }
 
-    console.log('Token obtenido exitosamente');
-
     // Conectar a la base de datos
     await connectDB();
 
@@ -123,8 +119,6 @@ export async function GET(request) {
       },
       { upsert: true, new: true },
     );
-
-    console.log('Configuración de MercadoPago guardada exitosamente');
 
     // Redirigir a una página de éxito
     return NextResponse.redirect(
