@@ -11,11 +11,9 @@ export default function Footer() {
       <div className="flex flex-col items-start gap-6.5 max-md:gap-4 max-md:items-center">
         <p className="text-xl font-bold">TE AYUDAMOS</p>
         <CustomLink href="/contact">Contacto</CustomLink>
-        <CustomLink href="/returns">Cambios y devoluciones</CustomLink>
-        <CustomLink href="/faq">Preguntas frecuentes</CustomLink>
-        <CustomLink href="/consumer-protection">
-          Defensa al consumidor
-        </CustomLink>
+        <CustomLink href="/privacy-policy">Politica de Privacidad</CustomLink>
+        <CustomLink href="/cookies">Configuración de Cookies</CustomLink>
+        <CustomLink href="/terms">Términos de Uso</CustomLink>
       </div>
 
       <div className="flex flex-col justify-start items-start gap-6.5 max-md:gap-4 max-md:order-1 max-md:flex-row max-md:mt-4">
