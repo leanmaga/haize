@@ -209,7 +209,7 @@ export default function MultipleImageUploader({
           widgetConfig,
           (error, result) => {
             if (error) {
-              console.error('❌ Error en imagen adicional:', error);
+              console.error('❌ Error en imagen adicionall:', error);
 
               let errorMessage = 'Error al subir imagen adicional';
 
