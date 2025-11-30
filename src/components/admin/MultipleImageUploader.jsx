@@ -39,7 +39,6 @@ export default function MultipleImageUploader({
     script.async = true;
 
     script.onload = () => {
-      console.log('✅ Script de Cloudinary cargado correctamente');
       setCloudinaryLoaded(true);
     };
 
@@ -65,7 +64,6 @@ export default function MultipleImageUploader({
   // Inicializar widgets de Cloudinary solo cuando el script esté cargado
   useEffect(() => {
     if (!cloudinaryLoaded || !window.cloudinary) {
-      console.log('⏳ Esperando a que Cloudinary se cargue...');
       return;
     }
 
@@ -84,10 +82,6 @@ export default function MultipleImageUploader({
       );
       return;
     }
-
-    console.log('🔧 Inicializando widgets de Cloudinary...');
-    console.log('Cloud Name:', cloudName);
-    console.log('📁 Carpeta:', folder); // 🔥 Log para verificar
 
     try {
       const widgetConfig = {
@@ -151,7 +145,6 @@ export default function MultipleImageUploader({
 
       // Widget para imagen principal
       if (!mainWidgetRef.current) {
-        console.log('📸 Creando widget de imagen principal...');
         mainWidgetRef.current = window.cloudinary.createUploadWidget(
           widgetConfig,
           (error, result) => {
@@ -177,11 +170,7 @@ export default function MultipleImageUploader({
               return;
             }
 
-            console.log('📡 Evento del widget principal:', result.event);
-
             if (result.event === 'success') {
-              console.log('✅ Imagen principal subida:', result.info);
-              console.log('📁 Carpeta destino:', result.info.folder); // 🔥 Verificar carpeta
               let imageUrl = result.info.secure_url;
 
               // Aplicar recorte si existe
@@ -196,7 +185,6 @@ export default function MultipleImageUploader({
                   '/upload/',
                   `/upload${transformation}`,
                 );
-                console.log('✂️ Imagen recortada:', imageUrl);
               }
 
               setMainImageError(false);
@@ -205,22 +193,18 @@ export default function MultipleImageUploader({
             }
 
             if (result.event === 'queues-start') {
-              console.log('⏳ Iniciando cola de subida...');
               setIsLoading(true);
             }
 
             if (result.event === 'queues-end') {
-              console.log('✅ Cola de subida finalizada');
               setIsLoading(false);
             }
           },
         );
-        console.log('✅ Widget de imagen principal creado');
       }
 
       // Widget para imágenes adicionales
       if (!addWidgetRef.current) {
-        console.log('📸 Creando widget de imágenes adicionales...');
         addWidgetRef.current = window.cloudinary.createUploadWidget(
           widgetConfig,
           (error, result) => {
@@ -240,11 +224,7 @@ export default function MultipleImageUploader({
               return;
             }
 
-            console.log('📡 Evento del widget adicional:', result.event);
-
             if (result.event === 'success') {
-              console.log('✅ Imagen adicional subida:', result.info);
-              console.log('📁 Carpeta destino:', result.info.folder); // 🔥 Verificar carpeta
               let imageUrl = result.info.secure_url;
 
               // Aplicar recorte si existe
@@ -259,7 +239,6 @@ export default function MultipleImageUploader({
                   '/upload/',
                   `/upload${transformation}`,
                 );
-                console.log('✂️ Imagen recortada:', imageUrl);
               }
 
               onAddImage(
@@ -273,17 +252,14 @@ export default function MultipleImageUploader({
             }
 
             if (result.event === 'queues-start') {
-              console.log('⏳ Iniciando cola de subida...');
               setIsLoading(true);
             }
 
             if (result.event === 'queues-end') {
-              console.log('✅ Cola de subida finalizada');
               setIsLoading(false);
             }
           },
         );
-        console.log('✅ Widget de imágenes adicionales creado');
       }
 
       setInitError(null);
@@ -319,7 +295,6 @@ export default function MultipleImageUploader({
 
     if (!isLoading && mainWidgetRef.current) {
       try {
-        console.log('🚀 Abriendo widget de imagen principal...');
         mainWidgetRef.current.open();
       } catch (error) {
         console.error('❌ Error opening main widget:', error);
@@ -346,7 +321,6 @@ export default function MultipleImageUploader({
 
     if (!isLoading && addWidgetRef.current) {
       try {
-        console.log('🚀 Abriendo widget de imagen adicional...');
         addWidgetRef.current.open();
       } catch (error) {
         console.error('❌ Error opening add widget:', error);
