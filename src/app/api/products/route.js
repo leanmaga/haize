@@ -105,7 +105,7 @@ export async function GET(request) {
             ? error.message
             : 'Error interno',
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -118,13 +118,9 @@ export async function POST(request) {
       return NextResponse.json({ message: 'No autorizado' }, { status: 403 });
     }
 
-    console.log('🔵 Iniciando POST /api/products');
-
     await connectDB();
-    console.log('✅ Conectado a MongoDB');
 
     const data = await request.json();
-    console.log('📝 Datos recibidos:', JSON.stringify(data, null, 2));
 
     // Validar campos requeridos
     if (!data.title || !data.salePrice || !data.category || !data.imageUrl) {
@@ -134,13 +130,12 @@ export async function POST(request) {
       if (!data.category) missingFields.push('category');
       if (!data.imageUrl) missingFields.push('imageUrl');
 
-      console.log('❌ Faltan campos requeridos:', missingFields);
       return NextResponse.json(
         {
           error: 'Faltan campos requeridos',
           missingFields,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -154,14 +149,13 @@ export async function POST(request) {
     ];
 
     if (!validCategories.includes(data.category)) {
-      console.log('❌ Categoría inválida:', data.category);
       return NextResponse.json(
         {
           error: 'Categoría no válida',
           category: data.category,
           validCategories,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -201,13 +195,11 @@ export async function POST(request) {
       additionalImages: data.additionalImages || [],
     };
 
-    console.log('🔨 Creando producto...');
     const product = new Product(productData);
 
     // Validar antes de guardar
     const validationError = product.validateSync();
     if (validationError) {
-      console.log('❌ Error de validación:', validationError.errors);
       const errors = {};
       Object.keys(validationError.errors).forEach((key) => {
         errors[key] = validationError.errors[key].message;
@@ -218,14 +210,11 @@ export async function POST(request) {
           error: 'Error de validación',
           validationErrors: errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    console.log('💾 Guardando producto...');
     await product.save();
-
-    console.log('✅ Producto guardado exitosamente:', product._id);
 
     return NextResponse.json(
       {
@@ -233,7 +222,7 @@ export async function POST(request) {
         product,
         message: 'Producto creado exitosamente',
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error('❌ Error al crear producto:', error);
@@ -251,7 +240,7 @@ export async function POST(request) {
           error: 'Error de validación',
           validationErrors: errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -262,7 +251,7 @@ export async function POST(request) {
           error: 'Ya existe un producto con ese SKU',
           duplicateField: Object.keys(error.keyPattern)[0],
         },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -271,7 +260,7 @@ export async function POST(request) {
         error: 'Error al crear producto',
         message: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
