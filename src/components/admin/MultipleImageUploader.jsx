@@ -87,7 +87,7 @@ export default function MultipleImageUploader({
       const widgetConfig = {
         cloudName: cloudName,
         uploadPreset:
-          process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'haizeecommerce',
+          process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'haize-staging',
         sources: ['local', 'camera'],
         multiple: false,
         maxFiles: 1,
