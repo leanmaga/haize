@@ -4,34 +4,78 @@ import { useState } from 'react';
 import { useCartStore } from '@/lib/store';
 import { toast } from 'react-hot-toast';
 
+/**
+ * AddToCartButton actualizado para variantes combinadas
+ * Usa Zustand store y valida selección obligatoria de talle + color
+ */
 export default function AddToCartButton({
   product,
   selectedSize,
   selectedColor,
+  selectedVariant, // ← NUEVO: Variante completa seleccionada
+  disabled = false,
 }) {
   const addToCart = useCartStore((state) => state.addItem);
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
 
+  // Precio a mostrar (promocional o normal)
   const price =
     product.promoPrice && product.promoPrice > 0
       ? product.promoPrice
       : product.salePrice;
 
-  // Verificar si tiene variantes
+  // ========== DETECCIÓN DE VARIANTES ==========
+
+  // Sistema NUEVO: Variantes combinadas
+  const hasVariantsCombined = product.variants && product.variants.length > 0;
+
+  // Sistema ANTIGUO: Sizes y colors separados (backward compatibility)
   const hasSizes = product.sizes && product.sizes.length > 0;
   const hasColors = product.colors && product.colors.length > 0;
-  const hasVariants = hasSizes || hasColors;
+  const hasVariantsSeparated = hasSizes || hasColors;
 
-  // Validar que se hayan seleccionado las variantes requeridas
-  const needsSize = hasSizes && !selectedSize;
-  const needsColor = hasColors && !selectedColor;
-  const canAddToCart = hasVariants ? !needsSize && !needsColor : true;
+  // Determinar qué sistema usar
+  const hasVariants = hasVariantsCombined || hasVariantsSeparated;
 
-  const hasStock = product.stock > 0;
+  // ========== VALIDACIÓN ==========
+
+  let needsSize = false;
+  let needsColor = false;
+  let canAddToCart = true;
+  let hasStock = true;
+
+  if (hasVariantsCombined) {
+    // Sistema NUEVO: Verificar que se haya seleccionado variante completa
+    needsSize = !selectedSize;
+    needsColor = !selectedColor;
+    canAddToCart = selectedSize && selectedColor && selectedVariant;
+
+    // Verificar stock de la variante específica
+    hasStock = selectedVariant ? selectedVariant.stock > 0 : product.stock > 0;
+
+    // Limitar cantidad al stock de la variante
+    const maxQuantity = selectedVariant ? selectedVariant.stock : product.stock;
+    if (quantity > maxQuantity) {
+      setQuantity(maxQuantity);
+    }
+  } else if (hasVariantsSeparated) {
+    // Sistema ANTIGUO: Backward compatibility
+    needsSize = hasSizes && !selectedSize;
+    needsColor = hasColors && !selectedColor;
+    canAddToCart = !needsSize && !needsColor;
+    hasStock = product.stock > 0;
+  } else {
+    // Sin variantes: producto simple
+    canAddToCart = true;
+    hasStock = product.stock > 0;
+  }
+
+  // ========== FUNCIONES DE CANTIDAD ==========
 
   const incrementQuantity = () => {
-    if (quantity < product.stock) {
+    const maxStock = selectedVariant ? selectedVariant.stock : product.stock;
+    if (quantity < maxStock) {
       setQuantity(quantity + 1);
     }
   };
@@ -42,18 +86,39 @@ export default function AddToCartButton({
     }
   };
 
+  // ========== AGREGAR AL CARRITO ==========
+
   const handleAddToCart = () => {
     // Validar variantes
     if (needsSize || needsColor) {
       const missing = [];
       if (needsSize) missing.push('talle');
       if (needsColor) missing.push('color');
-      toast.error(`Por favor selecciona: ${missing.join(' y ')}`);
+      toast.error(`Por favor seleccioná: ${missing.join(' y ')}`, {
+        icon: '⚠️',
+        duration: 3000,
+      });
       return;
     }
 
+    // Validar stock
     if (!hasStock) {
-      toast.error('Producto agotado');
+      toast.error('Producto agotado', {
+        icon: '😔',
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Validar variante específica
+    if (hasVariantsCombined && selectedVariant && selectedVariant.stock === 0) {
+      toast.error(
+        `${selectedSize} en ${selectedColor} está agotado. Por favor elegí otra combinación.`,
+        {
+          icon: '😔',
+          duration: 4000,
+        },
+      );
       return;
     }
 
@@ -64,6 +129,7 @@ export default function AddToCartButton({
       ? `${product._id}-${selectedSize || 'no-size'}-${selectedColor || 'no-color'}`
       : product._id;
 
+    // Construir objeto del carrito
     const cartItem = {
       id: uniqueId, // ← ID único por variante
       productId: product._id, // ← ID original del producto
@@ -71,37 +137,73 @@ export default function AddToCartButton({
       price: price,
       image: product.imageUrl,
       quantity: quantity,
-      ...(hasVariants && {
-        variant: {
-          size: selectedSize || undefined,
-          color: selectedColor || undefined,
-          variantId: `${selectedSize || 'no-size'}-${selectedColor || 'no-color'}`,
-        },
-      }),
     };
 
+    // Agregar información de variante si existe
+    if (hasVariants && (selectedSize || selectedColor)) {
+      cartItem.variant = {
+        size: selectedSize || undefined,
+        color: selectedColor || undefined,
+        variantId: `${selectedSize || 'no-size'}-${selectedColor || 'no-color'}`,
+      };
+
+      // Si es sistema nuevo, agregar stock y SKU
+      if (selectedVariant) {
+        cartItem.variant.stock = selectedVariant.stock;
+        cartItem.variant.sku = selectedVariant.sku;
+      }
+    }
+
+    // Agregar al carrito (Zustand)
     addToCart(cartItem);
-    toast.success('Producto agregado al carrito');
+
+    // Toast de éxito personalizado
+    toast.success(
+      <div className="flex flex-col">
+        <span className="font-semibold">¡Agregado al carrito!</span>
+        <span className="text-sm text-gray-600">
+          {product.title}
+          {selectedSize && ` · Talle ${selectedSize}`}
+          {selectedColor && ` · ${selectedColor}`}
+          {quantity > 1 && ` · ${quantity} unidades`}
+        </span>
+      </div>,
+      {
+        icon: '✅',
+        duration: 3000,
+      },
+    );
 
     setTimeout(() => {
       setIsAdding(false);
     }, 500);
   };
 
+  // ========== PEDIDO POR WHATSAPP ==========
+
   const handleWhatsAppOrder = () => {
+    // Validar variantes
     if (needsSize || needsColor) {
       const missing = [];
       if (needsSize) missing.push('talle');
       if (needsColor) missing.push('color');
-      toast.error(`Por favor selecciona: ${missing.join(' y ')}`);
+      toast.error(`Por favor seleccioná: ${missing.join(' y ')}`, {
+        icon: '⚠️',
+        duration: 3000,
+      });
       return;
     }
 
+    // Validar stock
     if (!hasStock) {
-      toast.error('Producto agotado');
+      toast.error('Producto agotado', {
+        icon: '😔',
+        duration: 3000,
+      });
       return;
     }
 
+    // Construir mensaje de WhatsApp
     let variantText = '';
     if (selectedSize) variantText += ` - Talle: ${selectedSize}`;
     if (selectedColor) variantText += ` - Color: ${selectedColor}`;
@@ -115,6 +217,8 @@ export default function AddToCartButton({
 
     window.open(url, '_blank');
   };
+
+  // ========== RENDER ==========
 
   return (
     <div className="space-y-4">
@@ -149,7 +253,10 @@ export default function AddToCartButton({
             <button
               type="button"
               onClick={incrementQuantity}
-              disabled={quantity >= product.stock}
+              disabled={
+                quantity >=
+                (selectedVariant ? selectedVariant.stock : product.stock)
+              }
               className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-r-lg"
             >
               <svg
@@ -168,18 +275,25 @@ export default function AddToCartButton({
             </button>
           </div>
         </div>
+
+        {/* Indicador de stock máximo */}
+        {selectedVariant && (
+          <div className="text-xs text-gray-500 text-right mt-2">
+            Stock disponible: {selectedVariant.stock} unidades
+          </div>
+        )}
       </div>
 
       {/* Botón de agregar al carrito */}
       <button
         type="button"
         onClick={handleAddToCart}
-        disabled={isAdding || !hasStock || !canAddToCart}
+        disabled={isAdding || !hasStock || !canAddToCart || disabled}
         className={`w-full md:w-[500px] md:h-12 py-4 md:py-0 font-semibold text-center rounded-full transition-all duration-300 cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2 border-2
           ${
             isAdding
               ? 'opacity-70 text-white bg-black border-black'
-              : !hasStock || !canAddToCart
+              : !hasStock || !canAddToCart || disabled
                 ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
                 : 'text-white bg-black border-black hover:bg-black/70'
           }`}
@@ -236,7 +350,7 @@ export default function AddToCartButton({
                 d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            Selecciona variante
+            Seleccioná variante
           </>
         ) : (
           <>
@@ -262,10 +376,10 @@ export default function AddToCartButton({
       <button
         type="button"
         onClick={handleWhatsAppOrder}
-        disabled={!hasStock || !canAddToCart}
+        disabled={!hasStock || !canAddToCart || disabled}
         className={`w-full md:w-[500px] md:h-12 py-4 md:py-0 font-semibold text-center rounded-full transition-all duration-300 cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2 border-2
           ${
-            !hasStock || !canAddToCart
+            !hasStock || !canAddToCart || disabled
               ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
               : 'text-black bg-white border-black hover:bg-black/70 hover:text-white'
           }`}

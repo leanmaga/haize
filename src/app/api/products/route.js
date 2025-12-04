@@ -1,9 +1,9 @@
-// app/api/products/route.js - ACTUALIZADO PARA INDUMENTARIA
+// app/api/products/route.js - ACTUALIZADO PARA VARIANTES COMBINADAS
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import { authOptions } from '@/lib/auth';
 import { getServerSession } from 'next-auth/next';
-import Product from '@/models/Product'; // ✅ Importar el modelo actualizado
+import Product from '@/models/Product';
 
 export async function GET(request) {
   try {
@@ -72,7 +72,7 @@ export async function GET(request) {
       .sort({ featured: -1, createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .lean({ virtuals: true });
+      .lean();
 
     // Obtener filtros únicos
     const [categories, brands, seasons] = await Promise.all([
@@ -186,7 +186,10 @@ export async function POST(request) {
       careInstructions: data.careInstructions || [],
       tags: data.tags || [],
 
-      // Variantes
+      // ✅ VARIANTES COMBINADAS (SISTEMA NUEVO)
+      variants: data.variants || [],
+
+      // Variantes separadas (SISTEMA ANTIGUO - backward compatibility)
       sizes: data.sizes || [],
       colors: data.colors || [],
 
@@ -194,6 +197,32 @@ export async function POST(request) {
       imageCloudinaryInfo: data.imageCloudinaryInfo || {},
       additionalImages: data.additionalImages || [],
     };
+
+    // ✅ Si se enviaron variantes combinadas, procesar y filtrar
+    if (data.variants && Array.isArray(data.variants)) {
+      productData.variants = data.variants
+        .filter((v) => v.size && v.color) // Solo variantes con talle y color
+        .map((v) => ({
+          size: v.size,
+          color: v.color,
+          colorHex: v.colorHex || '#808080',
+          stock: parseInt(v.stock) || 0,
+          sku: v.sku || '',
+        }));
+
+      // Calcular stock total desde variantes
+      if (productData.variants.length > 0) {
+        productData.stock = productData.variants.reduce(
+          (total, v) => total + v.stock,
+          0,
+        );
+      }
+    }
+
+    console.log(
+      '📦 Creando producto con datos:',
+      JSON.stringify(productData, null, 2),
+    );
 
     const product = new Product(productData);
 
@@ -215,6 +244,8 @@ export async function POST(request) {
     }
 
     await product.save();
+
+    console.log('✅ Producto creado con ID:', product._id);
 
     return NextResponse.json(
       {

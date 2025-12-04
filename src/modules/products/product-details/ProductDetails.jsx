@@ -57,7 +57,18 @@ export default async function ProductDetails({ params }) {
       }
     });
   }
-
+  // En ProductDetails.jsx, después de obtener el product
+  console.log('📦 PRODUCT DATA:', {
+    id: product._id,
+    title: product.title,
+    hasVariants: !!product.variants,
+    variants: product.variants,
+    hasSizes: !!product.sizes,
+    sizes: product.sizes,
+    hasColors: !!product.colors,
+    colors: product.colors,
+    stock: product.stock,
+  });
   return (
     <div className="container mx-auto px-4 py-6 max-w-[1400px] mt-[80px]">
       {/* Breadcrumb - Alineado a la derecha como en la imagen */}
