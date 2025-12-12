@@ -8,27 +8,51 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useForm } from 'react-hook-form';
 import Link from 'next/link';
 import Image from 'next/image';
-import { LockClosedIcon } from '@heroicons/react/24/solid';
+import { LockClosedIcon, TagIcon } from '@heroicons/react/24/solid';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import MercadoPagoButton from '@/components/mercadopago/MercadoPagoButton';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
+
+// ========== FUNCIÓN HELPER PARA EXTRAER PRODUCT ID ==========
+const extractProductId = (item) => {
+  if (item.productId) return item.productId;
+
+  if (item.id) {
+    const id = item.id.toString();
+
+    // Si tiene guiones, es un ID compuesto: "6930da3d2abbbd71b0df30a3-L-Negro"
+    if (id.includes('-')) {
+      return id.split('-')[0]; // Extraer solo la primera parte
+    }
+
+    // Si es un ObjectId válido (24 caracteres), retornarlo
+    if (id.length === 24) {
+      return id;
+    }
+
+    // Si es más largo, tomar los primeros 24 caracteres
+    if (id.length > 24) {
+      return id.substring(0, 24);
+    }
+  }
+
+  return item._id || item.id;
+};
+// ===========================================================
 
 export default function CheckoutPage() {
   const [mounted, setMounted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] =
-    useState('mercadopago');
-  const [mercadoPagoUrl, setMercadoPagoUrl] = useState('');
-  const [preferenceId, setPreferenceId] = useState('');
-  const [orderId, setOrderId] = useState(null);
-  const orderCreatedRef = useRef(false);
   const idempotencyKey = useRef(
     `order_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`,
   );
 
   const router = useRouter();
   const { data: session, status } = useSession();
-  const { items, getTotal, clearCart } = useCartStore();
+
+  // ========== OBTENER MÉTODOS DEL STORE CON CUPONES ==========
+  const { items, getTotal, getTotalWithDiscount, getDiscountInfo, clearCart } =
+    useCartStore();
+  // ===========================================================
 
   const {
     register,
@@ -43,33 +67,21 @@ export default function CheckoutPage() {
     setMounted(true);
   }, []);
 
-  // Añadir después de cargar los datos del usuario
+  // Cargar datos del usuario
   useEffect(() => {
     if (session?.user) {
       setValue('name', session.user.name || '');
       setValue('email', session.user.email || '');
       setValue('phone', session.user.phone || '');
 
-      // Si el usuario se acaba de registrar con Google y no tiene teléfono
       if (session.user.needsPhoneUpdate && !session.user.phone) {
         toast(
-          'Por favor, ingresa tu número de teléfono para completar tu perfil y continuar con la compra',
+          'Por favor, ingresa tu número de teléfono para completar tu perfil',
           {
             duration: 6000,
             icon: '🔔',
-            style: {
-              background: '#3498db',
-              color: '#fff',
-            },
           },
         );
-        // Hacer focus en el campo de teléfono
-        setTimeout(() => {
-          const phoneInput = document.getElementById('phone');
-          if (phoneInput) {
-            phoneInput.focus();
-          }
-        }, 500);
       }
     }
   }, [session, setValue]);
@@ -83,26 +95,11 @@ export default function CheckoutPage() {
 
   // Redirect if cart is empty
   useEffect(() => {
-    if (mounted && items.length === 0 && !orderId) {
+    if (mounted && items.length === 0) {
       toast.error('Tu carrito está vacío');
       router.push('/products');
     }
-  }, [mounted, items, router, orderId]);
-
-  // Manejar retorno después de intento de pago
-  useEffect(() => {
-    // Verificar si regresa de un intento de pago
-    const lastOrderId = sessionStorage.getItem('lastOrderId');
-    const lastPreferenceId = sessionStorage.getItem('lastPreferenceId');
-    const lastMercadoPagoUrl = sessionStorage.getItem('lastMercadoPagoUrl');
-
-    if (lastOrderId && lastPreferenceId && !orderId && !preferenceId) {
-      setOrderId(lastOrderId);
-      setPreferenceId(lastPreferenceId);
-      setMercadoPagoUrl(lastMercadoPagoUrl);
-      orderCreatedRef.current = true;
-    }
-  }, [orderId, preferenceId]);
+  }, [mounted, items, router]);
 
   if (!mounted || status === 'loading' || !session) {
     return (
@@ -112,35 +109,40 @@ export default function CheckoutPage() {
     );
   }
 
-  const total = getTotal();
+  // ========== CALCULAR TOTALES CON CUPONES ==========
+  const subtotal = getTotal();
+  const total = getTotalWithDiscount();
+  const discountInfo = getDiscountInfo();
+  // ==================================================
 
-  // ✅ FUNCIÓN MEJORADA CON SIZE Y COLOR
-  // ✅ FUNCIÓN CORREGIDA CON productId
+  // ========== SUBMIT PARA MERCADOPAGO ==========
   const onSubmit = async (data) => {
-    if (isSubmitting || orderCreatedRef.current) {
-      return;
-    }
-
+    if (isSubmitting) return;
     setIsSubmitting(true);
 
     try {
-      if (orderId) {
-        return;
-      }
+      // ========== MAPEAR ITEMS CON PRODUCT ID LIMPIO ==========
+      const orderItems = items.map((item) => {
+        const productId = extractProductId(item);
 
-      const orderData = {
-        items: items.map((item) => ({
-          product: item.productId || item.id, // ✅ USAR productId primero
+        return {
+          product: productId, // ✅ ProductId limpio
           title: item.title,
           quantity: item.quantity,
           price: item.price,
           imageUrl: item.image,
-          // ✅ INCLUIR size y color
           size: item.variant?.size || undefined,
           color: item.variant?.color || undefined,
-        })),
-        totalAmount: total,
-        paymentMethod: selectedPaymentMethod,
+        };
+      });
+      // =======================================================
+
+      const orderData = {
+        items: orderItems,
+        subtotal: subtotal, // ✅ Subtotal sin descuento
+        discountAmount: discountInfo ? discountInfo.amount : 0, // ✅ Descuento
+        totalAmount: total, // ✅ Total con descuento
+        paymentMethod: 'mercadopago',
         shippingInfo: {
           name: data.name,
           email: data.email,
@@ -149,20 +151,16 @@ export default function CheckoutPage() {
           city: data.city,
           postalCode: data.postalCode,
         },
+        appliedCoupon: discountInfo
+          ? {
+              code: discountInfo.code,
+              discountAmount: discountInfo.amount,
+            }
+          : null,
         idempotencyKey: idempotencyKey.current,
       };
 
-      console.log('📦 Datos de la orden enviados:', orderData); // Para debug
-
-      // Crear timeout para la solicitud
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => {
-        controller.abort();
-        toast.error(
-          'La solicitud está tardando demasiado. Por favor, inténtalo de nuevo.',
-        );
-        setIsSubmitting(false);
-      }, 30000);
+      console.log('📦 MercadoPago - Enviando orden:', orderData);
 
       const response = await fetch('/api/orders', {
         method: 'POST',
@@ -170,25 +168,18 @@ export default function CheckoutPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(orderData),
-        signal: controller.signal,
       });
-
-      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Error processing order');
+        throw new Error(errorData.message || 'Error al procesar la orden');
       }
 
       const result = await response.json();
+      console.log('✅ MercadoPago - Orden creada:', result.orderId);
 
-      setOrderId(result.orderId);
-      orderCreatedRef.current = true;
-
-      if (selectedPaymentMethod === 'mercadopago' && result.paymentInfo?.id) {
-        setPreferenceId(result.paymentInfo.id);
-
-        // Determinar URL de redirección según el entorno
+      // Redirigir a MercadoPago
+      if (result.paymentInfo?.init_point) {
         const redirectUrl =
           process.env.NODE_ENV === 'development'
             ? result.paymentInfo.sandbox_init_point ||
@@ -197,139 +188,24 @@ export default function CheckoutPage() {
               result.paymentInfo.sandbox_init_point;
 
         if (!redirectUrl) {
-          throw new Error('No se recibió URL de redirección de MercadoPago');
+          throw new Error('No se recibió URL de MercadoPago');
         }
 
-        setMercadoPagoUrl(redirectUrl);
+        toast.success('Redirigiendo a MercadoPago...');
 
-        // Guardar datos en sessionStorage para recuperación
-        sessionStorage.setItem('lastOrderId', result.orderId);
-        sessionStorage.setItem('lastPreferenceId', result.paymentInfo.id);
-        sessionStorage.setItem('lastMercadoPagoUrl', redirectUrl);
-
-        // Mostrar mensaje de éxito
-        toast.success('Orden creada. Redirigiendo a MercadoPago...');
-      } else if (selectedPaymentMethod === 'whatsapp') {
-        toast.success('Orden creada para WhatsApp');
-        clearCart();
-        router.push('/checkout/success?method=whatsapp');
+        // Redirigir directamente
+        window.location.href = redirectUrl;
       } else {
-        toast.success('Orden creada exitosamente');
-        clearCart();
-        router.push('/checkout/success');
+        throw new Error('No se recibió información de pago de MercadoPago');
       }
     } catch (error) {
-      if (error.name === 'AbortError') {
-        console.error('❌ Solicitud cancelada por timeout');
-        toast.error('La solicitud fue cancelada. Inténtalo de nuevo.');
-      } else {
-        console.error('❌ Error en checkout:', error);
-        toast.error(error.message || 'Error al procesar el pago');
-      }
+      console.error('❌ Error en MercadoPago:', error);
+      toast.error(error.message || 'Error al procesar el pago');
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  // Componente de renderizado del botón MercadoPago mejorado
-  const renderMercadoPagoButton = () => {
-    if (!preferenceId) return null;
-
-    return (
-      <div className="bg-white p-8 mt-[80px] border border-gray-200 rounded-lg">
-        <h1 className="text-2xl font-nexa-bold mb-6">Completar Pago</h1>
-
-        <div className="mb-6">
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <svg
-                  className="h-5 w-5 text-green-400"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-green-800">
-                  ¡Orden creada exitosamente!
-                </p>
-                <p className="text-sm text-green-700">
-                  Orden #{orderId?.substring(0, 8)} - Total: ${total.toFixed(2)}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <p className="mb-6 text-gray-600">
-            Para completar tu compra, haz clic en el botón de MercadoPago a
-            continuación. Serás redirigido a una página segura para realizar el
-            pago.
-          </p>
-        </div>
-
-        <div className="w-full">
-          <MercadoPagoButton
-            preferenceId={preferenceId}
-            fallbackUrl={mercadoPagoUrl}
-            buttonText="Pagar con MercadoPago"
-          />
-        </div>
-
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-          <h4 className="font-medium text-blue-900 mb-2">
-            ℹ️ Información importante:
-          </h4>
-          <ul className="text-sm text-blue-800 space-y-1">
-            <li>
-              • Tu carrito se vaciará automáticamente después del pago exitoso
-            </li>
-            <li>
-              • Recibirás un email de confirmación una vez completado el pago
-            </li>
-            <li>
-              • Puedes pagar con tarjeta de crédito, débito o transferencia
-              bancaria
-            </li>
-            <li>• El pago es 100% seguro y está protegido por MercadoPago</li>
-          </ul>
-        </div>
-
-        <div className="mt-8 border-t pt-6">
-          <div className="flex justify-between items-center text-sm text-gray-600">
-            <Link
-              href="/products"
-              className="hover:text-black transition-colors"
-            >
-              ← Seguir comprando
-            </Link>
-            <Link
-              href="/profile/orders"
-              className="hover:text-black transition-colors"
-            >
-              Ver mis pedidos →
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Si ya tenemos preferenceId, mostrar solo el botón de MercadoPago
-  if (preferenceId) {
-    return (
-      <div className="bg-white min-h-screen py-12">
-        <div className="container mx-auto px-4 max-w-md">
-          {renderMercadoPagoButton()}
-        </div>
-      </div>
-    );
-  }
+  // ===========================================
 
   return (
     <div className="bg-white min-h-screen py-12 mt-[80px]">
@@ -524,7 +400,7 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Resumen de la Orden - ✅ MEJORADO CON SIZE Y COLOR */}
+          {/* Resumen de la Orden */}
           <div className="lg:w-1/3">
             <div className="bg-white border border-gray-200 p-6">
               <h2 className="text-xl font-nexa-bold mb-4 pb-4 border-b border-gray-200">
@@ -540,7 +416,7 @@ export default function CheckoutPage() {
                     <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden">
                       <Image
                         src={item.image}
-                        alt={item.title || 'Producto en carrito'}
+                        alt={item.title || 'Producto'}
                         fill
                         sizes="64px"
                         className="object-cover rounded"
@@ -549,7 +425,7 @@ export default function CheckoutPage() {
                     <div className="ml-4 flex-1">
                       <h3 className="text-sm font-medium">{item.title}</h3>
 
-                      {/* ✅ MOSTRAR TALLA Y COLOR */}
+                      {/* Mostrar talla y color */}
                       {item.variant && (
                         <p className="text-xs text-gray-500 mt-1">
                           {item.variant.size && `Talle: ${item.variant.size}`}
@@ -569,20 +445,41 @@ export default function CheckoutPage() {
                 ))}
               </div>
 
+              {/* Totales con cupón */}
               <div className="space-y-3">
                 <div className="flex justify-between py-2">
                   <span className="text-gray-600">Subtotal</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>${subtotal.toFixed(2)}</span>
                 </div>
+
+                {/* Mostrar descuento si existe */}
+                {discountInfo && (
+                  <div className="flex justify-between py-2 text-green-600">
+                    <span className="flex items-center">
+                      <TagIcon className="h-4 w-4 mr-1" />
+                      Descuento ({discountInfo.code})
+                    </span>
+                    <span>-${discountInfo.amount.toFixed(2)}</span>
+                  </div>
+                )}
+
                 <div className="flex justify-between py-2">
                   <span className="text-gray-600">Envío</span>
                   <span>Por coordinar</span>
                 </div>
+
                 <div className="border-t border-gray-200 pt-3 mt-2">
                   <div className="flex justify-between font-sora-regular text-lg">
                     <span>Total</span>
                     <span>${total.toFixed(2)}</span>
                   </div>
+
+                  {/* Mensaje de ahorro */}
+                  {discountInfo && (
+                    <div className="mt-2 text-sm text-green-600 text-right">
+                      ¡Ahorrás ${discountInfo.amount.toFixed(2)}!
+                    </div>
+                  )}
                 </div>
               </div>
 

@@ -12,6 +12,7 @@ import {
   CogIcon,
   ChevronRightIcon,
   EnvelopeIcon,
+  TagIcon, // ← NUEVO ÍCONO PARA CUPONES
 } from '@heroicons/react/24/outline';
 
 /**
@@ -54,6 +55,25 @@ const AdminSidebar = () => {
       icon: UserGroupIcon,
       href: '/admin/users',
     },
+    // ========== NUEVO: CUPONES ==========
+    {
+      title: 'Cupones',
+      icon: TagIcon,
+      href: '/admin/coupons',
+      submenu: [
+        {
+          title: 'Crear',
+          icon: PlusCircleIcon,
+          href: '/admin/coupons/new',
+        },
+        {
+          title: 'Gestionar',
+          icon: ListBulletIcon,
+          href: '/admin/coupons',
+        },
+      ],
+    },
+    // ====================================
     {
       title: 'Contactos',
       icon: EnvelopeIcon,
