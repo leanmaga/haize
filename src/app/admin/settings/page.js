@@ -1,10 +1,11 @@
 // src/app/admin/settings/page.js
 'use client';
 
-import MercadoPagoLinkButton from '@/components/admin/MercadoPagoLinkButton';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import SettingsPage from '@/modules/profile/settings/ProfileSettingsPage';
+import ProfilePage from '@/modules/profile/Profile';
 
 export default function AdminSettingsPage() {
   const { data: session, status } = useSession();
@@ -34,21 +35,9 @@ export default function AdminSettingsPage() {
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-nexa-bold mb-6">
-        Configuración del Sistema
-      </h1>
-
-      <div className="space-y-8">
-        <section>
-          <h2 className="text-xl font-sora-regular mb-4">
-            Pagos y Facturación
-          </h2>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <MercadoPagoLinkButton />
-          </div>
-        </section>
-      </div>
+    <div className="bg-white p-6 rounded-lg shadow-md">
+      <ProfilePage />
+      <SettingsPage />
     </div>
   );
 }

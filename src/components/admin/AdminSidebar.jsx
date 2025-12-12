@@ -12,7 +12,10 @@ import {
   CogIcon,
   ChevronRightIcon,
   EnvelopeIcon,
-  TagIcon, // ← NUEVO ÍCONO PARA CUPONES
+  TagIcon,
+  StarIcon,
+  KeyIcon,
+  BanknotesIcon,
 } from '@heroicons/react/24/outline';
 
 /**
@@ -75,6 +78,11 @@ const AdminSidebar = () => {
     },
     // ====================================
     {
+      title: 'Reviews',
+      icon: StarIcon,
+      href: '/admin/reviews',
+    },
+    {
       title: 'Contactos',
       icon: EnvelopeIcon,
       href: '/admin/contact',
@@ -83,6 +91,18 @@ const AdminSidebar = () => {
       title: 'Configuración',
       icon: CogIcon,
       href: '/admin/settings',
+      submenu: [
+        {
+          title: 'Mercado pago',
+          icon: BanknotesIcon,
+          href: '/admin/settings/payment/mercado-pago',
+        },
+        {
+          title: 'Cuenta',
+          icon: KeyIcon,
+          href: '/admin/settings',
+        },
+      ],
     },
   ];
 
