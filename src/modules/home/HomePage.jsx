@@ -114,7 +114,7 @@ export default async function Home() {
         />
       </HomeProductSlider>
 
-      {/* Video Hero */}
+      {/* Video  */}
       <div className="w-full h-[70vh] md:h-[100vh] min-h-[500px]">
         <video
           src="/assets/videohero.mp4"
