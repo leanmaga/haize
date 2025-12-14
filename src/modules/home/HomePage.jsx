@@ -67,19 +67,19 @@ export default async function Home() {
       {/* Grid de Productos - 1 columna en mobile, 2 en desktop */}
       <div className="grid grid-cols-1 md:grid-cols-2 w-full">
         <HomeProduct
-          imageSrc="/assets/clothes.jpg"
+          imageSrc="/assets/clothes2.png"
           altText="Clothes 1"
-          title="MUSCULOSA BEIGE"
-          description="Tejido perforado. Cuello henley. Frescura y estilo en su máxima expresión."
+          title="CAMISA ESSENTIAL PERFORADA"
+          description="Tejido calado de algodón. Cuello abierto tipo resort. Frescura y elegancia relajada."
           linkTitle="Descubrir Más"
           link="/products/692a41f813ad12598ac559d8"
         />
 
         <HomeProduct
-          imageSrc="/assets/clothes2.jpg"
+          imageSrc="/assets/clothes.png"
           altText="Clothes 2"
-          title="Camisa Negra"
-          description="Algodón de alta densidad. Silueta relajada. Versatilidad absoluta."
+          title="SET ESSENTIAL TEXTURADO"
+          description="Algodón texturado de tacto suave. Silueta relajada.Versatilidad absoluta."
           linkTitle="Ver Más"
           link="/products/692872216e8daddf1277cb57"
         />
@@ -91,8 +91,8 @@ export default async function Home() {
           width="w-[100vw] md:w-[50vw]"
           imageSrc="/assets/clothes4.jpg"
           altText="Clothes 4"
-          title="Conjunto Blanco"
-          description="Textura diagonal. Silueta relajada. El uniforme del verano contemporáneo."
+          title="SET WAFFLE ESSENTIAL"
+          description="Algodón waffle texturado. Silueta relajada. El uniforme del verano contemporáneo."
           linkTitle="Descubrir Más"
           link="/products/692a46935f2af38e059f879e"
         />
@@ -101,8 +101,8 @@ export default async function Home() {
           width="w-[100vw] md:w-[50vw]"
           imageSrc="/assets/clothes3.jpg"
           altText="Clothes 3"
-          title="CAMISA BEIGE"
-          description="Algodón de alta densidad. Silueta relajada. Versatilidad absoluta."
+          title="MUSCULOSA RELAXED ESSENTIAL"
+          description="Algodón texturado. Silueta cómoda. Estilo minimal para uso diario."
           linkTitle="Descubrir Más"
           link="/products/692a431013ad12598ac559fc"
         />
@@ -111,8 +111,8 @@ export default async function Home() {
           width="w-[100vw] md:w-[50vw]"
           imageSrc="/assets/clothes5.jpg"
           altText="Clothes 5"
-          title="REMERA BLANCA"
-          description="Algodón de alta densidad. Silueta relajada. Versatilidad absoluta."
+          title="REMERA ESSENTIAL TEXTURADA"
+          description="Algodón texturado de tacto suave. Silueta relajada. Diseño versátil para uso diario."
           linkTitle="Ver Más"
           link="/products/692a44d85f2af38e059f8755"
         />
