@@ -38,11 +38,7 @@
     "mercadopago": "^2.0.5",
     "mongodb": "^6.16.0",
     "mongoose": "^8.0.1",
-<<<<<<< HEAD
-    "next": "15.3.6",
-=======
     "next": "15.3.6 ",
->>>>>>> f8c729ff2f91c78dd905debea693cd5ebefaa727
     "next-auth": "^4.24.11",
     "nodemailer": "^6.10.1",
     "prop-types": "^15.8.1",
@@ -66,7 +62,6 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^30.0.5",
     "jest-environment-jsdom": "^30.0.5",
-    "tailwindcss": "^4",
-    "lightningcss": "^1.28.3"
+    "tailwindcss": "^4"
   }
 }
