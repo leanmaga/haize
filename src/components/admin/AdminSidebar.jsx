@@ -17,6 +17,7 @@ import {
   KeyIcon,
   BanknotesIcon,
   ChatBubbleLeftRightIcon,
+  RectangleStackIcon,
 } from '@heroicons/react/24/outline';
 
 /**
@@ -46,6 +47,11 @@ const AdminSidebar = () => {
           title: 'Catálogo',
           icon: ListBulletIcon,
           href: '/admin/products',
+        },
+        {
+          title: 'Guías de Talles',
+          icon: RectangleStackIcon,
+          href: '/admin/size-guides',
         },
       ],
     },
