@@ -4,7 +4,7 @@ import HomeProduct from './HomeProduct';
 import HomeProductSlider from './HomeProductSlider';
 import ProductSlider from '@/modules/products/ProductSlider';
 import { getProducts } from '@/lib/data';
-import BlackFridayBanner from './components/BlackFridayBanner';
+// import BlackFridayBanner from './components/BlackFridayBanner';
 import PageLoader from './components/PageLoader';
 
 export default async function Home() {
@@ -63,7 +63,7 @@ export default async function Home() {
           </div>
         </div>
       </div>
-      <BlackFridayBanner />
+      {/* <BlackFridayBanner /> */}
       {/* Grid de Productos - 1 columna en mobile, 2 en desktop */}
       <div className="grid grid-cols-1 md:grid-cols-2 w-full">
         <HomeProduct

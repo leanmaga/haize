@@ -17,7 +17,7 @@ import {
   ChevronRightIcon,
 } from '@heroicons/react/24/outline';
 
-const MessagesPage = () => {
+const ProfileMessages = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -477,4 +477,4 @@ const MessagesPage = () => {
   );
 };
 
-export default MessagesPage;
+export default ProfileMessages;

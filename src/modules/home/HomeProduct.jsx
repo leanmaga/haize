@@ -12,7 +12,7 @@ export default function HomeProduct({
 }) {
   return (
     <div
-      className={`block relative min-h-[70vh] md:min-h-[100vh] ${width} flex-none basis-auto`}
+      className={`block relative min-h-[175vh] ${width} flex-none basis-auto`}
     >
       <Image
         src={imageSrc}

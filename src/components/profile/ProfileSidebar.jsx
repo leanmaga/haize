@@ -5,115 +5,40 @@ import Link from 'next/link';
 import {
   HomeIcon,
   CubeIcon,
-  UserGroupIcon,
   ShoppingCartIcon,
-  PlusCircleIcon,
-  ListBulletIcon,
   CogIcon,
   ChevronRightIcon,
-  EnvelopeIcon,
-  TagIcon,
-  StarIcon,
-  KeyIcon,
-  BanknotesIcon,
-  ChatBubbleLeftRightIcon,
 } from '@heroicons/react/24/outline';
 
-/**
- * AdminSidebar - Estilo Premium Minimalista
- * Diseño inspirado en marcas de ropa de alta gama
- */
-const AdminSidebar = () => {
+const ProfileSidebar = () => {
   const pathname = usePathname();
 
   const menuItems = [
     {
-      title: 'Dashboard',
+      title: 'Administración',
       icon: HomeIcon,
-      href: '/admin',
+      href: '/profile',
     },
     {
-      title: 'Productos',
+      title: 'Mensajes',
       icon: CubeIcon,
-      href: '/admin/products',
-      submenu: [
-        {
-          title: 'Agregar',
-          icon: PlusCircleIcon,
-          href: '/admin/products/add',
-        },
-        {
-          title: 'Catálogo',
-          icon: ListBulletIcon,
-          href: '/admin/products',
-        },
-      ],
+      href: '/profile/messages',
     },
     {
-      title: 'Pedidos',
+      title: 'Ordenes',
       icon: ShoppingCartIcon,
-      href: '/admin/orders',
-    },
-    {
-      title: 'Usuarios',
-      icon: UserGroupIcon,
-      href: '/admin/users',
-    },
-    {
-      title: 'Preguntas',
-      icon: ChatBubbleLeftRightIcon,
-      href: '/admin/questions',
-    },
-    {
-      title: 'Cupones',
-      icon: TagIcon,
-      href: '/admin/coupons',
-      submenu: [
-        {
-          title: 'Crear',
-          icon: PlusCircleIcon,
-          href: '/admin/coupons/new',
-        },
-        {
-          title: 'Gestionar',
-          icon: ListBulletIcon,
-          href: '/admin/coupons',
-        },
-      ],
-    },
-    // ====================================
-    {
-      title: 'Reviews',
-      icon: StarIcon,
-      href: '/admin/reviews',
-    },
-    {
-      title: 'Contactos',
-      icon: EnvelopeIcon,
-      href: '/admin/contact',
+      href: '/profile/orders',
     },
     {
       title: 'Configuración',
       icon: CogIcon,
-      href: '/admin/settings',
-      submenu: [
-        {
-          title: 'Mercado pago',
-          icon: BanknotesIcon,
-          href: '/admin/settings/payment/mercado-pago',
-        },
-        {
-          title: 'Cuenta',
-          icon: KeyIcon,
-          href: '/admin/settings',
-        },
-      ],
+      href: '/profile/settings',
     },
   ];
 
   const isActive = (href) => {
-    if (href === '/admin') {
-      return pathname === '/admin';
+    if (href === '/profile') {
+      return pathname === '/profile';
     }
     return pathname.startsWith(href);
   };
@@ -208,4 +133,4 @@ const AdminSidebar = () => {
   );
 };
 
-export default AdminSidebar;
+export default ProfileSidebar;
