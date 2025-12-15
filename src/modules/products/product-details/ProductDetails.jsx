@@ -214,7 +214,7 @@ export default async function ProductDetails({ params }) {
           <VariantSelector product={product} />
 
           {/* Secciones Expandibles con nuevo diseño */}
-          <div className="space-y-0 border-t border-gray-200">
+          <div className="space-y-0 border-t border-gray-200 mt-4">
             {/* Guía de Talles */}
             <details className="group border-b border-gray-200">
               <summary className="py-5 flex justify-between items-center cursor-pointer hover:opacity-70 transition-opacity list-none">
