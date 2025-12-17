@@ -93,7 +93,7 @@ export default function ProfileOrdersPage() {
         <button
           onClick={() => window.location.reload()}
           className="px-4 py-2 text-white rounded-md transition-colors hover:opacity-90"
-          style={{ backgroundColor: '#FAC348' }}
+          style={{ backgroundColor: '#000000' }}
         >
           Reintentar
         </button>
@@ -220,7 +220,7 @@ export default function ProfileOrdersPage() {
           <Link
             href="/products"
             className="px-4 py-2 text-white rounded-md transition-colors hover:opacity-90 inline-block"
-            style={{ backgroundColor: '#FAC348' }}
+            style={{ backgroundColor: '#000000' }}
           >
             Explorar Productos
           </Link>

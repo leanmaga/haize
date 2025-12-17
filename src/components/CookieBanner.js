@@ -72,7 +72,7 @@ const CookieBanner = ({ onOpenCookiesSettings, onAccept }) => {
             <button
               onClick={handleAcceptAll}
               className="px-4 py-2 text-sm text-white rounded-md hover:opacity-90 focus:outline-none font-sora-regular transition-colors"
-              style={{ backgroundColor: '#FAC348' }}
+              style={{ backgroundColor: '#000000' }}
             >
               Aceptar todas
             </button>

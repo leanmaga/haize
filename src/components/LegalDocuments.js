@@ -256,7 +256,7 @@ const legalDocuments = {
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" value="" class="sr-only peer" checked>
-              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all" style="background-color: #FAC348;" data-checked></div>
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all" style="background-color: #000000;" data-checked></div>
             </label>
           </div>
           
@@ -267,14 +267,14 @@ const legalDocuments = {
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" value="" class="sr-only peer">
-              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all" style="background-color: #FAC348;" data-checked></div>
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all" style="background-color: #000000;" data-checked></div>
             </label>
           </div>
         </div>
         
         <div class="mt-6 flex justify-end space-x-4">
           <button class="px-4 py-2 border border-dark-500 text-dark-600 rounded hover:bg-dark-50 transition-colors">Rechazar todo</button>
-          <button class="px-4 py-2 text-white rounded hover:opacity-90 transition-colors" style="background-color: #FAC348;">Guardar preferencias</button>
+          <button class="px-4 py-2 text-white rounded hover:opacity-90 transition-colors" style="background-color: #000000;">Guardar preferencias</button>
         </div>
       </div>
       
@@ -376,7 +376,7 @@ const LegalDocuments = () => {
 export const openLegalDocument = (
   setModalOpen,
   setCurrentDocument,
-  docType
+  docType,
 ) => {
   if (legalDocuments[docType]) {
     setCurrentDocument({

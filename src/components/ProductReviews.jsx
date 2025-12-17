@@ -74,7 +74,7 @@ const ProductReviews = ({ productId }) => {
             average: 0,
             total: 0,
             distribution: [0, 0, 0, 0, 0],
-          }
+          },
         );
         setCounts(data.counts || { questions: 0, ratings: 0, total: 0 });
       } else {
@@ -94,7 +94,7 @@ const ProductReviews = ({ productId }) => {
 
     try {
       const response = await fetch(
-        `/api/products/${productId}/reviews/can-review`
+        `/api/products/${productId}/reviews/can-review`,
       );
       const data = await response.json();
 
@@ -183,7 +183,7 @@ const ProductReviews = ({ productId }) => {
         }
 
         toast.success(
-          'Pregunta enviada con éxito. Recibirás una notificación cuando sea respondida.'
+          'Pregunta enviada con éxito. Recibirás una notificación cuando sea respondida.',
         );
         setQuestionForm({ comment: '' });
         setShowQuestionForm(false);
@@ -290,7 +290,7 @@ const ProductReviews = ({ productId }) => {
     (q) =>
       searchTerm === '' ||
       q.comment.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      q.user?.name.toLowerCase().includes(searchTerm.toLowerCase())
+      q.user?.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const filteredRatings = ratings.filter((r) => {
@@ -324,7 +324,7 @@ const ProductReviews = ({ productId }) => {
           <Link
             href="/auth/login"
             className="inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-md transition-colors hover:opacity-90"
-            style={{ backgroundColor: '#FAC348' }}
+            style={{ backgroundColor: '#000000' }}
           >
             Iniciar Sesión
           </Link>
@@ -336,9 +336,9 @@ const ProductReviews = ({ productId }) => {
       return (
         <div
           className="border rounded-lg p-3 text-center"
-          style={{ backgroundColor: '#FEF3E2', borderColor: '#FAC348' }}
+          style={{ backgroundColor: '#000000', borderColor: '#000000' }}
         >
-          <p className="text-gray-700 text-sm">
+          <p className="text-white text-sm">
             Ya has hecho una pregunta sobre este producto
           </p>
         </div>
@@ -377,7 +377,7 @@ const ProductReviews = ({ productId }) => {
           <Link
             href="/auth/login"
             className="inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-md transition-colors hover:opacity-90"
-            style={{ backgroundColor: '#FAC348' }}
+            style={{ backgroundColor: '#000000' }}
           >
             Iniciar Sesión
           </Link>
@@ -389,11 +389,9 @@ const ProductReviews = ({ productId }) => {
       return (
         <div
           className="border rounded-lg p-3 text-center"
-          style={{ backgroundColor: '#F9F7F4', borderColor: '#F1ECE8' }}
+          style={{ backgroundColor: '#000000', borderColor: '#000000' }}
         >
-          <p className="text-gray-700 text-sm">
-            Ya has calificado este producto
-          </p>
+          <p className="text-white text-sm">Ya has calificado este producto</p>
         </div>
       );
     }
@@ -402,7 +400,7 @@ const ProductReviews = ({ productId }) => {
       return (
         <div className="bg-gray-50 border border-black rounded-lg p-3 text-center">
           <p className="text-black text-sm">
-            Solo los clientes que compraron este producto pueden dejarlo una
+            Solo los clientes que compraron este producto pueden dejar una
             calificación con estrellas
           </p>
         </div>
@@ -414,7 +412,7 @@ const ProductReviews = ({ productId }) => {
         <button
           onClick={() => setShowRatingForm(true)}
           className="w-full text-white py-2 px-4 rounded-md transition-colors hover:opacity-90 text-sm font-medium"
-          style={{ backgroundColor: '#FAC348' }}
+          style={{ backgroundColor: '#000000' }}
         >
           ⭐ Calificar producto
         </button>
@@ -527,7 +525,7 @@ const ProductReviews = ({ productId }) => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:border-gray-500"
-          style={{ '--tw-ring-color': '#FAC348' }}
+          style={{ '--tw-ring-color': '#000000' }}
         />
       </div>
 
@@ -546,7 +544,7 @@ const ProductReviews = ({ productId }) => {
                   value={questionForm.comment}
                   onChange={(e) => setQuestionForm({ comment: e.target.value })}
                   className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-gray-500"
-                  style={{ '--tw-ring-color': '#FAC348' }}
+                  style={{ '--tw-ring-color': '#000000' }}
                   rows="3"
                   placeholder="¿Qué quieres saber sobre este producto?"
                   minLength="10"
@@ -565,7 +563,7 @@ const ProductReviews = ({ productId }) => {
                       backgroundColor:
                         submitting || questionForm.comment.trim().length < 10
                           ? '#9CA3AF'
-                          : '#FAC348',
+                          : '#000000',
                     }}
                   >
                     {submitting ? 'Enviando...' : 'Enviar pregunta'}
@@ -595,8 +593,8 @@ const ProductReviews = ({ productId }) => {
                 const displayComment = isExpanded
                   ? question.comment
                   : shouldTruncate
-                  ? question.comment.substring(0, 200) + '...'
-                  : question.comment;
+                    ? question.comment.substring(0, 200) + '...'
+                    : question.comment;
 
                 return (
                   <div
@@ -615,7 +613,7 @@ const ProductReviews = ({ productId }) => {
                               year: 'numeric',
                               month: 'long',
                               day: 'numeric',
-                            }
+                            },
                           )}
                         </p>
                       </div>
@@ -656,7 +654,7 @@ const ProductReviews = ({ productId }) => {
                         className="border-l-4 p-3 mt-3"
                         style={{
                           backgroundColor: '#FEF3E2',
-                          borderLeftColor: '#FAC348',
+                          borderLeftColor: '#000000',
                         }}
                       >
                         <div className="flex items-center mb-1">
@@ -672,7 +670,7 @@ const ProductReviews = ({ productId }) => {
                           <p className="text-xs text-gray-500 mt-1">
                             Respondido el{' '}
                             {new Date(question.responseDate).toLocaleDateString(
-                              'es-ES'
+                              'es-ES',
                             )}
                           </p>
                         )}
@@ -740,7 +738,7 @@ const ProductReviews = ({ productId }) => {
                       setRatingForm({ ...ratingForm, comment: e.target.value })
                     }
                     className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:border-gray-500"
-                    style={{ '--tw-ring-color': '#FAC348' }}
+                    style={{ '--tw-ring-color': '#000000' }}
                     rows="4"
                     placeholder="Cuéntanos qué te pareció este producto..."
                     minLength="10"
@@ -765,7 +763,7 @@ const ProductReviews = ({ productId }) => {
                         ratingForm.rating === 0 ||
                         ratingForm.comment.trim().length < 10
                           ? '#9CA3AF'
-                          : '#FAC348',
+                          : '#000000',
                     }}
                   >
                     {submitting ? 'Enviando...' : 'Enviar calificación'}
@@ -793,7 +791,7 @@ const ProductReviews = ({ productId }) => {
                 value={ratingFilter}
                 onChange={(e) => setRatingFilter(e.target.value)}
                 className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:border-gray-500"
-                style={{ '--tw-ring-color': '#FAC348' }}
+                style={{ '--tw-ring-color': '#000000' }}
               >
                 <option value="all">Todas las calificaciones</option>
                 <option value="5">
@@ -824,8 +822,8 @@ const ProductReviews = ({ productId }) => {
                 const displayComment = isExpanded
                   ? rating.comment
                   : shouldTruncate
-                  ? rating.comment.substring(0, 200) + '...'
-                  : rating.comment;
+                    ? rating.comment.substring(0, 200) + '...'
+                    : rating.comment;
 
                 return (
                   <div
@@ -858,7 +856,7 @@ const ProductReviews = ({ productId }) => {
                               year: 'numeric',
                               month: 'long',
                               day: 'numeric',
-                            }
+                            },
                           )}
                         </p>
                       </div>
