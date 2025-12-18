@@ -115,7 +115,7 @@ export default async function Home() {
           title="CAMISA ESSENTIAL PERFORADA"
           description="Tejido calado de algodón. Cuello abierto tipo resort. Frescura y elegancia relajada."
           linkTitle="Descubrir Más"
-          link="/products/692a41f813ad12598ac559d8"
+          link="/products/694429568d61e3ab76e093a8"
         />
 
         <HomeProduct
@@ -124,12 +124,11 @@ export default async function Home() {
           title="SET ESSENTIAL TEXTURADO"
           description="Algodón texturado de tacto suave. Silueta relajada.Versatilidad absoluta."
           linkTitle="Ver Más"
-          link="/products/692872216e8daddf1277cb57"
+          link="/products/694429568d61e3ab76e093a8"
         />
       </div>
 
       {/* Slider de Productos */}
-
       <HomeProductSlider
         cardWidth="w-[100vw] md:w-[calc(100vw/3)]"
         cardHeight="min-h-[100dvh]"
