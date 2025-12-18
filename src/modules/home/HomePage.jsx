@@ -13,12 +13,60 @@ export default async function Home() {
     limit: 12,
   });
 
+  const homeProducts = [
+    {
+      id: '692a46935f2af38e059f879e',
+      imageSrc: '/assets/clothes3.jpg',
+      altText: 'Clothes 4',
+      title: 'SET WAFFLE ESSENTIAL',
+      description:
+        'Algodón waffle texturado. Silueta relajada. El uniforme del verano contemporáneo.',
+      linkTitle: 'Descubrir Más',
+    },
+    {
+      id: '692a431013ad12598ac559fc',
+      imageSrc: '/assets/clothes2.png',
+      altText: 'Clothes 3',
+      title: 'MUSCULOSA RELAXED ESSENTIAL',
+      description:
+        'Algodón texturado. Silueta cómoda. Estilo minimal para uso diario.',
+      linkTitle: 'Descubrir Más',
+    },
+    {
+      id: '692a44d85f2af38e059f8755',
+      imageSrc: '/assets/clothes3.jpg',
+      altText: 'Clothes 5',
+      title: 'REMERA ESSENTIAL TEXTURADA',
+      description:
+        'Algodón texturado de tacto suave. Silueta relajada. Diseño versátil para uso diario.',
+      linkTitle: 'Ver Más',
+    },
+    {
+      id: '692a431013ad12598ac559fc5858',
+      imageSrc: '/assets/clothes2.png',
+      altText: 'Clothes 3',
+      title: 'MUSCULOSA RELAXED ESSENTIAL',
+      description:
+        'Algodón texturado. Silueta cómoda. Estilo minimal para uso diario.',
+      linkTitle: 'Descubrir Más',
+    },
+    {
+      id: '692a44d85f2af38e059f875211565',
+      imageSrc: '/assets/clothes3.jpg',
+      altText: 'Clothes 5',
+      title: 'REMERA ESSENTIAL TEXTURADA',
+      description:
+        'Algodón texturado de tacto suave. Silueta relajada. Diseño versátil para uso diario.',
+      linkTitle: 'Ver Más',
+    },
+  ];
+
   return (
     <>
       <PageLoader />
 
       {/* Hero Section */}
-      <div className="relative w-screen h-[100vh] md:h-[120vh] min-h-[600px] ">
+      <div className="relative w-full h-[100vh] md:h-[120vh] min-h-[600px]">
         {/* Imagen Desktop */}
         <Image
           src="https://res.cloudinary.com/dz7fsiwnu/image/upload/portada"
@@ -86,37 +134,11 @@ export default async function Home() {
       </div>
 
       {/* Slider de Productos */}
-      <HomeProductSlider>
-        <HomeProduct
-          width="w-[100vw] md:w-[50vw]"
-          imageSrc="/assets/clothes4.jpg"
-          altText="Clothes 4"
-          title="SET WAFFLE ESSENTIAL"
-          description="Algodón waffle texturado. Silueta relajada. El uniforme del verano contemporáneo."
-          linkTitle="Descubrir Más"
-          link="/products/692a46935f2af38e059f879e"
-        />
-
-        <HomeProduct
-          width="w-[100vw] md:w-[50vw]"
-          imageSrc="/assets/clothes3.jpg"
-          altText="Clothes 3"
-          title="MUSCULOSA RELAXED ESSENTIAL"
-          description="Algodón texturado. Silueta cómoda. Estilo minimal para uso diario."
-          linkTitle="Descubrir Más"
-          link="/products/692a431013ad12598ac559fc"
-        />
-
-        <HomeProduct
-          width="w-[100vw] md:w-[50vw]"
-          imageSrc="/assets/clothes5.jpg"
-          altText="Clothes 5"
-          title="REMERA ESSENTIAL TEXTURADA"
-          description="Algodón texturado de tacto suave. Silueta relajada. Diseño versátil para uso diario."
-          linkTitle="Ver Más"
-          link="/products/692a44d85f2af38e059f8755"
-        />
-      </HomeProductSlider>
+      <HomeProductSlider
+        cardWidth="w-[100vw] md:w-[calc(100vw/3)]"
+        cardHeight="min-h-[100dvh]"
+        products={homeProducts}
+      />
 
       {/* Video Hero */}
       <div className="w-full h-[70vh] md:h-[100vh] min-h-[500px]">

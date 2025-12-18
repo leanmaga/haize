@@ -9,17 +9,19 @@ export default function HomeProduct({
   linkTitle,
   link,
   width = 'w-full',
+  height = 'min-h-[175vh]',
+  className = '',
 }) {
   return (
     <div
-      className={`block relative min-h-[175vh] ${width} flex-none basis-auto`}
+      className={`block relative ${height} ${width} flex-none basis-auto ${className}`}
     >
       <Image
         src={imageSrc}
         alt={altText}
         fill
         sizes="(max-width: 768px) 100vw, 50vw"
-        className="object-cover object-top"
+        className="object-cover object-center"
       />
 
       {/* Overlay para mejor legibilidad */}
