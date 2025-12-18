@@ -4,7 +4,7 @@ import { useRef, useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import HomeProduct from './HomeProduct';
 
-export default function HomeProductSliderTwo({
+export default function HomeProductSlider({
   cardWidth,
   cardHeight,
   products = [],
@@ -75,9 +75,12 @@ export default function HomeProductSliderTwo({
       >
         <div className="flex items-stretch">
           {products.map(
-            ({ id, imageSrc, altText, title, description, linkTitle }) => (
+            (
+              { id, imageSrc, altText, title, description, linkTitle },
+              index,
+            ) => (
               <HomeProduct
-                key={id}
+                key={id ? id : index}
                 width={cardWidth}
                 height={cardHeight}
                 imageSrc={imageSrc}
@@ -85,7 +88,7 @@ export default function HomeProductSliderTwo({
                 title={title}
                 description={description}
                 linkTitle={linkTitle}
-                link={`/products/${id}`}
+                link={id ? `/products/${id}` : '/products'}
                 className="snap-start"
               />
             ),
