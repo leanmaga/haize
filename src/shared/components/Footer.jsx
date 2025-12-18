@@ -1,7 +1,3 @@
-// OPCIÓN 2: Footer usando el componente MercadoLibreIcon
-// Primero guarda MercadoLibreIcon.jsx en src/components/icons/
-// Luego usa este código en tu Footer
-
 import { SiTiktok, SiInstagram } from '@icons-pack/react-simple-icons';
 import CustomLink from './CustomLink';
 import { getSocialMediaUrls } from '@/config/socialMediaConfig';
