@@ -130,11 +130,6 @@ export default function VariantSelector({ product }) {
             <span className="text-sm font-semibold uppercase tracking-wide">
               Talle
             </span>
-            {!selectedSize && (
-              <span className="text-xs text-red-500 font-medium">
-                * Seleccioná un talle
-              </span>
-            )}
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -181,20 +176,6 @@ export default function VariantSelector({ product }) {
             <span className="text-sm font-semibold uppercase tracking-wide">
               Color
             </span>
-            <div className="flex items-center gap-2">
-              {selectedColor ? (
-                <span className="text-sm text-gray-900 font-medium">
-                  {selectedColor}
-                </span>
-              ) : (
-                <span className="text-xs text-gray-500">
-                  Seleccioná un color
-                </span>
-              )}
-              {selectedSize && !selectedColor && (
-                <span className="text-xs text-red-500 font-medium">*</span>
-              )}
-            </div>
           </div>
 
           {/* Mostrar mensaje si no se ha seleccionado talle */}

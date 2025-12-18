@@ -144,7 +144,6 @@ const ContactPage = () => {
                 {social.icon(
                   'w-8 h-8 text-gray-900 group-hover:scale-110 transition-transform',
                 )}
-                <span className="text-xs text-gray-600">{social.name}</span>
               </a>
             ))}
           </div>
