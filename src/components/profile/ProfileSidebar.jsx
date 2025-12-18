@@ -49,14 +49,14 @@ const ProfileSidebar = () => {
     <aside className="w-full xl:w-64 bg-gray-950 xl:min-h-screen xl:sticky xl:top-0">
       {/* Logo/Brand */}
       <div className="px-6 py-8 border-b border-gray-800">
-        <Link href="/admin" className="block">
+        <div>
           <h1 className="text-white text-xl font-nexa-bold tracking-[0.2em] uppercase">
             HAIZE
           </h1>
           <span className="text-gray-500 text-xs tracking-widest uppercase mt-1 block">
-            Administración
+            Usuario
           </span>
-        </Link>
+        </div>
       </div>
 
       {/* Navigation */}

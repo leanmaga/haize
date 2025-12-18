@@ -99,7 +99,7 @@ export default function UserProfile({ userData, recentOrders, onUpdate }) {
 
   return (
     <div>
-      <h2 className="font-sora-thin text-2xl font-bold mb-8 text-gray-800">
+      <h2 className="font-nexa-bold text-2xl font-bold mb-8 text-gray-800">
         Mi Perfil
       </h2>
 
