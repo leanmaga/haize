@@ -27,32 +27,32 @@ export default async function Home() {
       id: '692a431013ad12598ac559fc',
       imageSrc: '/assets/clothes2.png',
       altText: 'Clothes 3',
-      title: 'MUSCULOSA RELAXED ESSENTIAL',
+      title: 'CAMISA RELAXED ESSENTIAL',
       description:
         'Algodón texturado. Silueta cómoda. Estilo minimal para uso diario.',
       linkTitle: 'Descubrir Más',
     },
     {
       id: '692a44d85f2af38e059f8755',
-      imageSrc: '/assets/clothes3.jpg',
+      imageSrc: '/assets/clothes6.jpg',
       altText: 'Clothes 5',
-      title: 'REMERA ESSENTIAL TEXTURADA',
+      title: 'CAMISA ESSENTIAL TEXTURADA',
       description:
         'Algodón texturado de tacto suave. Silueta relajada. Diseño versátil para uso diario.',
       linkTitle: 'Ver Más',
     },
     {
       id: '692a431013ad12598ac559fc5858',
-      imageSrc: '/assets/clothes2.png',
+      imageSrc: '/assets/clothes7.png',
       altText: 'Clothes 3',
-      title: 'MUSCULOSA RELAXED ESSENTIAL',
+      title: 'REMERA ESSENTIAL TEXTURADA',
       description:
         'Algodón texturado. Silueta cómoda. Estilo minimal para uso diario.',
       linkTitle: 'Descubrir Más',
     },
     {
       id: '692a44d85f2af38e059f875211565',
-      imageSrc: '/assets/clothes3.jpg',
+      imageSrc: '/assets/clothes5.jpg',
       altText: 'Clothes 5',
       title: 'REMERA ESSENTIAL TEXTURADA',
       description:
