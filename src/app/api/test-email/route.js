@@ -1,6 +1,5 @@
 // =============================================================================
 // ARCHIVO: src/app/api/test-email/route.js
-// API COMPLETA CON LOGO CORREGIDO - REEMPLAZA COMPLETAMENTE
 // =============================================================================
 
 import { NextResponse } from 'next/server';
@@ -22,7 +21,7 @@ export async function GET() {
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json(
         { success: false, error: 'No autorizado' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -43,7 +42,7 @@ export async function GET() {
         error: 'Error interno del servidor',
         message: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -55,7 +54,7 @@ export async function POST(request) {
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json(
         { success: false, error: 'No autorizado' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -88,7 +87,7 @@ export async function POST(request) {
             'admin-payment-notification',
           ],
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -98,7 +97,7 @@ export async function POST(request) {
           success: false,
           error: "Se requiere 'to' en el body del request",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -110,7 +109,7 @@ export async function POST(request) {
           success: false,
           error: 'Formato de email inválido',
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -171,7 +170,7 @@ export async function POST(request) {
               'admin-payment-notification',
             ],
           },
-          { status: 400 }
+          { status: 400 },
         );
     }
 
@@ -206,7 +205,7 @@ export async function POST(request) {
         message: error.message,
         timestamp: new Date().toISOString(),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -223,7 +222,7 @@ async function sendBasicTestEmail(testEmail) {
     html: createBasicTestTemplate(
       'Test Básico de Email',
       '✅ El sistema de emails está funcionando correctamente.',
-      '#4CAF50'
+      '#4CAF50',
     ),
   };
   return await sendEmailWithRetry(emailData);
@@ -321,22 +320,22 @@ async function sendOrderConfirmationTestEmail(testEmail) {
   const logoUrl = getLogoUrl();
   const sampleProducts = [
     {
-      name: 'Carne Premium',
+      name: 'Remera Premium',
       quantity: 2,
       price: 2500,
-      image: 'https://via.placeholder.com/60x60?text=🥩',
+      image: 'https://via.placeholder.com/60x60?text=remera',
     },
     {
-      name: 'Pollo Entero',
+      name: 'musculosa',
       quantity: 1,
       price: 1200,
-      image: 'https://via.placeholder.com/60x60?text=🐔',
+      image: 'https://via.placeholder.com/60x60?text=musculosa',
     },
   ];
 
   const total = sampleProducts.reduce(
     (sum, p) => sum + p.price * p.quantity,
-    0
+    0,
   );
 
   const productsHtml = sampleProducts
@@ -345,8 +344,8 @@ async function sendOrderConfirmationTestEmail(testEmail) {
     <tr>
       <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">
         <img src="${product.image}" alt="${
-        product.name
-      }" style="width: 40px; height: 40px; border-radius: 4px;">
+          product.name
+        }" style="width: 40px; height: 40px; border-radius: 4px;">
       </td>
       <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">${
         product.name
@@ -361,7 +360,7 @@ async function sendOrderConfirmationTestEmail(testEmail) {
         product.price * product.quantity
       }</td>
     </tr>
-  `
+  `,
     )
     .join('');
 
@@ -389,7 +388,7 @@ async function sendOrderConfirmationTestEmail(testEmail) {
             <div class="order-details">
               <h3>📋 Detalles del Pedido #TEST123</h3>
               <p><strong>Fecha:</strong> ${new Date().toLocaleDateString(
-                'es-AR'
+                'es-AR',
               )}</p>
               <p><strong>Estado:</strong> Pendiente de pago</p>
             </div>
@@ -458,15 +457,15 @@ async function sendAdminOrderNotificationTestEmail(adminEmail) {
               <p><strong>Email:</strong> ${adminEmail}</p>
               <p><strong>Teléfono:</strong> +54 9 11 1234-5678</p>
               <p><strong>Fecha:</strong> ${new Date().toLocaleDateString(
-                'es-AR'
+                'es-AR',
               )}</p>
             </div>
 
             <div class="order-summary">
               <h3>💰 Resumen del Pedido</h3>
               <ul>
-                <li>Carne Premium x2 - $5000</li>
-                <li>Pollo Entero x1 - $1200</li>
+                <li>Remera Premium x2 - $5000</li>
+                <li>Musculosa Entero x1 - $1200</li>
               </ul>
               <h4 style="color: #ef4444;">Total: $6200</h4>
             </div>
@@ -528,7 +527,7 @@ async function sendPaymentConfirmationTestEmail(testEmail) {
               <h3>💳 Detalles del Pago</h3>
               <p><strong>Pedido:</strong> #TEST123</p>
               <p><strong>Fecha del pago:</strong> ${new Date().toLocaleDateString(
-                'es-AR'
+                'es-AR',
               )}</p>
               <p><strong>Método de pago:</strong> MercadoPago</p>
               <p><strong>ID de transacción:</strong> MP-TEST-789456</p>
@@ -602,7 +601,7 @@ async function sendAdminPaymentNotificationTestEmail(adminEmail) {
               <p><strong>Monto:</strong> $6200</p>
               <p><strong>Método:</strong> MercadoPago</p>
               <p><strong>Fecha:</strong> ${new Date().toLocaleDateString(
-                'es-AR'
+                'es-AR',
               )}</p>
               <p><strong>Estado:</strong> Aprobado ✅</p>
             </div>
@@ -728,7 +727,7 @@ function getEmailFooter() {
     <div class="footer">
       <p style="margin: 0; font-size: 14px;">© ${new Date().getFullYear()} HAIZE - Sistema de Emails</p>
       <p style="margin: 5px 0 0 0; font-size: 12px;">📧 Test: ${new Date().toLocaleString(
-        'es-AR'
+        'es-AR',
       )}</p>
     </div>
   `;

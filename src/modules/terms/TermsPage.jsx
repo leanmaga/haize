@@ -3,7 +3,7 @@
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 mt-20">
       {/* Contenido principal */}
       <main className="max-w-4xl mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-sm border p-8">
@@ -29,13 +29,12 @@ export default function TermsPage() {
             </h2>
             <ul className="mb-4 list-disc pl-5 text-gray-700">
               <li className="mb-2">
-                &quot;Nosotros&quot;, &quot;nuestro&quot;,
-                &quot;Campestre&quot;, &quot;HAIZE&quot; se refiere a nuestra
-                empresa.
+                &quot;Nosotros&quot;, &quot;nuestro&quot;, &quot;HAIZE&quot; se
+                refiere a nuestra empresa.
               </li>
               <li className="mb-2">
-                &quot;Sitio web&quot; se refiere a la plataforma en línea de Sol
-                Campestre.
+                &quot;Sitio web&quot; se refiere a la plataforma en línea de
+                Haize.
               </li>
               <li className="mb-2">
                 &quot;Usuario&quot;, &quot;usted&quot;, &quot;cliente&quot; se
@@ -231,9 +230,9 @@ export default function TermsPage() {
             <p className="mb-4 text-gray-700">
               Todo el contenido del sitio web, incluyendo, pero no limitado a,
               textos, gráficos, logotipos, iconos, imágenes, clips de audio,
-              descargas digitales y compilaciones de datos, es propiedad de Sol
-              Campestre o de sus proveedores de contenido y está protegido por
-              las leyes argentinas e internacionales de propiedad intelectual.
+              descargas digitales y compilaciones de datos, es propiedad de
+              HAIZE o de sus proveedores de contenido y está protegido por las
+              leyes argentinas e internacionales de propiedad intelectual.
             </p>
 
             <h2 className="text-xl font-nexa-bold mb-4 text-gray-800">

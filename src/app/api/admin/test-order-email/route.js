@@ -301,16 +301,16 @@ async function sendPasswordResetTestEmail(testEmail) {
 async function sendOrderConfirmationTestEmail(testEmail) {
   const sampleProducts = [
     {
-      name: 'Carne Premium',
+      name: 'Remera',
       quantity: 2,
       price: 2500,
-      image: 'https://via.placeholder.com/60x60?text=🥩',
+      image: 'https://via.placeholder.com/60x60?text=remera',
     },
     {
-      name: 'Pollo Entero',
+      name: 'Musculosa',
       quantity: 1,
       price: 1200,
-      image: 'https://via.placeholder.com/60x60?text=🐔',
+      image: 'https://via.placeholder.com/60x60?text=musculosa',
     },
   ];
 
@@ -448,8 +448,8 @@ async function sendAdminOrderNotificationTestEmail(adminEmail) {
             <div class="order-summary">
               <h3>💰 Resumen del Pedido</h3>
               <ul>
-                <li>Carne Premium x2 - $5000</li>
-                <li>Pollo Entero x1 - $1200</li>
+                <li>Remera Blanca x2 - $5000</li>
+                <li>Remera Negra x2 - $1200</li>
               </ul>
               <h4 style="color: #ef4444;">Total: $6200</h4>
             </div>
