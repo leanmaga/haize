@@ -44,7 +44,68 @@ const productSchema = new mongoose.Schema(
       enum: ['camisas', 'remeras', 'conjuntos', 'shorts', 'musculosas'],
     },
 
-    // === TALLES Y VARIANTES ===
+    // === VARIANTES COMBINADAS (SISTEMA NUEVO) ===
+
+    // Variantes combinadas: Talle + Color + Stock
+    variants: {
+      type: [
+        {
+          size: {
+            type: String,
+            enum: [
+              // Talles de ropa
+              'XS',
+              'S',
+              'M',
+              'L',
+              'XL',
+              'XXL',
+              'XXXL',
+              // Talles numéricos de pantalones y camisas
+              '36',
+              '38',
+              '40',
+              '42',
+              '44',
+              '46',
+              '48',
+              '50',
+              '52',
+              // Talles de calzado (argentino)
+              '39',
+              '40',
+              '41',
+              '42',
+              '43',
+              '44',
+              '45',
+              '46',
+              // Talles únicos
+              'UNICO',
+            ],
+            required: true,
+          },
+          color: {
+            type: String,
+            required: true,
+          },
+          colorHex: {
+            type: String, // Ej: "#000000" para negro
+          },
+          stock: {
+            type: Number,
+            min: [0, 'El stock no puede ser negativo'],
+            default: 0,
+          },
+          sku: {
+            type: String,
+          },
+        },
+      ],
+      default: [],
+    },
+
+    // === TALLES Y VARIANTES (SISTEMA ANTIGUO - MANTENER PARA BACKWARD COMPATIBILITY) ===
 
     // Sistema de talles
     sizes: {
@@ -348,7 +409,7 @@ const productSchema = new mongoose.Schema(
     timestamps: true,
     // ✅ AGREGADO: Suprimir el warning de isNew
     suppressReservedKeysWarning: true,
-  }
+  },
 );
 
 // Crear índices para mejorar el rendimiento de las consultas
@@ -365,6 +426,9 @@ productSchema.index({ tags: 1 });
 productSchema.index({ style: 1 });
 productSchema.index({ 'colors.name': 1 });
 productSchema.index({ 'sizes.size': 1 });
+// Nuevo índice para variantes combinadas
+productSchema.index({ 'variants.size': 1 });
+productSchema.index({ 'variants.color': 1 });
 
 // Índice de texto para búsqueda
 productSchema.index({
@@ -391,12 +455,22 @@ productSchema.pre('save', function (next) {
     this.sku = `${categoryCode}-${timestamp}-${random}`;
   }
 
-  // Calcular stock total si hay talles o colores con stock
-  if (this.sizes && this.sizes.length > 0) {
+  // Calcular stock total
+  // Prioridad: variants > sizes > colors > stock manual
+  if (this.variants && this.variants.length > 0) {
+    // Sistema NUEVO: Calcular desde variantes combinadas
+    this.stock = this.variants.reduce(
+      (total, variant) => total + variant.stock,
+      0,
+    );
+  } else if (this.sizes && this.sizes.length > 0) {
+    // Sistema ANTIGUO: Calcular desde sizes
     this.stock = this.sizes.reduce((total, size) => total + size.stock, 0);
   } else if (this.colors && this.colors.length > 0) {
+    // Sistema ANTIGUO: Calcular desde colors
     this.stock = this.colors.reduce((total, color) => total + color.stock, 0);
   }
+  // Si no hay variantes, mantener stock manual
 
   // Generar slug si no existe
   if (!this.slug && this.title) {
@@ -445,7 +519,7 @@ productSchema.virtual('hasDiscount').get(function () {
 productSchema.virtual('discountPercentage').get(function () {
   if (this.hasDiscount) {
     return Math.round(
-      ((this.salePrice - this.promoPrice) / this.salePrice) * 100
+      ((this.salePrice - this.promoPrice) / this.salePrice) * 100,
     );
   }
   return 0;
@@ -475,9 +549,10 @@ productSchema.virtual('allImages').get(function () {
   return images;
 });
 
-// Virtual para verificar si tiene variantes (colores o talles)
+// Virtual para verificar si tiene variantes
 productSchema.virtual('hasVariants').get(function () {
   return (
+    (this.variants && this.variants.length > 0) ||
     (this.colors && this.colors.length > 0) ||
     (this.sizes && this.sizes.length > 0)
   );
@@ -487,6 +562,8 @@ productSchema.virtual('hasVariants').get(function () {
 productSchema.virtual('isNew').get(function () {
   return this.productIsNew;
 });
+
+// ========== MÉTODOS PARA SISTEMA ANTIGUO (BACKWARD COMPATIBILITY) ==========
 
 // Método para obtener stock de un talle específico
 productSchema.methods.getStockBySize = function (size) {
@@ -524,7 +601,7 @@ productSchema.methods.updateStockByColor = function (colorName, quantity) {
   return false;
 };
 
-// Método para verificar disponibilidad
+// Método para verificar disponibilidad (sistema antiguo)
 productSchema.methods.isAvailable = function (size = null, color = null) {
   if (size && this.sizes.length > 0) {
     const sizeVariant = this.sizes.find((s) => s.size === size);
@@ -537,6 +614,70 @@ productSchema.methods.isAvailable = function (size = null, color = null) {
   }
 
   return this.stock > 0;
+};
+
+// ========== MÉTODOS PARA VARIANTES COMBINADAS (SISTEMA NUEVO) ==========
+
+// Método para obtener stock de una variante específica (talle + color)
+productSchema.methods.getStockByVariant = function (size, color) {
+  const variant = this.variants.find(
+    (v) => v.size === size && v.color === color,
+  );
+  return variant ? variant.stock : 0;
+};
+
+// Método para actualizar stock de una variante específica
+productSchema.methods.updateStockByVariant = function (size, color, quantity) {
+  const variant = this.variants.find(
+    (v) => v.size === size && v.color === color,
+  );
+  if (variant) {
+    variant.stock = Math.max(0, variant.stock + quantity);
+    // Recalcular stock total
+    this.stock = this.variants.reduce((total, v) => total + v.stock, 0);
+    return true;
+  }
+  return false;
+};
+
+// Método para verificar disponibilidad de una variante específica
+productSchema.methods.isVariantAvailable = function (size, color) {
+  const variant = this.variants.find(
+    (v) => v.size === size && v.color === color,
+  );
+  return variant && variant.stock > 0;
+};
+
+// Método para obtener talles únicos disponibles
+productSchema.methods.getAvailableSizes = function () {
+  if (this.variants && this.variants.length > 0) {
+    const uniqueSizes = [...new Set(this.variants.map((v) => v.size))];
+    return uniqueSizes.filter((size) => {
+      return this.variants.some((v) => v.size === size && v.stock > 0);
+    });
+  }
+  return [];
+};
+
+// Método para obtener colores únicos disponibles
+productSchema.methods.getAvailableColors = function () {
+  if (this.variants && this.variants.length > 0) {
+    const uniqueColors = [...new Set(this.variants.map((v) => v.color))];
+    return uniqueColors.filter((color) => {
+      return this.variants.some((v) => v.color === color && v.stock > 0);
+    });
+  }
+  return [];
+};
+
+// Método para obtener colores disponibles para un talle específico
+productSchema.methods.getColorsForSize = function (size) {
+  if (this.variants && this.variants.length > 0) {
+    return this.variants
+      .filter((v) => v.size === size && v.stock > 0)
+      .map((v) => v.color);
+  }
+  return [];
 };
 
 // Configurar para que los virtuals se incluyan en JSON

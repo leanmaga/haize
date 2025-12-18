@@ -11,15 +11,11 @@ import PropTypes from 'prop-types';
 // ✅ FUNCIÓN CORREGIDA - Usar la ruta API correcta
 async function fetchOrderFromAPI(id) {
   try {
-    console.log('🌐 Intentando obtener orden via API:', id);
-
     // Usar URL absoluta para server-side
     const baseUrl = process.env.NEXTAUTH_URL || 'https://www.haize.com.ar';
 
     // ✅ CORREGIDO: Usar la ruta de admin específica
     const url = `${baseUrl}/api/admin/orders/${id}`;
-
-    console.log('🌐 URL de la API (CORREGIDA):', url);
 
     const response = await fetch(url, {
       headers: {
@@ -28,38 +24,27 @@ async function fetchOrderFromAPI(id) {
       cache: 'no-store', // No cachear para tener datos frescos
     });
 
-    console.log('🌐 Response status:', response.status);
-    console.log('🌐 Response ok:', response.ok);
-
     if (response.status === 404) {
-      console.log('🌐 Orden no encontrada (404)');
       return null;
     }
 
     if (response.status === 401) {
-      console.log('🌐 No autenticado (401)');
       throw new Error('No autenticado');
     }
 
     if (response.status === 403) {
-      console.log('🌐 Sin permisos (403)');
       throw new Error('No tienes permisos para ver esta orden');
     }
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.log('🌐 Error en la respuesta:', response.status, errorText);
       throw new Error(`Error ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
-    console.log('🌐 Datos recibidos de la API:', !!data);
-    console.log('🌐 Estructura de datos:', Object.keys(data));
 
     // La API devuelve { order, paymentDetails }
     const order = data.order || data;
-    console.log('🌐 Orden extraída:', !!order);
-    console.log('🌐 ID de la orden:', order?._id);
 
     return order;
   } catch (error) {
@@ -75,8 +60,6 @@ async function fetchOrderFromAPI(id) {
 // ✅ ALTERNATIVA MEJORADA: Usar conexión directa a la base de datos (MÁS EFICIENTE)
 async function fetchOrderFromDB(id) {
   try {
-    console.log('🗄️ Obteniendo orden directamente de la base de datos:', id);
-
     // Importar las dependencias necesarias
     const connectDB = (await import('@/lib/db')).default;
     const Order = (await import('@/models/Order')).default;
@@ -84,7 +67,6 @@ async function fetchOrderFromDB(id) {
     // Validar que el ID tenga formato válido
     const mongoose = await import('mongoose');
     if (!mongoose.default.Types.ObjectId.isValid(id)) {
-      console.log('❌ ID no es un ObjectId válido:', id);
       return null;
     }
 
@@ -95,11 +77,8 @@ async function fetchOrderFromDB(id) {
     const order = await Order.findById(id).lean();
 
     if (!order) {
-      console.log('❌ Orden no encontrada para ID:', id);
       return null;
     }
-
-    console.log('✅ Orden encontrada directamente de la DB:', order._id);
 
     // Convertir a JSON serializable
     return JSON.parse(JSON.stringify(order));
@@ -187,57 +166,33 @@ export async function generateMetadata({ params }) {
 
 export default async function OrderDetailPage({ params }) {
   try {
-    console.log('🚀 OrderDetailPage iniciado');
-    console.log('🚀 Params recibidos:', params);
-
     // 1. Verificar autenticación PRIMERO
     const session = await getServerSession(authOptions);
-    console.log('🚀 Sesión:', session ? 'ENCONTRADA' : 'NO ENCONTRADA');
 
     if (!session) {
-      console.log('🚀 No hay sesión, redirigiendo a login');
       redirect('/auth/signin');
     }
 
     if (session.user.role !== 'admin') {
-      console.log('🚀 Usuario no es admin, redirigiendo');
-      console.log('🚀 Rol del usuario:', session.user.role);
       redirect('/unauthorized');
     }
 
-    console.log('🚀 Usuario autenticado como admin:', session.user.email);
-
     // 2. Validar parámetros
     if (!params?.id) {
-      console.log('🚀 No ID provided in params');
       notFound();
     }
-
-    console.log('🚀 ID recibido:', params.id);
-    console.log('🚀 Longitud del ID:', params.id.length);
 
     // 3. Validar formato de ObjectId (opcional pero recomendado)
     const objectIdPattern = /^[0-9a-fA-F]{24}$/;
     if (!objectIdPattern.test(params.id)) {
-      console.log('🚀 ID no tiene formato de ObjectId válido:', params.id);
       notFound();
     }
 
-    // 4. Obtener la orden usando conexión directa a la DB (MÁS EFICIENTE)
-    console.log('🚀 Intentando obtener orden...');
     const order = await fetchOrderFromDB(params.id);
 
     if (!order) {
-      console.log('🚀 Orden no encontrada, mostrando 404');
       notFound();
     }
-
-    console.log('🚀 Orden obtenida exitosamente:');
-    console.log('🚀   - ID:', order._id);
-    console.log('🚀   - Status:', order.status);
-    console.log('🚀   - Cliente:', order.shippingInfo?.name);
-    console.log('🚀   - Total:', order.totalAmount);
-    console.log('🚀   - Items:', order.items?.length);
 
     const statusStyle = getStatusStyle(order.status);
 

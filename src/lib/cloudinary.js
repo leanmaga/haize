@@ -8,12 +8,21 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// 🔥 NUEVO: Obtener la carpeta según el ambiente
+const getCloudinaryFolder = () => {
+  return (
+    process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER || 'haizeecommerce/haize-staging'
+  );
+};
+
 // Función para subir imágenes
 export const uploadImage = async (file) => {
   try {
-    // Asegúrate de que file sea un string base64 o un buffer
+    const folder = getCloudinaryFolder();
+    console.log('📁 Subiendo a carpeta:', folder);
+
     const result = await cloudinary.uploader.upload(file, {
-      folder: 'ecommerce_products',
+      folder: folder, // 🔥 CAMBIO: usar carpeta dinámica
     });
 
     return {
@@ -37,9 +46,9 @@ export const deleteImage = async (publicId) => {
   }
 };
 
-// lib/cloudinary.js
 export const getCloudinaryUrl = (publicId, transformations = {}) => {
-  const cloudName = 'dz7fsiwnu';
+  const cloudName =
+    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dz7fsiwnu';
 
   const transforms = [];
 
@@ -52,7 +61,6 @@ export const getCloudinaryUrl = (publicId, transformations = {}) => {
   const transformString =
     transforms.length > 0 ? `${transforms.join(',')}/` : '';
 
-  // Sin carpeta, solo el publicId
   return `https://res.cloudinary.com/${cloudName}/image/upload/${transformString}${publicId}`;
 };
 

@@ -9,6 +9,7 @@ import RelatedProducts from '@/components/product/RelatedProducts';
 import ProductImageSlider from '@/components/product/ProductImageSlider';
 import VariantSelector from '@/components/product/VariantSelector';
 import SameDayShipping from './components/SameDayShipping';
+import SizeGuideTable from '@/components/product/SizeGuideTable';
 
 export default async function ProductDetails({ params }) {
   // Extract id from params
@@ -57,7 +58,18 @@ export default async function ProductDetails({ params }) {
       }
     });
   }
-
+  // En ProductDetails.jsx, después de obtener el product
+  console.log('📦 PRODUCT DATA:', {
+    id: product._id,
+    title: product.title,
+    hasVariants: !!product.variants,
+    variants: product.variants,
+    hasSizes: !!product.sizes,
+    sizes: product.sizes,
+    hasColors: !!product.colors,
+    colors: product.colors,
+    stock: product.stock,
+  });
   return (
     <div className="container mx-auto px-4 py-6 max-w-[1400px] mt-[80px]">
       {/* Breadcrumb - Alineado a la derecha como en la imagen */}
@@ -202,7 +214,45 @@ export default async function ProductDetails({ params }) {
           <VariantSelector product={product} />
 
           {/* Secciones Expandibles con nuevo diseño */}
-          <div className="space-y-0 border-t border-gray-200">
+          <div className="space-y-0 border-t border-gray-200 mt-4">
+            {/* Guía de Talles */}
+            <details className="group border-b border-gray-200">
+              <summary className="py-5 flex justify-between items-center cursor-pointer hover:opacity-70 transition-opacity list-none">
+                <div className="flex items-center gap-3">
+                  <svg
+                    className="w-5 h-5 text-gray-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <span className="text-sm font-medium">Guía de Talles</span>
+                </div>
+                <svg
+                  className="w-5 h-5 text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </summary>
+              <div className="pb-5">
+                <SizeGuideTable category={product.category} />
+              </div>
+            </details>
+
             {/* Especificaciones */}
             <details className="group border-b border-gray-200">
               <summary className="py-5 flex justify-between items-center cursor-pointer hover:opacity-70 transition-opacity list-none">
@@ -245,7 +295,6 @@ export default async function ProductDetails({ params }) {
                     {product.category.charAt(0).toUpperCase() +
                       product.category.slice(1)}
                   </li>
-
                   {product.material && <li>Material: {product.material}</li>}
                   {product.brand && <li>Marca: {product.brand}</li>}
                   {product.origin && <li>Origen: {product.origin}</li>}

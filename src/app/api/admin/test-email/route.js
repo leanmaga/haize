@@ -19,11 +19,10 @@ export async function GET() {
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json(
         { success: false, error: 'No autorizado' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
-    console.log('🧪 Verificando configuración de email...');
     const configResult = await verifyEmailConfig();
 
     return NextResponse.json({
@@ -39,7 +38,7 @@ export async function GET() {
         error: 'Error interno del servidor',
         message: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -51,21 +50,14 @@ export async function POST(request) {
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json(
         { success: false, error: 'No autorizado' },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     const body = await request.json();
-    console.log('📧 Request completo recibido:', JSON.stringify(body, null, 2));
 
     const emailType = body.action || body.type;
     const testEmail = body.to || body.testEmail;
-
-    console.log('🔍 Valores extraídos:', {
-      emailType,
-      testEmail,
-      bodyKeys: Object.keys(body),
-    });
 
     if (!emailType) {
       return NextResponse.json(
@@ -83,7 +75,7 @@ export async function POST(request) {
             'admin-payment-notification',
           ],
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -93,7 +85,7 @@ export async function POST(request) {
           success: false,
           error: "Se requiere 'to' en el body del request",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -105,7 +97,7 @@ export async function POST(request) {
           success: false,
           error: 'Formato de email inválido',
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -115,44 +107,37 @@ export async function POST(request) {
     switch (emailType) {
       // Email de prueba básico
       case 'test':
-        console.log('📧 Enviando email de prueba básico a:', testEmail);
         result = await sendBasicTestEmail(testEmail);
         break;
 
       // Email de verificación de cuenta
       case 'verification':
-        console.log('📧 Enviando email de verificación a:', testEmail);
         result = await sendVerificationTestEmail(testEmail);
         break;
 
       // Email de reset de contraseña
       case 'password-reset':
-        console.log('📧 Enviando email de reset de contraseña a:', testEmail);
         result = await sendPasswordResetTestEmail(testEmail);
         break;
 
       // Email de confirmación de orden
       case 'order-confirmation':
-        console.log('📧 Enviando confirmación de orden a:', testEmail);
         result = await sendOrderConfirmationTestEmail(testEmail);
         break;
 
       // Email de notificación de nueva orden al admin
       case 'admin-order-notification':
-        console.log('📧 Enviando notificación de orden al admin');
         const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
         result = await sendAdminOrderNotificationTestEmail(adminEmail);
         break;
 
       // Email de confirmación de pago
       case 'payment-confirmation':
-        console.log('📧 Enviando confirmación de pago a:', testEmail);
         result = await sendPaymentConfirmationTestEmail(testEmail);
         break;
 
       // Email de notificación de pago al admin
       case 'admin-payment-notification':
-        console.log('📧 Enviando notificación de pago al admin');
         const adminPaymentEmail =
           process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
         result = await sendAdminPaymentNotificationTestEmail(adminPaymentEmail);
@@ -173,7 +158,7 @@ export async function POST(request) {
               'admin-payment-notification',
             ],
           },
-          { status: 400 }
+          { status: 400 },
         );
     }
 
@@ -208,7 +193,7 @@ export async function POST(request) {
         message: error.message,
         timestamp: new Date().toISOString(),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -225,7 +210,7 @@ async function sendBasicTestEmail(testEmail) {
     html: createBasicTestTemplate(
       'Test Básico de Email',
       '✅ El sistema de emails está funcionando correctamente.',
-      '#4CAF50'
+      '#4CAF50',
     ),
   };
   return await sendEmailWithRetry(emailData);
@@ -331,7 +316,7 @@ async function sendOrderConfirmationTestEmail(testEmail) {
 
   const total = sampleProducts.reduce(
     (sum, p) => sum + p.price * p.quantity,
-    0
+    0,
   );
 
   const productsHtml = sampleProducts
@@ -340,8 +325,8 @@ async function sendOrderConfirmationTestEmail(testEmail) {
     <tr>
       <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">
         <img src="${product.image}" alt="${
-        product.name
-      }" style="width: 40px; height: 40px; border-radius: 4px;">
+          product.name
+        }" style="width: 40px; height: 40px; border-radius: 4px;">
       </td>
       <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;">${
         product.name
@@ -356,7 +341,7 @@ async function sendOrderConfirmationTestEmail(testEmail) {
         product.price * product.quantity
       }</td>
     </tr>
-  `
+  `,
     )
     .join('');
 
@@ -383,7 +368,7 @@ async function sendOrderConfirmationTestEmail(testEmail) {
             <div class="order-details">
               <h3>📋 Detalles del Pedido #TEST123</h3>
               <p><strong>Fecha:</strong> ${new Date().toLocaleDateString(
-                'es-AR'
+                'es-AR',
               )}</p>
               <p><strong>Estado:</strong> Pendiente de pago</p>
             </div>
@@ -456,7 +441,7 @@ async function sendAdminOrderNotificationTestEmail(adminEmail) {
               <p><strong>Email:</strong> ${adminEmail}</p>
               <p><strong>Teléfono:</strong> +54 9 11 1234-5678</p>
               <p><strong>Fecha:</strong> ${new Date().toLocaleDateString(
-                'es-AR'
+                'es-AR',
               )}</p>
             </div>
 
@@ -522,7 +507,7 @@ async function sendPaymentConfirmationTestEmail(testEmail) {
               <h3>💳 Detalles del Pago</h3>
               <p><strong>Pedido:</strong> #TEST123</p>
               <p><strong>Fecha del pago:</strong> ${new Date().toLocaleDateString(
-                'es-AR'
+                'es-AR',
               )}</p>
               <p><strong>Método de pago:</strong> MercadoPago</p>
               <p><strong>ID de transacción:</strong> MP-TEST-789456</p>
@@ -592,7 +577,7 @@ async function sendAdminPaymentNotificationTestEmail(adminEmail) {
               <p><strong>Monto:</strong> $6200</p>
               <p><strong>Método:</strong> MercadoPago</p>
               <p><strong>Fecha:</strong> ${new Date().toLocaleDateString(
-                'es-AR'
+                'es-AR',
               )}</p>
               <p><strong>Estado:</strong> Aprobado ✅</p>
             </div>
@@ -706,7 +691,7 @@ function getEmailFooter() {
     <div class="footer">
       <p style="margin: 0; font-size: 14px;">© ${new Date().getFullYear()} HAIZE - Sistema de Emails</p>
       <p style="margin: 5px 0 0 0; font-size: 12px;">📧 Test: ${new Date().toLocaleString(
-        'es-AR'
+        'es-AR',
       )}</p>
     </div>
   `;

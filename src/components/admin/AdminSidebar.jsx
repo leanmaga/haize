@@ -12,6 +12,12 @@ import {
   CogIcon,
   ChevronRightIcon,
   EnvelopeIcon,
+  TagIcon,
+  StarIcon,
+  KeyIcon,
+  BanknotesIcon,
+  ChatBubbleLeftRightIcon,
+  RectangleStackIcon,
 } from '@heroicons/react/24/outline';
 
 /**
@@ -42,6 +48,11 @@ const AdminSidebar = () => {
           icon: ListBulletIcon,
           href: '/admin/products',
         },
+        {
+          title: 'Guías de Talles',
+          icon: RectangleStackIcon,
+          href: '/admin/size-guides',
+        },
       ],
     },
     {
@@ -55,6 +66,34 @@ const AdminSidebar = () => {
       href: '/admin/users',
     },
     {
+      title: 'Preguntas',
+      icon: ChatBubbleLeftRightIcon,
+      href: '/admin/questions',
+    },
+    {
+      title: 'Cupones',
+      icon: TagIcon,
+      href: '/admin/coupons',
+      submenu: [
+        {
+          title: 'Crear',
+          icon: PlusCircleIcon,
+          href: '/admin/coupons/new',
+        },
+        {
+          title: 'Gestionar',
+          icon: ListBulletIcon,
+          href: '/admin/coupons',
+        },
+      ],
+    },
+    // ====================================
+    {
+      title: 'Reviews',
+      icon: StarIcon,
+      href: '/admin/reviews',
+    },
+    {
       title: 'Contactos',
       icon: EnvelopeIcon,
       href: '/admin/contact',
@@ -63,6 +102,18 @@ const AdminSidebar = () => {
       title: 'Configuración',
       icon: CogIcon,
       href: '/admin/settings',
+      submenu: [
+        {
+          title: 'Mercado pago',
+          icon: BanknotesIcon,
+          href: '/admin/settings/payment/mercado-pago',
+        },
+        {
+          title: 'Cuenta',
+          icon: KeyIcon,
+          href: '/admin/settings',
+        },
+      ],
     },
   ];
 

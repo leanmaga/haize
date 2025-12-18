@@ -1,35 +1,34 @@
 // api/mercadopago/webhook/route.js - WEBHOOK CORREGIDO CON EMAILS
-import { NextResponse } from "next/server";
-import connectDB from "@/lib/db";
-import Order from "@/models/Order";
-import User from "@/models/User";
-import crypto from "crypto";
-import { getPaymentById } from "@/lib/mercadopago";
-import { sendPaymentConfirmedEmails } from "@/lib/order-emails";
-import { verifyEmailConfig } from "@/lib/email-config";
+import { NextResponse } from 'next/server';
+import connectDB from '@/lib/db';
+import Order from '@/models/Order';
+import User from '@/models/User';
+import crypto from 'crypto';
+import { getPaymentById } from '@/lib/mercadopago';
+import { sendPaymentConfirmedEmails } from '@/lib/order-emails';
+import { verifyEmailConfig } from '@/lib/email-config';
 
 // Función para verificar firma del webhook (opcional pero recomendada)
 function verifyWebhookSignature(rawBody, signature) {
   if (!process.env.MERCADOPAGO_WEBHOOK_SECRET || !signature) {
-    console.log("⚠️ Webhook signature verification skipped");
     return true; // Permitir si no hay secret configurado
   }
 
   try {
-    const [ts, v1] = signature.split(",").map((part) => part.split("=")[1]);
+    const [ts, v1] = signature.split(',').map((part) => part.split('=')[1]);
     const signedPayload = `ts=${ts},v1=${v1}`;
 
     const expectedSignature = crypto
-      .createHmac("sha256", process.env.MERCADOPAGO_WEBHOOK_SECRET)
+      .createHmac('sha256', process.env.MERCADOPAGO_WEBHOOK_SECRET)
       .update(`${ts}.${rawBody}`)
-      .digest("hex");
+      .digest('hex');
 
     return crypto.timingSafeEqual(
-      Buffer.from(v1, "hex"),
-      Buffer.from(expectedSignature, "hex")
+      Buffer.from(v1, 'hex'),
+      Buffer.from(expectedSignature, 'hex'),
     );
   } catch (error) {
-    console.error("❌ Error verificando firma:", error);
+    console.error('❌ Error verificando firma:', error);
     return false;
   }
 }
@@ -38,27 +37,12 @@ export async function POST(request) {
   const startTime = Date.now();
   const requestId = crypto.randomUUID().substring(0, 8);
 
-  console.log(`🚀 [${requestId}] Webhook iniciado:`, {
-    timestamp: new Date().toISOString(),
-    url: request.url,
-    method: request.method,
-  });
-
   // Log de headers para debugging
   const headers = Object.fromEntries(request.headers.entries());
-  console.log(`📋 [${requestId}] Headers recibidos:`, {
-    "content-type": headers["content-type"],
-    "x-signature": headers["x-signature"] ? "PRESENTE" : "AUSENTE",
-    "user-agent": headers["user-agent"],
-  });
 
   try {
     // 1. Leer el body
     const bodyText = await request.text();
-    console.log(`📄 [${requestId}] Body recibido:`, {
-      length: bodyText.length,
-      preview: bodyText.substring(0, 200) + "...",
-    });
 
     // 2. Verificar firma (comentado temporalmente para debugging)
     /*
@@ -76,27 +60,22 @@ export async function POST(request) {
     let data;
     try {
       data = JSON.parse(bodyText);
-      console.log(`✅ [${requestId}] JSON parseado:`, {
-        action: data.action,
-        dataId: data.data?.id,
-        type: data.type,
-      });
     } catch (error) {
       console.error(`❌ [${requestId}] Error parseando JSON:`, error);
       return NextResponse.json(
         {
-          message: "Invalid JSON",
+          message: 'Invalid JSON',
           requestId,
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
     // 4. Verificar que es una notificación de pago
-    if (!["payment.created", "payment.updated"].includes(data.action)) {
+    if (!['payment.created', 'payment.updated'].includes(data.action)) {
       console.log(`ℹ️ [${requestId}] No es notificación de pago:`, data.action);
       return NextResponse.json({
-        message: "Not a payment notification",
+        message: 'Not a payment notification',
         action: data.action,
         requestId,
       });
@@ -108,10 +87,10 @@ export async function POST(request) {
       console.log(`❌ [${requestId}] No payment ID encontrado`);
       return NextResponse.json(
         {
-          message: "No payment ID",
+          message: 'No payment ID',
           requestId,
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -131,11 +110,11 @@ export async function POST(request) {
       console.error(`❌ [${requestId}] Error obteniendo info del pago:`, error);
       return NextResponse.json(
         {
-          message: "Payment info error",
+          message: 'Payment info error',
           error: error.message,
           requestId,
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -145,10 +124,10 @@ export async function POST(request) {
       console.log(`❌ [${requestId}] No external reference encontrado`);
       return NextResponse.json(
         {
-          message: "No external reference",
+          message: 'No external reference',
           requestId,
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -158,15 +137,15 @@ export async function POST(request) {
 
     if (!order) {
       console.log(
-        `❌ [${requestId}] Orden no encontrada: ${externalReference}`
+        `❌ [${requestId}] Orden no encontrada: ${externalReference}`,
       );
       return NextResponse.json(
         {
-          message: "Order not found",
+          message: 'Order not found',
           externalReference,
           requestId,
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -181,22 +160,22 @@ export async function POST(request) {
     const paymentStatus = paymentInfo.status;
     const previousStatus = order.status;
 
-    if (paymentStatus === "approved" && order.status !== "pagado") {
+    if (paymentStatus === 'approved' && order.status !== 'pagado') {
       console.log(`💰 [${requestId}] Pago aprobado - Procesando...`);
 
       // 10. Obtener información del usuario
       const user = await User.findById(order.user);
       if (!user) {
         console.warn(
-          `⚠️ [${requestId}] Usuario no encontrado para la orden ${order._id}`
+          `⚠️ [${requestId}] Usuario no encontrado para la orden ${order._id}`,
         );
         return NextResponse.json(
           {
-            message: "User not found",
+            message: 'User not found',
             orderId: order._id,
             requestId,
           },
-          { status: 200 }
+          { status: 200 },
         );
       }
 
@@ -211,11 +190,11 @@ export async function POST(request) {
       const emailConfigCheck = await verifyEmailConfig();
       console.log(
         `📧 [${requestId}] Resultado verificación email:`,
-        emailConfigCheck
+        emailConfigCheck,
       );
 
       // 12. Actualizar la orden
-      order.status = "pagado";
+      order.status = 'pagado';
       order.paymentId = paymentId;
 
       // Actualizar detalles del pago
@@ -236,7 +215,7 @@ export async function POST(request) {
         emailResults = await sendPaymentConfirmedEmails(
           order,
           user,
-          paymentInfo
+          paymentInfo,
         );
 
         console.log(`📧 [${requestId}] Resultado emails:`, {
@@ -302,11 +281,11 @@ export async function POST(request) {
 
       const processingTime = Date.now() - startTime;
       console.log(
-        `✅ [${requestId}] Webhook procesado exitosamente en ${processingTime}ms`
+        `✅ [${requestId}] Webhook procesado exitosamente en ${processingTime}ms`,
       );
 
       return NextResponse.json({
-        message: "Webhook processed successfully",
+        message: 'Webhook processed successfully',
         requestId,
         orderId: order._id,
         previousStatus,
@@ -329,7 +308,7 @@ export async function POST(request) {
       });
 
       return NextResponse.json({
-        message: "No update required",
+        message: 'No update required',
         requestId,
         paymentStatus,
         orderStatus: order.status,
@@ -349,9 +328,9 @@ export async function POST(request) {
         message: `Error: ${error.message}`,
         requestId,
         processingTimeMs: processingTime,
-        stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
       },
-      { status: 200 } // Siempre devolver 200 para que MP no reintente
+      { status: 200 }, // Siempre devolver 200 para que MP no reintente
     );
   }
 }
@@ -359,8 +338,8 @@ export async function POST(request) {
 // También agregar método GET para verificar que el endpoint funciona
 export async function GET() {
   return NextResponse.json({
-    message: "MercadoPago Webhook Endpoint",
-    status: "active",
+    message: 'MercadoPago Webhook Endpoint',
+    status: 'active',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,
   });

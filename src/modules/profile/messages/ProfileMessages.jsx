@@ -17,7 +17,7 @@ import {
   ChevronRightIcon,
 } from '@heroicons/react/24/outline';
 
-const MessagesPage = () => {
+const ProfileMessages = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -222,7 +222,7 @@ const MessagesPage = () => {
                     }`}
                     style={
                       filter === filterOption.key
-                        ? { backgroundColor: '#FAC348' }
+                        ? { backgroundColor: '#000000' }
                         : {}
                     }
                   >
@@ -318,7 +318,7 @@ const MessagesPage = () => {
                         className="border-l-4 p-3 rounded-r-lg"
                         style={{
                           backgroundColor: '#FEF3E2',
-                          borderLeftColor: '#FAC348',
+                          borderLeftColor: '#000000',
                         }}
                       >
                         <p className="text-gray-800">{message.comment}</p>
@@ -402,7 +402,7 @@ const MessagesPage = () => {
                         }`}
                         style={
                           currentPage === i + 1
-                            ? { backgroundColor: '#FAC348' }
+                            ? { backgroundColor: '#000000' }
                             : {}
                         }
                       >
@@ -445,7 +445,7 @@ const MessagesPage = () => {
                 <Link
                   href="/products"
                   className="inline-flex items-center px-4 py-2 text-white text-sm font-medium rounded-md transition-colors hover:opacity-90"
-                  style={{ backgroundColor: '#FAC348' }}
+                  style={{ backgroundColor: '#000000' }}
                 >
                   Explorar productos
                 </Link>
@@ -457,7 +457,7 @@ const MessagesPage = () => {
         {/* Info adicional */}
         <div
           className="mt-8 border rounded-lg p-4"
-          style={{ backgroundColor: '#FEF3E2', borderColor: '#FAC348' }}
+          style={{ backgroundColor: '#FEF3E2', borderColor: '#000000' }}
         >
           <div className="flex items-start space-x-3">
             <ChatBubbleLeftRightIcon className="h-5 w-5 text-gray-600 mt-0.5" />
@@ -477,4 +477,4 @@ const MessagesPage = () => {
   );
 };
 
-export default MessagesPage;
+export default ProfileMessages;

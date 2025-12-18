@@ -100,8 +100,8 @@ export default function SettingsPage() {
   };
 
   return (
-    <div>
-      <h2 className="font-sora-extralight text-xl font-nexa-bold mb-6 text-gray-800">
+    <div className="h-full">
+      <h2 className="font-sora-extralight text-xl font-nexa-bold mb-4 mt-2 text-gray-800">
         Configuración de la cuenta
       </h2>
 
@@ -132,8 +132,7 @@ export default function SettingsPage() {
                 value={passwordData.currentPassword}
                 onChange={handlePasswordChange}
                 required
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:border-gray-500"
-                style={{ '--tw-ring-color': '#FAC348' }}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-1 focus:border-gray-50"
               />
             </div>
 
@@ -151,8 +150,7 @@ export default function SettingsPage() {
                 value={passwordData.newPassword}
                 onChange={handlePasswordChange}
                 required
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:border-gray-500"
-                style={{ '--tw-ring-color': '#FAC348' }}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-1 focus:border-gray-50"
               />
             </div>
 
@@ -170,64 +168,21 @@ export default function SettingsPage() {
                 value={passwordData.confirmPassword}
                 onChange={handlePasswordChange}
                 required
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-2 focus:border-gray-500"
-                style={{ '--tw-ring-color': '#FAC348' }}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-1 focus:border-gray-50"
               />
             </div>
 
             <button
               onClick={handlePasswordSubmit}
               disabled={changingPassword}
-              className="px-4 py-2 text-white rounded-md transition hover:opacity-90 disabled:opacity-50"
-              style={{
-                backgroundColor: changingPassword ? '#9CA3AF' : '#FAC348',
-              }}
+              className={`px-4 py-2 text-white rounded-md transition cursor-pointer hover:bg-gray-800 ${
+                changingPassword ? 'bg-black/30' : 'bg-black'
+              }`}
             >
               {changingPassword ? 'Actualizando...' : 'Cambiar contraseña'}
             </button>
           </div>
         )}
-      </div>
-
-      {/* Opciones de notificaciones */}
-      <div className="mb-8">
-        <h3 className="font-sora-extralight text-lg font-sora-regular mb-4 text-gray-800">
-          Notificaciones
-        </h3>
-
-        <div className="space-y-4 max-w-md">
-          <div className="flex items-center">
-            <input
-              id="emailNotifications"
-              name="emailNotifications"
-              type="checkbox"
-              className="h-4 w-4 border-gray-300 rounded focus:ring-2"
-              style={{ color: '#FAC348', '--tw-ring-color': '#FAC348' }}
-            />
-            <label
-              htmlFor="emailNotifications"
-              className="ml-3 block text-sm text-gray-700"
-            >
-              Recibir notificaciones por email
-            </label>
-          </div>
-
-          <div className="flex items-center">
-            <input
-              id="promotions"
-              name="promotions"
-              type="checkbox"
-              className="h-4 w-4 border-gray-300 rounded focus:ring-2"
-              style={{ color: '#FAC348', '--tw-ring-color': '#FAC348' }}
-            />
-            <label
-              htmlFor="promotions"
-              className="ml-3 block text-sm text-gray-700"
-            >
-              Recibir promociones y ofertas
-            </label>
-          </div>
-        </div>
       </div>
 
       {/* Eliminar cuenta */}
@@ -244,7 +199,7 @@ export default function SettingsPage() {
             </p>
             <button
               onClick={() => setShowDeleteConfirm(true)}
-              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+              className="px-4 py-2 bg-red-600 text-white rounded-md cursor-pointer hover:bg-red-700 transition"
             >
               Eliminar mi cuenta
             </button>
@@ -274,7 +229,7 @@ export default function SettingsPage() {
                 disabled={
                   isDeleting || deleteConfirmInput !== session?.user?.email
                 }
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition disabled:opacity-50"
+                className="px-4 py-2 bg-red-600 text-white rounded-md cursor-pointer hover:bg-red-700 transition disabled:opacity-50"
               >
                 {isDeleting ? 'Eliminando...' : 'Confirmar eliminación'}
               </button>
@@ -283,7 +238,7 @@ export default function SettingsPage() {
                   setShowDeleteConfirm(false);
                   setDeleteConfirmInput('');
                 }}
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition"
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 cursor-pointer hover:bg-gray-50 transition"
               >
                 Cancelar
               </button>

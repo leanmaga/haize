@@ -73,10 +73,27 @@ export async function getProducts(options = {}) {
 export async function getProductById(id) {
   try {
     await connectDB();
-    const product = await Product.findById(id);
+
+    // ✅ CAMBIO: Usar .lean() para mejor serialización
+    const product = await Product.findById(id).lean();
 
     if (!product) {
       return null;
+    }
+
+    // ✅ CAMBIO: Asegurar que variants existe como array
+    if (!product.variants) {
+      product.variants = [];
+    }
+
+    // Asegurar que sizes existe como array (backward compatibility)
+    if (!product.sizes) {
+      product.sizes = [];
+    }
+
+    // Asegurar que colors existe como array (backward compatibility)
+    if (!product.colors) {
+      product.colors = [];
     }
 
     return JSON.parse(JSON.stringify(product));
@@ -177,7 +194,7 @@ export async function getAllUsers() {
 export async function getRelatedProducts(
   category,
   currentProductId,
-  limit = 3
+  limit = 3,
 ) {
   await connectDB();
 

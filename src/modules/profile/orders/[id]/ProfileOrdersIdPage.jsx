@@ -162,7 +162,7 @@ Estado actual: ${getStatusText(order.status).text}
 Total: $${order.totalAmount.toFixed(2)}
 Fecha: ${formatDate(order.createdAt)}
 
-¿Podrían ayudarme con el estado de mi pedido?`
+¿Podrían ayudarme con el estado de mi pedido?`,
     );
 
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
@@ -290,14 +290,14 @@ Fecha: ${formatDate(order.createdAt)}
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center z-10 ${
                         ['pagado', 'enviado', 'entregado'].includes(
-                          order.status
+                          order.status,
                         )
                           ? 'text-white'
                           : 'bg-gray-200 text-gray-500'
                       }`}
                       style={
                         ['pagado', 'enviado', 'entregado'].includes(
-                          order.status
+                          order.status,
                         )
                           ? { backgroundColor: '#F1ECE8', color: '#5A5A5A' }
                           : {}
@@ -498,12 +498,12 @@ Fecha: ${formatDate(order.createdAt)}
                           {order.paymentMethod === 'mercadopago'
                             ? 'MercadoPago'
                             : order.paymentMethod === 'credit_card'
-                            ? 'Tarjeta de Crédito'
-                            : order.paymentMethod === 'debit_card'
-                            ? 'Tarjeta de Débito'
-                            : order.paymentMethod === 'whatsapp'
-                            ? 'WhatsApp'
-                            : order.paymentMethod}
+                              ? 'Tarjeta de Crédito'
+                              : order.paymentMethod === 'debit_card'
+                                ? 'Tarjeta de Débito'
+                                : order.paymentMethod === 'whatsapp'
+                                  ? 'WhatsApp'
+                                  : order.paymentMethod}
                         </p>
                       </div>
                     </div>
@@ -521,8 +521,8 @@ Fecha: ${formatDate(order.createdAt)}
                               paymentDetails.status === 'approved'
                                 ? 'text-gray-700'
                                 : paymentDetails.status === 'pending'
-                                ? 'bg-gray-100 text-gray-800'
-                                : 'bg-red-100 text-red-800'
+                                  ? 'bg-gray-100 text-gray-800'
+                                  : 'bg-red-100 text-red-800'
                             }`}
                             style={
                               paymentDetails.status === 'approved'
@@ -533,12 +533,12 @@ Fecha: ${formatDate(order.createdAt)}
                             {paymentDetails.status === 'approved'
                               ? 'Aprobado'
                               : paymentDetails.status === 'pending'
-                              ? 'Pendiente'
-                              : paymentDetails.status === 'in_process'
-                              ? 'En proceso'
-                              : paymentDetails.status === 'rejected'
-                              ? 'Rechazado'
-                              : paymentDetails.status}
+                                ? 'Pendiente'
+                                : paymentDetails.status === 'in_process'
+                                  ? 'En proceso'
+                                  : paymentDetails.status === 'rejected'
+                                    ? 'Rechazado'
+                                    : paymentDetails.status}
                           </span>
                         </p>
                         {paymentDetails.date_approved && (
@@ -572,7 +572,7 @@ Fecha: ${formatDate(order.createdAt)}
                     <Link
                       href="/products"
                       className="w-full flex items-center justify-center px-4 py-2 text-white rounded-md transition-colors hover:opacity-90"
-                      style={{ backgroundColor: '#FAC348' }}
+                      style={{ backgroundColor: '#000000' }}
                     >
                       Seguir comprando
                     </Link>
@@ -668,7 +668,7 @@ Fecha: ${formatDate(order.createdAt)}
             <Link
               href="/profile/orders"
               className="px-4 py-2 text-white rounded-md transition-colors hover:opacity-90 inline-block"
-              style={{ backgroundColor: '#FAC348' }}
+              style={{ backgroundColor: '#000000' }}
             >
               Volver a mis pedidos
             </Link>

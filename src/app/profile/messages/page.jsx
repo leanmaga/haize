@@ -1,9 +1,9 @@
-import ProfilePage from '@/modules/profile/Profile';
+import ProfileMessages from '@/modules/profile/messages/ProfileMessages';
 
 const page = () => {
   return (
     <>
-      <ProfilePage />
+      <ProfileMessages />
     </>
   );
 };

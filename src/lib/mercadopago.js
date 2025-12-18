@@ -34,7 +34,7 @@ const getClient = async () => {
       if (config.expiresAt && new Date() > config.expiresAt) {
         console.log('⏰ Token expirado:', config.expiresAt);
         throw new Error(
-          'Token de MercadoPago expirado. La tienda debe renovar su conexión.'
+          'Token de MercadoPago expirado. La tienda debe renovar su conexión.',
         );
       }
 
@@ -54,7 +54,7 @@ const getClient = async () => {
 
         cacheExpiry = new Date(Date.now() + 5 * 60 * 1000);
         console.log(
-          '🎉 Cliente creado exitosamente usando configuración de la BD'
+          '🎉 Cliente creado exitosamente usando configuración de la BD',
         );
         return cachedClient;
       } else {
@@ -68,7 +68,7 @@ const getClient = async () => {
     if (process.env.NODE_ENV === 'production') {
       console.log('🚫 Producción: No hay configuración válida');
       throw new Error(
-        'No hay cuenta de MercadoPago vinculada. La tienda debe conectar su cuenta primero.'
+        'No hay cuenta de MercadoPago vinculada. La tienda debe conectar su cuenta primero.',
       );
     }
 
@@ -78,7 +78,7 @@ const getClient = async () => {
 
     if (!mpConfig.accessToken) {
       throw new Error(
-        'No se encontraron credenciales de MercadoPago para desarrollo.'
+        'No se encontraron credenciales de MercadoPago para desarrollo.',
       );
     }
 
@@ -101,7 +101,7 @@ const getClient = async () => {
   }
 };
 
-// Crear preferencia de pago - FUNCIÓN OPTIMIZADA
+// Crear preferencia de pago - CON SOPORTE DE DESCUENTOS/CUPONES
 export const createPaymentPreference = async (orderData) => {
   try {
     const client = await getClient();
@@ -111,6 +111,15 @@ export const createPaymentPreference = async (orderData) => {
     if (!orderData.items || !orderData.items.length || !orderData._id) {
       throw new Error('Datos de orden inválidos: faltan campos requeridos');
     }
+
+    console.log('💰 Creando preferencia con datos:', {
+      orderId: orderData._id,
+      subtotal: orderData.subtotal,
+      discountAmount: orderData.discountAmount,
+      totalAmount: orderData.totalAmount,
+      hasCoupon: !!orderData.appliedCoupon,
+      couponCode: orderData.appliedCoupon?.code,
+    });
 
     // Preparar items para MercadoPago
     const items = orderData.items.map((item) => ({
@@ -122,6 +131,46 @@ export const createPaymentPreference = async (orderData) => {
       picture_url: item.imageUrl || '',
       description: `${item.title} - Cantidad: ${item.quantity}`,
     }));
+
+    // ✅ AGREGAR ITEM DE DESCUENTO SI HAY CUPÓN APLICADO
+    if (orderData.discountAmount > 0 && orderData.appliedCoupon) {
+      items.push({
+        id: 'discount',
+        title: `Descuento - Cupón: ${orderData.appliedCoupon.code}`,
+        quantity: 1,
+        unit_price: -parseFloat(orderData.discountAmount), // ⚠️ PRECIO NEGATIVO
+        currency_id: 'ARS',
+        description: `Cupón de descuento aplicado: ${orderData.appliedCoupon.code}`,
+      });
+
+      console.log('✅ Item de descuento agregado:', {
+        code: orderData.appliedCoupon.code,
+        amount: -orderData.discountAmount,
+      });
+    }
+
+    // Calcular total para verificación
+    const calculatedTotal = items.reduce(
+      (sum, item) => sum + item.unit_price * item.quantity,
+      0,
+    );
+
+    console.log('📊 Verificación de totales:', {
+      subtotal: orderData.subtotal,
+      discount: orderData.discountAmount || 0,
+      totalEsperado: orderData.totalAmount,
+      totalCalculado: calculatedTotal,
+      diferencia: Math.abs(calculatedTotal - orderData.totalAmount),
+    });
+
+    // Verificar que los totales coincidan (con tolerancia de 1 peso por redondeo)
+    if (Math.abs(calculatedTotal - orderData.totalAmount) > 1) {
+      console.warn('⚠️ Discrepancia en totales:', {
+        esperado: orderData.totalAmount,
+        calculado: calculatedTotal,
+        diferencia: calculatedTotal - orderData.totalAmount,
+      });
+    }
 
     // Obtener URL base
     const baseUrl =
@@ -162,7 +211,7 @@ export const createPaymentPreference = async (orderData) => {
       };
     }
 
-    // Crear preferencia
+    // Crear preferencia - ✅ CON METADATA DE CUPÓN
     const preferenceData = {
       items: items,
       back_urls: backUrls,
@@ -180,26 +229,30 @@ export const createPaymentPreference = async (orderData) => {
         order_id: orderData._id.toString(),
         customer_email: orderData.shippingInfo?.email || 'unknown',
         environment: mpConfig.environment,
+        // ✅ AGREGAR INFORMACIÓN DEL CUPÓN
+        subtotal: orderData.subtotal || 0,
+        discount_amount: orderData.discountAmount || 0,
+        coupon_code: orderData.appliedCoupon?.code || null,
+        total_amount: orderData.totalAmount,
       },
 
       statement_descriptor: 'HAIZE',
       expires: true,
       expiration_date_to: new Date(
-        Date.now() + 24 * 60 * 60 * 1000
+        Date.now() + 24 * 60 * 60 * 1000,
       ).toISOString(),
       binary_mode: false,
     };
 
-    // console.log("📝 Datos de preferencia preparados:", {
-    //   items: items.length,
-    //   total: items.reduce(
-    //     (sum, item) => sum + item.unit_price * item.quantity,
-    //     0
-    //   ),
-    //   external_reference: preferenceData.external_reference,
-    //   payer_email: preferenceData.payer.email,
-    //   environment: mpConfig.environment,
-    // });
+    console.log('📝 Datos de preferencia preparados:', {
+      itemsCount: items.length,
+      subtotal: orderData.subtotal,
+      discount: orderData.discountAmount || 0,
+      total: calculatedTotal,
+      external_reference: preferenceData.external_reference,
+      payer_email: preferenceData.payer.email,
+      environment: mpConfig.environment,
+    });
 
     const preference = new Preference(client);
     const response = await preference.create({ body: preferenceData });
@@ -213,6 +266,12 @@ export const createPaymentPreference = async (orderData) => {
       throw new Error('MercadoPago no devolvió URLs de checkout válidas');
     }
 
+    console.log('✅ Preferencia MercadoPago creada exitosamente:', {
+      preferenceId: response.id,
+      init_point: response.init_point?.substring(0, 50) + '...',
+      totalAmount: orderData.totalAmount,
+    });
+
     return response;
   } catch (error) {
     console.error('❌ Error detallado al crear preferencia:', {
@@ -222,12 +281,14 @@ export const createPaymentPreference = async (orderData) => {
       orderData: {
         id: orderData._id,
         itemsCount: orderData.items?.length,
+        subtotal: orderData.subtotal,
+        discount: orderData.discountAmount,
         total: orderData.totalAmount,
       },
     });
 
     throw new Error(
-      `Error al crear preferencia en MercadoPago: ${error.message}`
+      `Error al crear preferencia en MercadoPago: ${error.message}`,
     );
   }
 };
@@ -254,7 +315,7 @@ export const checkMercadoPagoStatus = async () => {
     console.log('🔍 Verificando configuración de MercadoPago...');
     console.log(
       '📊 Config de base de datos:',
-      config ? 'ENCONTRADA' : 'NO ENCONTRADA'
+      config ? 'ENCONTRADA' : 'NO ENCONTRADA',
     );
 
     // ✅ SOLO verificar configuración en base de datos para tienda real
@@ -368,7 +429,7 @@ export async function getPaymentsByExternalReference(externalReference) {
           Authorization: `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -377,7 +438,7 @@ export async function getPaymentsByExternalReference(externalReference) {
       throw new Error(
         `Error ${response.status}: ${
           errorData.message || 'Error buscando pagos'
-        }`
+        }`,
       );
     }
 

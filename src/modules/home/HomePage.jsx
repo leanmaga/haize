@@ -4,7 +4,7 @@ import HomeProduct from './HomeProduct';
 import HomeProductSlider from './HomeProductSlider';
 import ProductSlider from '@/modules/products/ProductSlider';
 import { getProducts } from '@/lib/data';
-import BlackFridayBanner from './components/BlackFridayBanner';
+// import BlackFridayBanner from './components/BlackFridayBanner';
 import PageLoader from './components/PageLoader';
 
 export default async function Home() {
@@ -12,6 +12,54 @@ export default async function Home() {
     featured: true,
     limit: 12,
   });
+
+  const homeProducts = [
+    {
+      id: '692a46935f2af38e059f879e',
+      imageSrc: '/assets/clothes3.jpg',
+      altText: 'Clothes 4',
+      title: 'SET WAFFLE ESSENTIAL',
+      description:
+        'Algodón waffle texturado. Silueta relajada. El uniforme del verano contemporáneo.',
+      linkTitle: 'Descubrir Más',
+    },
+    {
+      id: '692a431013ad12598ac559fc',
+      imageSrc: '/assets/clothes2.png',
+      altText: 'Clothes 3',
+      title: 'CAMISA RELAXED ESSENTIAL',
+      description:
+        'Algodón texturado. Silueta cómoda. Estilo minimal para uso diario.',
+      linkTitle: 'Descubrir Más',
+    },
+    {
+      id: '692a44d85f2af38e059f8755',
+      imageSrc: '/assets/clothes6.jpg',
+      altText: 'Clothes 5',
+      title: 'CAMISA ESSENTIAL TEXTURADA',
+      description:
+        'Algodón texturado de tacto suave. Silueta relajada. Diseño versátil para uso diario.',
+      linkTitle: 'Ver Más',
+    },
+    {
+      id: '692a431013ad12598ac559fc5858',
+      imageSrc: '/assets/clothes7.png',
+      altText: 'Clothes 3',
+      title: 'REMERA ESSENTIAL TEXTURADA',
+      description:
+        'Algodón texturado. Silueta cómoda. Estilo minimal para uso diario.',
+      linkTitle: 'Descubrir Más',
+    },
+    {
+      id: '692a44d85f2af38e059f875211565',
+      imageSrc: '/assets/clothes5.jpg',
+      altText: 'Clothes 5',
+      title: 'REMERA ESSENTIAL TEXTURADA',
+      description:
+        'Algodón texturado de tacto suave. Silueta relajada. Diseño versátil para uso diario.',
+      linkTitle: 'Ver Más',
+    },
+  ];
 
   return (
     <>
@@ -25,6 +73,8 @@ export default async function Home() {
           alt="Home background"
           fill
           priority
+          sizes="100vw"
+          quality={90}
           className="hidden md:block object-cover object-top"
         />
 
@@ -34,6 +84,8 @@ export default async function Home() {
           alt="Home background mobile"
           fill
           priority
+          sizes="(max-width: 768px) 100vw, 0px"
+          quality={90}
           className="block md:hidden object-cover object-center"
         />
 
@@ -59,7 +111,7 @@ export default async function Home() {
           </div>
         </div>
       </div>
-      <BlackFridayBanner />
+      {/* <BlackFridayBanner /> */}
       {/* Grid de Productos - 1 columna en mobile, 2 en desktop */}
       <div className="grid grid-cols-1 md:grid-cols-2 w-full">
         <HomeProduct
@@ -68,7 +120,7 @@ export default async function Home() {
           title="CAMISA ESSENTIAL PERFORADA"
           description="Tejido calado de algodón. Cuello abierto tipo resort. Frescura y elegancia relajada."
           linkTitle="Descubrir Más"
-          link="/products"
+          link="/products/692a41f813ad12598ac559d8"
         />
 
         <HomeProduct
@@ -77,42 +129,17 @@ export default async function Home() {
           title="SET ESSENTIAL TEXTURADO"
           description="Algodón texturado de tacto suave. Silueta relajada.Versatilidad absoluta."
           linkTitle="Ver Más"
-          link="/products"
+          link="/products/692872216e8daddf1277cb57"
         />
       </div>
 
       {/* Slider de Productos */}
-      <HomeProductSlider>
-        <HomeProduct
-          width="w-[100vw] md:w-[50vw]"
-          imageSrc="/assets/clothes4.jpg"
-          altText="Clothes 4"
-          title="SET WAFFLE ESSENTIAL"
-          description="Algodón waffle texturado. Silueta relajada. El uniforme del verano contemporáneo."
-          linkTitle="Descubrir Más"
-          link="/products"
-        />
 
-        <HomeProduct
-          width="w-[100vw] md:w-[50vw]"
-          imageSrc="/assets/clothes3.jpg"
-          altText="Clothes 3"
-          title="MUSCULOSA RELAXED ESSENTIAL"
-          description="Algodón texturado. Silueta cómoda. Estilo minimal para uso diario."
-          linkTitle="Descubrir Más"
-          link="/products"
-        />
-
-        <HomeProduct
-          width="w-[100vw] md:w-[50vw]"
-          imageSrc="/assets/clothes5.jpg"
-          altText="Clothes 5"
-          title="REMERA ESSENTIAL TEXTURADA"
-          description="Algodón texturado de tacto suave. Silueta relajada. Diseño versátil para uso diario."
-          linkTitle="Ver Más"
-          link="/products"
-        />
-      </HomeProductSlider>
+      <HomeProductSlider
+        cardWidth="w-[100vw] md:w-[calc(100vw/3)]"
+        cardHeight="min-h-[100dvh]"
+        products={homeProducts}
+      />
 
       {/* Video  */}
       <div className="w-full h-[70vh] md:h-[100vh] min-h-[500px]">

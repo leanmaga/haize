@@ -1,4 +1,4 @@
-// app/api/products/[id]/route.js - ACTUALIZADO PARA INDUMENTARIA
+// app/api/products/[id]/route.js - ACTUALIZADO PARA VARIANTES COMBINADAS
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import Product from '@/models/Product';
@@ -12,13 +12,18 @@ export async function GET(request, { params }) {
 
     await connectDB();
 
-    const product = await Product.findById(id).lean({ virtuals: true });
+    const product = await Product.findById(id).lean();
 
     if (!product) {
       return NextResponse.json(
         { message: 'Producto no encontrado' },
-        { status: 404 }
+        { status: 404 },
       );
+    }
+
+    // Asegurar que variants existe
+    if (!product.variants) {
+      product.variants = [];
     }
 
     return NextResponse.json(product);
@@ -28,18 +33,18 @@ export async function GET(request, { params }) {
     if (error.name === 'CastError') {
       return NextResponse.json(
         { message: 'ID de producto inválido' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     return NextResponse.json(
       { message: 'Error al obtener producto' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
-// PUT para actualizar un producto - INDUMENTARIA
+// PUT para actualizar un producto
 export async function PUT(request, { params }) {
   try {
     const session = await getServerSession(authOptions);
@@ -62,7 +67,7 @@ export async function PUT(request, { params }) {
     if (!existingProduct) {
       return NextResponse.json(
         { message: 'Producto no encontrado' },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -78,7 +83,7 @@ export async function PUT(request, { params }) {
           message: 'Faltan campos obligatorios',
           missingFields,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -86,11 +91,11 @@ export async function PUT(request, { params }) {
     if (parseFloat(data.salePrice) <= 0) {
       return NextResponse.json(
         { message: 'El precio de venta debe ser mayor a 0' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // Validar categorías válidas para indumentaria
+    // Validar categorías válidas
     const validCategories = [
       'camisas',
       'remeras',
@@ -106,7 +111,7 @@ export async function PUT(request, { params }) {
           category: data.category,
           validCategories,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -119,10 +124,9 @@ export async function PUT(request, { params }) {
       featured: data.featured || false,
       isNew: data.isNew || false,
       season: data.season || 'todo-el-año',
-      stock: parseInt(data.stock) || 0,
     };
 
-    // Campos opcionales de indumentaria
+    // Campos opcionales
     if (data.brand !== undefined) {
       productData.brand = data.brand?.trim() || '';
     }
@@ -156,7 +160,36 @@ export async function PUT(request, { params }) {
       productData.tags = Array.isArray(data.tags) ? data.tags : [];
     }
 
-    // Variantes de talle
+    // ✅ VARIANTES COMBINADAS (SISTEMA NUEVO)
+    if (data.variants !== undefined) {
+      productData.variants = Array.isArray(data.variants)
+        ? data.variants
+            .filter((v) => v.size && v.color) // Solo variantes con talle y color
+            .map((v) => ({
+              size: v.size,
+              color: v.color,
+              colorHex: v.colorHex || '#808080',
+              stock: parseInt(v.stock) || 0,
+              sku: v.sku || '',
+            }))
+        : [];
+
+      // Calcular stock total desde variantes
+      if (productData.variants.length > 0) {
+        productData.stock = productData.variants.reduce(
+          (total, v) => total + v.stock,
+          0,
+        );
+      } else if (data.stock !== undefined) {
+        // Si no hay variantes, usar stock manual
+        productData.stock = parseInt(data.stock) || 0;
+      }
+    } else if (data.stock !== undefined) {
+      // Si no se enviaron variantes, usar stock manual
+      productData.stock = parseInt(data.stock) || 0;
+    }
+
+    // Variantes de talle (SISTEMA ANTIGUO - backward compatibility)
     if (data.sizes !== undefined) {
       productData.sizes = Array.isArray(data.sizes)
         ? data.sizes
@@ -169,7 +202,7 @@ export async function PUT(request, { params }) {
         : [];
     }
 
-    // Variantes de color
+    // Variantes de color (SISTEMA ANTIGUO - backward compatibility)
     if (data.colors !== undefined) {
       productData.colors = Array.isArray(data.colors)
         ? data.colors
@@ -189,7 +222,7 @@ export async function PUT(request, { params }) {
       productData.imageUrl = data.imageUrl;
     }
 
-    // Información adicional de Cloudinary para imagen principal
+    // Información adicional de Cloudinary
     if (data.imageCloudinaryInfo) {
       productData.imageCloudinaryInfo = {
         publicId: data.imageCloudinaryInfo.publicId,
@@ -241,7 +274,6 @@ export async function PUT(request, { params }) {
 
     // SKU
     if (data.sku !== undefined) {
-      // Solo actualizar SKU si se proporciona y es diferente
       if (data.sku && data.sku !== existingProduct.sku) {
         // Verificar que no exista otro producto con ese SKU
         const duplicateSku = await Product.findOne({
@@ -252,27 +284,26 @@ export async function PUT(request, { params }) {
         if (duplicateSku) {
           return NextResponse.json(
             { message: 'Ya existe otro producto con ese SKU' },
-            { status: 400 }
+            { status: 400 },
           );
         }
 
         productData.sku = data.sku;
       } else if (!data.sku) {
-        // Si se envía vacío, no actualizar
         delete productData.sku;
       }
     }
 
     console.log(
       '💾 Actualizando con datos:',
-      JSON.stringify(productData, null, 2)
+      JSON.stringify(productData, null, 2),
     );
 
     // Actualizar el producto
     const updatedProduct = await Product.findByIdAndUpdate(id, productData, {
-      new: true, // Devuelve el documento actualizado
-      runValidators: true, // Ejecuta las validaciones del modelo
-    }).lean({ virtuals: true });
+      new: true,
+      runValidators: true,
+    }).lean();
 
     console.log('✅ Producto actualizado exitosamente');
 
@@ -284,7 +315,6 @@ export async function PUT(request, { params }) {
     console.error('❌ Error al actualizar producto:', error);
     console.error('Stack:', error.stack);
 
-    // Manejo de errores más específico
     if (error.name === 'ValidationError') {
       const validationErrors = {};
       Object.keys(error.errors).forEach((field) => {
@@ -296,22 +326,21 @@ export async function PUT(request, { params }) {
           message: 'Error de validación',
           validationErrors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (error.name === 'CastError') {
       return NextResponse.json(
         { message: 'ID de producto inválido' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // Error de SKU duplicado
     if (error.code === 11000) {
       return NextResponse.json(
         { message: 'Ya existe un producto con ese SKU' },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -320,7 +349,7 @@ export async function PUT(request, { params }) {
         message: 'Error al actualizar producto',
         error: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -344,7 +373,7 @@ export async function DELETE(request, { params }) {
     if (!product) {
       return NextResponse.json(
         { message: 'Producto no encontrado' },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -360,7 +389,7 @@ export async function DELETE(request, { params }) {
     if (error.name === 'CastError') {
       return NextResponse.json(
         { message: 'ID de producto inválido' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -369,7 +398,7 @@ export async function DELETE(request, { params }) {
         message: 'Error al eliminar producto',
         error: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

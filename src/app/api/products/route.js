@@ -1,9 +1,9 @@
-// app/api/products/route.js - ACTUALIZADO PARA INDUMENTARIA
+// app/api/products/route.js - ACTUALIZADO PARA VARIANTES COMBINADAS
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import { authOptions } from '@/lib/auth';
 import { getServerSession } from 'next-auth/next';
-import Product from '@/models/Product'; // ✅ Importar el modelo actualizado
+import Product from '@/models/Product';
 
 export async function GET(request) {
   try {
@@ -72,7 +72,7 @@ export async function GET(request) {
       .sort({ featured: -1, createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .lean({ virtuals: true });
+      .lean();
 
     // Obtener filtros únicos
     const [categories, brands, seasons] = await Promise.all([
@@ -105,7 +105,7 @@ export async function GET(request) {
             ? error.message
             : 'Error interno',
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -118,13 +118,9 @@ export async function POST(request) {
       return NextResponse.json({ message: 'No autorizado' }, { status: 403 });
     }
 
-    console.log('🔵 Iniciando POST /api/products');
-
     await connectDB();
-    console.log('✅ Conectado a MongoDB');
 
     const data = await request.json();
-    console.log('📝 Datos recibidos:', JSON.stringify(data, null, 2));
 
     // Validar campos requeridos
     if (!data.title || !data.salePrice || !data.category || !data.imageUrl) {
@@ -134,13 +130,12 @@ export async function POST(request) {
       if (!data.category) missingFields.push('category');
       if (!data.imageUrl) missingFields.push('imageUrl');
 
-      console.log('❌ Faltan campos requeridos:', missingFields);
       return NextResponse.json(
         {
           error: 'Faltan campos requeridos',
           missingFields,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -154,14 +149,13 @@ export async function POST(request) {
     ];
 
     if (!validCategories.includes(data.category)) {
-      console.log('❌ Categoría inválida:', data.category);
       return NextResponse.json(
         {
           error: 'Categoría no válida',
           category: data.category,
           validCategories,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -192,7 +186,10 @@ export async function POST(request) {
       careInstructions: data.careInstructions || [],
       tags: data.tags || [],
 
-      // Variantes
+      // ✅ VARIANTES COMBINADAS (SISTEMA NUEVO)
+      variants: data.variants || [],
+
+      // Variantes separadas (SISTEMA ANTIGUO - backward compatibility)
       sizes: data.sizes || [],
       colors: data.colors || [],
 
@@ -201,13 +198,37 @@ export async function POST(request) {
       additionalImages: data.additionalImages || [],
     };
 
-    console.log('🔨 Creando producto...');
+    // ✅ Si se enviaron variantes combinadas, procesar y filtrar
+    if (data.variants && Array.isArray(data.variants)) {
+      productData.variants = data.variants
+        .filter((v) => v.size && v.color) // Solo variantes con talle y color
+        .map((v) => ({
+          size: v.size,
+          color: v.color,
+          colorHex: v.colorHex || '#808080',
+          stock: parseInt(v.stock) || 0,
+          sku: v.sku || '',
+        }));
+
+      // Calcular stock total desde variantes
+      if (productData.variants.length > 0) {
+        productData.stock = productData.variants.reduce(
+          (total, v) => total + v.stock,
+          0,
+        );
+      }
+    }
+
+    console.log(
+      '📦 Creando producto con datos:',
+      JSON.stringify(productData, null, 2),
+    );
+
     const product = new Product(productData);
 
     // Validar antes de guardar
     const validationError = product.validateSync();
     if (validationError) {
-      console.log('❌ Error de validación:', validationError.errors);
       const errors = {};
       Object.keys(validationError.errors).forEach((key) => {
         errors[key] = validationError.errors[key].message;
@@ -218,14 +239,13 @@ export async function POST(request) {
           error: 'Error de validación',
           validationErrors: errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    console.log('💾 Guardando producto...');
     await product.save();
 
-    console.log('✅ Producto guardado exitosamente:', product._id);
+    console.log('✅ Producto creado con ID:', product._id);
 
     return NextResponse.json(
       {
@@ -233,7 +253,7 @@ export async function POST(request) {
         product,
         message: 'Producto creado exitosamente',
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error('❌ Error al crear producto:', error);
@@ -251,7 +271,7 @@ export async function POST(request) {
           error: 'Error de validación',
           validationErrors: errors,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -262,7 +282,7 @@ export async function POST(request) {
           error: 'Ya existe un producto con ese SKU',
           duplicateField: Object.keys(error.keyPattern)[0],
         },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -271,7 +291,7 @@ export async function POST(request) {
         error: 'Error al crear producto',
         message: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

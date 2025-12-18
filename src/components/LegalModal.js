@@ -35,7 +35,7 @@ const LegalModal = ({ isOpen, onClose, title, content }) => {
           <button
             onClick={onClose}
             className="px-4 py-2 text-sm font-medium text-white rounded-md hover:opacity-90 focus:outline-none font-drop transition-opacity"
-            style={{ backgroundColor: '#FAC348' }}
+            style={{ backgroundColor: '#000000' }}
           >
             Cerrar
           </button>

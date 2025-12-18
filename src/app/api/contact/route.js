@@ -45,7 +45,7 @@ export async function POST(request) {
     ) {
       return NextResponse.json(
         { error: 'Todos los campos obligatorios deben ser completados' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -54,7 +54,7 @@ export async function POST(request) {
     if (!emailRegex.test(email)) {
       return NextResponse.json(
         { error: 'El formato del email no es válido' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -74,7 +74,6 @@ export async function POST(request) {
     };
 
     const newContact = await Contact.create(contactData);
-    console.log('✅ Consulta guardada en MongoDB:', newContact._id);
 
     // Enviar email de notificación si Resend está configurado
     if (resend) {
@@ -157,16 +156,13 @@ export async function POST(request) {
             </html>
           `,
         });
-        console.log('✅ Email de notificación enviado a:', NOTIFICATION_EMAIL);
       } catch (emailError) {
         console.error(
           '⚠️ Error al enviar email (la consulta se guardó igual):',
-          emailError
+          emailError,
         );
         // No fallamos la request si el email falla - la consulta ya está guardada
       }
-    } else {
-      console.log('⚠️ Resend no configurado - email no enviado');
     }
 
     return NextResponse.json(
@@ -175,13 +171,13 @@ export async function POST(request) {
         message: 'Consulta enviada exitosamente',
         id: newContact._id,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error('❌ Error al procesar formulario de contacto:', error);
     return NextResponse.json(
       { error: 'Error interno del servidor' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -244,7 +240,7 @@ export async function GET(request) {
     console.error('❌ Error al obtener consultas:', error);
     return NextResponse.json(
       { error: 'Error interno del servidor' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -258,7 +254,7 @@ export async function PATCH(request) {
     if (!id) {
       return NextResponse.json(
         { error: 'ID de consulta requerido' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -275,7 +271,7 @@ export async function PATCH(request) {
     if (!updatedContact) {
       return NextResponse.json(
         { error: 'Consulta no encontrada' },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -287,7 +283,7 @@ export async function PATCH(request) {
     console.error('❌ Error al actualizar consulta:', error);
     return NextResponse.json(
       { error: 'Error interno del servidor' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -301,7 +297,7 @@ export async function DELETE(request) {
     if (!id) {
       return NextResponse.json(
         { error: 'ID de consulta requerido' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -312,7 +308,7 @@ export async function DELETE(request) {
     if (!deletedContact) {
       return NextResponse.json(
         { error: 'Consulta no encontrada' },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -324,7 +320,7 @@ export async function DELETE(request) {
     console.error('❌ Error al eliminar consulta:', error);
     return NextResponse.json(
       { error: 'Error interno del servidor' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -23,6 +23,7 @@ export default function ProductCard({ product }) {
             src={product.imageUrl || '/assets/placeholder.jpg'}
             alt={product.title}
             fill
+            sizes="(max-width: 768px) 260px, 260px"
             className="object-cover object-center"
           />
 

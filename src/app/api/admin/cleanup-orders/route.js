@@ -1,16 +1,16 @@
 // src/app/api/admin/cleanup-orders/route.js - NUEVA API
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
-import connectDB from "@/lib/db";
-import Order from "@/models/Order";
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
+import connectDB from '@/lib/mongodb';
+import Order from '@/models/Order';
 
 export async function POST(request) {
   try {
     // Solo admins pueden ejecutar la limpieza
     const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== "admin") {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
     }
 
     await connectDB();
@@ -22,28 +22,28 @@ export async function POST(request) {
     // Cancelar órdenes pendientes de más de 30 minutos
     const pendingResult = await Order.updateMany(
       {
-        status: { $in: ["pendiente", "whatsapp_pendiente"] },
+        status: { $in: ['pendiente', 'whatsapp_pendiente'] },
         createdAt: { $lt: thirtyMinutesAgo },
         // Asegurar que no tengan ya info de cancelación
-        "paymentDetails.cancelledAt": { $exists: false },
+        'paymentDetails.cancelledAt': { $exists: false },
       },
       {
-        status: "cancelado",
+        status: 'cancelado',
         $set: {
-          "paymentDetails.cancelledReason":
-            "Timeout automático - 30 minutos sin pago",
-          "paymentDetails.cancelledAt": new Date(),
+          'paymentDetails.cancelledReason':
+            'Timeout automático - 30 minutos sin pago',
+          'paymentDetails.cancelledAt': new Date(),
         },
-      }
+      },
     );
 
     // Obtener estadísticas actualizadas
     const stats = await Order.aggregate([
       {
         $group: {
-          _id: "$status",
+          _id: '$status',
           count: { $sum: 1 },
-          totalAmount: { $sum: "$totalAmount" },
+          totalAmount: { $sum: '$totalAmount' },
         },
       },
     ]);
@@ -57,10 +57,10 @@ export async function POST(request) {
       message: `Limpieza completada: ${pendingResult.modifiedCount} órdenes canceladas`,
     });
   } catch (error) {
-    console.error("Error en limpieza de órdenes:", error);
+    console.error('Error en limpieza de órdenes:', error);
     return NextResponse.json(
-      { error: "Error al ejecutar limpieza" },
-      { status: 500 }
+      { error: 'Error al ejecutar limpieza' },
+      { status: 500 },
     );
   }
 }
@@ -69,8 +69,8 @@ export async function POST(request) {
 export async function GET(request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== "admin") {
-      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
     }
 
     await connectDB();
@@ -80,18 +80,18 @@ export async function GET(request) {
 
     // Contar órdenes que necesitan limpieza
     const pendingToCancel = await Order.countDocuments({
-      status: { $in: ["pendiente", "whatsapp_pendiente"] },
+      status: { $in: ['pendiente', 'whatsapp_pendiente'] },
       createdAt: { $lt: thirtyMinutesAgo },
-      "paymentDetails.cancelledAt": { $exists: false },
+      'paymentDetails.cancelledAt': { $exists: false },
     });
 
     // Estadísticas generales
     const stats = await Order.aggregate([
       {
         $group: {
-          _id: "$status",
+          _id: '$status',
           count: { $sum: 1 },
-          totalAmount: { $sum: "$totalAmount" },
+          totalAmount: { $sum: '$totalAmount' },
         },
       },
     ]);
@@ -103,10 +103,10 @@ export async function GET(request) {
       currentStats: stats,
     });
   } catch (error) {
-    console.error("Error obteniendo estadísticas:", error);
+    console.error('Error obteniendo estadísticas:', error);
     return NextResponse.json(
-      { error: "Error al obtener estadísticas" },
-      { status: 500 }
+      { error: 'Error al obtener estadísticas' },
+      { status: 500 },
     );
   }
 }

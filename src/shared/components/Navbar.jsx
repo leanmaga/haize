@@ -34,7 +34,7 @@ const Navbar = () => {
 
   const cartItemsCount = cartItems.reduce(
     (acc, item) => acc + item.quantity,
-    0
+    0,
   );
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -186,7 +186,7 @@ const Navbar = () => {
                         onClick={() =>
                           setIsProfileDropdownOpen(!isProfileDropdownOpen)
                         }
-                        className="flex items-center space-x-1 focus:outline-none"
+                        className="flex items-center space-x-1 focus:outline-none cursor-pointer"
                         aria-label="Menu de usuario"
                       >
                         {session?.user?.image &&
@@ -218,26 +218,28 @@ const Navbar = () => {
                               {session.user.email}
                             </p>
                           </div>
-                          <div className="py-1">
-                            <Link
-                              href="/profile"
-                              className="block px-4 py-2.5 text-sm hover:bg-white/10 transition"
-                            >
-                              Mi Perfil
-                            </Link>
-                            <Link
-                              href="/profile/orders"
-                              className="block px-4 py-2.5 text-sm hover:bg-white/10 transition"
-                            >
-                              Mis Pedidos
-                            </Link>
-                            <Link
-                              href="/profile/settings"
-                              className="block px-4 py-2.5 text-sm hover:bg-white/10 transition"
-                            >
-                              Configuración
-                            </Link>
-                          </div>
+                          {!isAdmin && (
+                            <div className="py-1">
+                              <Link
+                                href="/profile"
+                                className="block px-4 py-2.5 text-sm hover:bg-white/10 transition"
+                              >
+                                Mi Perfil
+                              </Link>
+                              <Link
+                                href="/profile/orders"
+                                className="block px-4 py-2.5 text-sm hover:bg-white/10 transition"
+                              >
+                                Mis Pedidos
+                              </Link>
+                              <Link
+                                href="/profile/settings"
+                                className="block px-4 py-2.5 text-sm hover:bg-white/10 transition"
+                              >
+                                Configuración
+                              </Link>
+                            </div>
+                          )}
                           <div className="border-t border-white/10 bg-white/5">
                             <button
                               onClick={handleSignOut}
