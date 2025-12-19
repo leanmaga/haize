@@ -1,4 +1,4 @@
-// api/mercadopago/webhook/route.js - WEBHOOK CORREGIDO CON EMAILS
+// api/mercadopago/webhook/route.js - WEBHOOK CON DESCUENTO DE STOCK
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import Order from '@/models/Order';
@@ -7,6 +7,7 @@ import crypto from 'crypto';
 import { getPaymentById } from '@/lib/mercadopago';
 import { sendPaymentConfirmedEmails } from '@/lib/order-emails';
 import { verifyEmailConfig } from '@/lib/email-config';
+import { reduceStockForOrder } from '@/lib/stock-helper'; // 🆕 NUEVO IMPORT
 
 // Función para verificar firma del webhook (opcional pero recomendada)
 function verifyWebhookSignature(rawBody, signature) {
@@ -36,9 +37,6 @@ function verifyWebhookSignature(rawBody, signature) {
 export async function POST(request) {
   const startTime = Date.now();
   const requestId = crypto.randomUUID().substring(0, 8);
-
-  // Log de headers para debugging
-  const headers = Object.fromEntries(request.headers.entries());
 
   try {
     // 1. Leer el body
@@ -207,7 +205,56 @@ export async function POST(request) {
         statusHistory: order.paymentDetails?.statusHistory || [],
       };
 
-      // 13. ENVIAR EMAILS DE CONFIRMACIÓN
+      // 🆕 13. DESCONTAR STOCK DE LOS PRODUCTOS
+      console.log(`📦 [${requestId}] Descontando stock de productos...`);
+      let stockResults = null;
+      try {
+        stockResults = await reduceStockForOrder(order);
+
+        console.log(`📦 [${requestId}] Resultado descuento de stock:`, {
+          success: stockResults.success,
+          updatedProducts: stockResults.updatedProducts.length,
+          errors: stockResults.errors.length,
+        });
+
+        // Guardar info de stock en la orden
+        order.stockReduction = {
+          timestamp: new Date(),
+          success: stockResults.success,
+          updatedProducts: stockResults.updatedProducts,
+          errors:
+            stockResults.errors.length > 0 ? stockResults.errors : undefined,
+          requestId: requestId,
+        };
+
+        if (stockResults.success && stockResults.errors.length === 0) {
+          console.log(`✅ [${requestId}] Stock descontado exitosamente`);
+        } else if (stockResults.errors.length > 0) {
+          console.warn(
+            `⚠️ [${requestId}] Descuento de stock con advertencias:`,
+            {
+              errors: stockResults.errors,
+            },
+          );
+        }
+      } catch (stockError) {
+        console.error(`❌ [${requestId}] Error crítico descontando stock:`, {
+          message: stockError.message,
+          stack: stockError.stack,
+        });
+
+        // Guardar el error en la orden para debugging
+        order.stockReduction = {
+          timestamp: new Date(),
+          success: false,
+          error: stockError.message,
+          stack: stockError.stack,
+          requestId: requestId,
+        };
+        // NO fallar el webhook por errores de stock
+      }
+
+      // 14. ENVIAR EMAILS DE CONFIRMACIÓN
       let emailResults = null;
       try {
         console.log(`📧 [${requestId}] Enviando emails de confirmación...`);
@@ -266,17 +313,18 @@ export async function POST(request) {
         };
       }
 
-      // 14. Agregar al historial de cambios de estado
+      // 15. Agregar al historial de cambios de estado
       order.paymentDetails.statusHistory.push({
         from: previousStatus,
         to: order.status,
         timestamp: new Date(),
         paymentId: paymentId,
         emailsSent: emailResults?.success || false,
+        stockReduced: stockResults?.success || false,
         requestId: requestId,
       });
 
-      // 15. Guardar la orden
+      // 16. Guardar la orden
       await order.save();
 
       const processingTime = Date.now() - startTime;
@@ -290,6 +338,11 @@ export async function POST(request) {
         orderId: order._id,
         previousStatus,
         newStatus: order.status,
+        stockReduced: stockResults?.success || false,
+        stockDetails: {
+          updatedProducts: stockResults?.updatedProducts?.length || 0,
+          errors: stockResults?.errors?.length || 0,
+        },
         emailsSent: emailResults?.success || false,
         emailDetails: {
           customer: emailResults?.customerResult?.success || false,
