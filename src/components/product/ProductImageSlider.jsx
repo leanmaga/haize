@@ -1,12 +1,13 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ArrowsPointingOutIcon,
-} from "@heroicons/react/24/outline";
+} from '@heroicons/react/24/outline';
+import ShareButton from '@/shared/components/ShareButton.jsx';
 
 export default function ProductImageSlider({ images, product }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -38,32 +39,32 @@ export default function ProductImageSlider({ images, product }) {
 
       // Añadir placeholder si no hay imágenes
       if (imagesList.length === 0) {
-        imagesList = ["/placeholder.png"];
+        imagesList = ['/placeholder.png'];
       }
 
       // Verificar que todas las URLs sean válidas
       const validImagesList = imagesList.filter((url) => {
-        return typeof url === "string" && url.length > 0;
+        return typeof url === 'string' && url.length > 0;
       });
 
       setImagesArray(validImagesList);
     } catch (err) {
-      console.error("Error processing images:", err);
-      setError("Error al cargar las imágenes");
-      setImagesArray(["/placeholder.png"]);
+      console.error('Error processing images:', err);
+      setError('Error al cargar las imágenes');
+      setImagesArray(['/placeholder.png']);
     }
   }, [images, product]);
 
   // Navegación
   const goToNext = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === imagesArray.length - 1 ? 0 : prevIndex + 1
+      prevIndex === imagesArray.length - 1 ? 0 : prevIndex + 1,
     );
   };
 
   const goToPrev = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? imagesArray.length - 1 : prevIndex - 1
+      prevIndex === 0 ? imagesArray.length - 1 : prevIndex - 1,
     );
   };
 
@@ -90,23 +91,23 @@ export default function ProductImageSlider({ images, product }) {
   // Navegación con teclado
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === "ArrowLeft") {
+      if (e.key === 'ArrowLeft') {
         goToPrev();
-      } else if (e.key === "ArrowRight") {
+      } else if (e.key === 'ArrowRight') {
         goToNext();
-      } else if (e.key === "Escape" && isZoomed) {
+      } else if (e.key === 'Escape' && isZoomed) {
         setIsZoomed(false);
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isZoomed]);
 
   // Formato de contador 01/15 - estilo drop.com
-  const imagePosition = `${String(currentIndex + 1).padStart(2, "0")}/${String(
-    imagesArray.length
-  ).padStart(2, "0")}`;
+  const imagePosition = `${String(currentIndex + 1).padStart(2, '0')}/${String(
+    imagesArray.length,
+  ).padStart(2, '0')}`;
 
   // Mostrar indicador de carga mientras las imágenes se preparan
   if (error) {
@@ -130,19 +131,19 @@ export default function ProductImageSlider({ images, product }) {
       {/* Contenedor principal de la imagen */}
       <div
         className={`relative overflow-hidden rounded-lg ${
-          isZoomed ? "cursor-zoom-out" : "cursor-zoom-in"
+          isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'
         }`}
-        style={{ height: "500px" }}
+        style={{ height: '500px' }}
         onClick={toggleZoom}
         onMouseMove={handleMouseMove}
       >
         {/* Imagen actual */}
         <div className="absolute inset-0 bg-gray-50">
           <Image
-            src={imagesArray[currentIndex] || "/placeholder.png"}
+            src={imagesArray[currentIndex] || '/placeholder.png'}
             alt={`Imagen del producto ${currentIndex + 1}`}
             className={`object-contain transition-transform duration-300 ${
-              isZoomed ? "scale-150" : "scale-100"
+              isZoomed ? 'scale-150' : 'scale-100'
             }`}
             style={
               isZoomed
@@ -161,11 +162,18 @@ export default function ProductImageSlider({ images, product }) {
             e.stopPropagation();
             toggleZoom();
           }}
-          className="absolute top-2 right-2 bg-white/80 rounded-full p-2 shadow hover:bg-white transition-colors z-10"
-          aria-label={isZoomed ? "Reducir zoom" : "Ampliar zoom"}
+          className="absolute top-2 right-2 bg-white/80 rounded-full p-2 shadow hover:bg-white transition-colors z-10 cursor-pointer"
+          aria-label={isZoomed ? 'Reducir zoom' : 'Ampliar zoom'}
         >
           <ArrowsPointingOutIcon className="h-5 w-5 text-gray-800" />
         </button>
+
+        {/* Botón de compartir */}
+        <ShareButton
+          title={product?.title || 'Producto'}
+          text={`Mira este producto: ${product?.title || ''}`}
+          className="absolute top-16 right-2"
+        />
 
         {/* Contador de imágenes - Estilo drop.com */}
         {imagesArray.length > 1 && (
@@ -205,25 +213,27 @@ export default function ProductImageSlider({ images, product }) {
       {/* Miniaturas - Estilo drop.com */}
       {imagesArray.length > 1 && (
         <div className="mt-4 relative">
-          <div className="flex space-x-2 overflow-x-auto scrollbar-hide">
+          <div className="p-8 flex items-center space-x-4 overflow-x-auto scrollbar-hide">
             {imagesArray.map((image, index) => (
               <div
                 key={`thumb-${index}`}
                 onClick={() => goToSlide(index)}
-                className={`relative flex-shrink-0 cursor-pointer rounded-md overflow-hidden transition-all
+                className={`relative flex-shrink-0 cursor-pointer rounded-md transition-all
                   ${
                     currentIndex === index
-                      ? "ring-2 ring-black h-20 w-20"
-                      : "border border-gray-200 h-16 w-16 opacity-70 hover:opacity-100"
+                      ? 'shadow-[0px_13px_27px_-5px_rgba(50,50,93,0.25),0px_8px_16px_-8px_rgba(0,0,0,0.3)] z-10 size-20'
+                      : 'size-15 opacity-60 hover:opacity-100'
                   }`}
               >
-                <Image
-                  src={image || "/placeholder.png"}
-                  alt={`Miniatura ${index + 1}`}
-                  className="object-cover"
-                  fill
-                  sizes="80px"
-                />
+                <div className="rounded-md overflow-hidden w-full h-full relative">
+                  <Image
+                    src={image || '/placeholder.png'}
+                    alt={`Miniatura ${index + 1}`}
+                    className="object-cover"
+                    fill
+                    sizes="80px"
+                  />
+                </div>
               </div>
             ))}
           </div>
