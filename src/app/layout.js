@@ -30,7 +30,7 @@ export const metadata = {
     siteName: 'HAIZE',
     images: [
       {
-        url: '/og-image.jpg', // Deberás crear esta imagen
+        url: 'https://haize.com.ar/haizelogo.png',
         width: 1200,
         height: 630,
         alt: 'HAIZE - Moda Masculina Premium',
@@ -41,7 +41,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'HAIZE | Moda Masculina Premium',
     description: 'Ropa masculina de alta calidad con diseño minimalista.',
-    images: ['/og-image.jpg'],
+    images: ['https://haize.com.ar/haizelogo.png'],
   },
   robots: {
     index: true,
@@ -110,7 +110,7 @@ export default async function RootLayout({ children }) {
       'Tienda de moda masculina premium con diseño minimalista y estilo argentino',
     url: 'https://haize.com.ar',
     logo: 'https://haize.com.ar/icono/haize_HZ_favicon_256.png',
-    image: 'https://haize.com.ar/og-image.jpg',
+    image: 'https://haize.com.ar/haizelogo.png',
     address: {
       '@type': 'PostalAddress',
       addressCountry: 'AR',
