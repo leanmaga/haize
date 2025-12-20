@@ -7,6 +7,12 @@ import ProductDetailsSkeleton from '@/modules/products/product-details/ProductSk
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
   const product = await getProductById(resolvedParams.id);
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const url = `${baseUrl}/products/${resolvedParams.id}`;
+  const shareImageUrl = product.imageUrl.replace(
+    '/upload/',
+    '/upload/c_pad,w_1200,h_630,b_white,f_jpg/',
+  );
 
   if (!product) {
     return {
@@ -18,6 +24,19 @@ export async function generateMetadata({ params }) {
   return {
     title: `${product.title} | HAIZE`,
     description: product.description,
+    openGraph: {
+      title: product.title,
+      description: product.description,
+      url,
+      images: [{ url: shareImageUrl, width: 1200, height: 630 }],
+      type: 'product',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: product.title,
+      description: product.description,
+      images: [shareImageUrl],
+    },
   };
 }
 

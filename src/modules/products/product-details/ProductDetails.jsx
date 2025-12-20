@@ -10,31 +10,6 @@ import VariantSelector from '@/components/product/VariantSelector';
 import SameDayShipping from './components/SameDayShipping';
 import SizeGuideTable from '@/components/product/SizeGuideTable';
 
-export async function generateMetadata({ params }) {
-  const { id } = params;
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
-  const url = `${baseUrl}/products/${id}`;
-  const product = await getProductById(id);
-
-  return {
-    title: product.title,
-    description: product.description,
-    openGraph: {
-      title: product.title,
-      description: product.description,
-      url,
-      images: [{ url: product.imageUrl }],
-      type: 'product',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: product.title,
-      description: product.description,
-      images: [product.imageUrl],
-    },
-  };
-}
-
 export default async function ProductDetails({ params }) {
   // Extract id from params
   const { id } = params;
