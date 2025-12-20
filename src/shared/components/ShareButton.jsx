@@ -15,7 +15,7 @@ export default function ShareButton({ title, text, url, className }) {
     e.stopPropagation();
     const shareData = {
       title,
-      text,
+      text: `${text}\n\n`,
       url,
     };
 
