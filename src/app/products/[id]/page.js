@@ -7,12 +7,6 @@ import ProductDetailsSkeleton from '@/modules/products/product-details/ProductSk
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
   const product = await getProductById(resolvedParams.id);
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
-  const url = `${baseUrl}/products/${resolvedParams.id}`;
-  const shareImageUrl = product.imageUrl.replace(
-    '/upload/',
-    '/upload/c_pad,w_1200,h_630,b_white,f_jpg/',
-  );
 
   if (!product) {
     return {
@@ -20,6 +14,12 @@ export async function generateMetadata({ params }) {
       description: 'El producto que buscas no está disponible',
     };
   }
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  const url = `${baseUrl}/products/${resolvedParams.id}`;
+  const shareImageUrl = product.imageUrl.replace(
+    '/upload/',
+    '/upload/c_pad,w_1200,h_630,b_white,f_jpg/',
+  );
 
   return {
     title: `${product.title} | HAIZE`,
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }) {
       description: product.description,
       url,
       images: [{ url: shareImageUrl, width: 1200, height: 630 }],
-      type: 'product',
+      type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
