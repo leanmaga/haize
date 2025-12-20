@@ -18,7 +18,7 @@ export async function generateMetadata({ params }) {
   const url = `${baseUrl}/products/${resolvedParams.id}`;
   const shareImageUrl = product.imageUrl.replace(
     '/upload/',
-    '/upload/c_pad,w_1200,h_630,b_white,f_jpg/',
+    '/upload/c_pad,w_1200,h_630,b_gen_fill:blur,f_jpg/',
   );
 
   return {
@@ -28,7 +28,9 @@ export async function generateMetadata({ params }) {
       title: product.title,
       description: product.description,
       url,
-      images: [{ url: shareImageUrl, width: 1200, height: 630 }],
+      images: [
+        { url: shareImageUrl, width: 1200, height: 630, alt: product.title },
+      ],
       type: 'website',
     },
     twitter: {
