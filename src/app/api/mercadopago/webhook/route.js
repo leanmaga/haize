@@ -1,4 +1,4 @@
-// api/mercadopago/webhook/route.js - WEBHOOK CON DESCUENTO DE STOCK
+// api/mercadopago/webhook/route.js - WEBHOOK CON REDUCCIÓN AUTOMÁTICA DE STOCK
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import Order from '@/models/Order';
@@ -7,7 +7,7 @@ import crypto from 'crypto';
 import { getPaymentById } from '@/lib/mercadopago';
 import { sendPaymentConfirmedEmails } from '@/lib/order-emails';
 import { verifyEmailConfig } from '@/lib/email-config';
-import { reduceStockForOrder } from '@/lib/stock-helper'; // 🆕 NUEVO IMPORT
+import { reduceStockForOrder } from '@/lib/stock-utils'; // ← NUEVA IMPORTACIÓN
 
 // Función para verificar firma del webhook (opcional pero recomendada)
 function verifyWebhookSignature(rawBody, signature) {
@@ -191,7 +191,7 @@ export async function POST(request) {
         emailConfigCheck,
       );
 
-      // 12. Actualizar la orden
+      // 12. Actualizar el estado de la orden
       order.status = 'pagado';
       order.paymentId = paymentId;
 
@@ -205,53 +205,53 @@ export async function POST(request) {
         statusHistory: order.paymentDetails?.statusHistory || [],
       };
 
-      // 🆕 13. DESCONTAR STOCK DE LOS PRODUCTOS
-      console.log(`📦 [${requestId}] Descontando stock de productos...`);
+      // 🆕 13. REDUCIR STOCK DE LOS PRODUCTOS
       let stockResults = null;
       try {
+        console.log(`📦 [${requestId}] Reduciendo stock de productos...`);
+
         stockResults = await reduceStockForOrder(order);
 
-        console.log(`📦 [${requestId}] Resultado descuento de stock:`, {
+        console.log(`📦 [${requestId}] Resultado reducción de stock:`, {
           success: stockResults.success,
-          updatedProducts: stockResults.updatedProducts.length,
+          updated: stockResults.updated.length,
           errors: stockResults.errors.length,
         });
 
-        // Guardar info de stock en la orden
-        order.stockReduction = {
+        // Guardar información del stock en la orden
+        order.paymentDetails.stockReduction = {
           timestamp: new Date(),
           success: stockResults.success,
-          updatedProducts: stockResults.updatedProducts,
-          errors:
-            stockResults.errors.length > 0 ? stockResults.errors : undefined,
+          updatedProducts: stockResults.updated,
+          errors: stockResults.errors,
           requestId: requestId,
         };
 
-        if (stockResults.success && stockResults.errors.length === 0) {
-          console.log(`✅ [${requestId}] Stock descontado exitosamente`);
-        } else if (stockResults.errors.length > 0) {
-          console.warn(
-            `⚠️ [${requestId}] Descuento de stock con advertencias:`,
-            {
-              errors: stockResults.errors,
-            },
-          );
+        if (stockResults.success) {
+          console.log(`✅ [${requestId}] Stock reducido exitosamente`);
+        } else {
+          console.error(`❌ [${requestId}] Error reduciendo stock:`, {
+            errors: stockResults.errors,
+          });
+          // ⚠️ IMPORTANTE: Aunque falle la reducción de stock, continuamos
+          // El admin puede ajustar manualmente el stock después
         }
       } catch (stockError) {
-        console.error(`❌ [${requestId}] Error crítico descontando stock:`, {
+        console.error(`💥 [${requestId}] Error crítico reduciendo stock:`, {
           message: stockError.message,
           stack: stockError.stack,
         });
 
-        // Guardar el error en la orden para debugging
-        order.stockReduction = {
+        // Guardar el error en la orden
+        order.paymentDetails.stockError = {
           timestamp: new Date(),
-          success: false,
           error: stockError.message,
           stack: stockError.stack,
           requestId: requestId,
         };
-        // NO fallar el webhook por errores de stock
+
+        // ⚠️ No fallar el webhook por errores de stock
+        // El pago fue aprobado y el cliente debe recibir confirmación
       }
 
       // 14. ENVIAR EMAILS DE CONFIRMACIÓN
@@ -340,7 +340,7 @@ export async function POST(request) {
         newStatus: order.status,
         stockReduced: stockResults?.success || false,
         stockDetails: {
-          updatedProducts: stockResults?.updatedProducts?.length || 0,
+          updatedProducts: stockResults?.updated?.length || 0,
           errors: stockResults?.errors?.length || 0,
         },
         emailsSent: emailResults?.success || false,
