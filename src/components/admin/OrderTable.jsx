@@ -42,7 +42,7 @@ const OrderTable = ({ orders: initialOrders }) => {
   const indexOfFirstOrder = indexOfLastOrder - rowsPerPage;
   const currentOrders = filteredOrders.slice(
     indexOfFirstOrder,
-    indexOfLastOrder
+    indexOfLastOrder,
   );
 
   const totalPages = Math.ceil(filteredOrders.length / rowsPerPage);
@@ -52,7 +52,7 @@ const OrderTable = ({ orders: initialOrders }) => {
     try {
       setIsUpdating(true);
 
-      const response = await fetch(`/api/orders/${orderId}`, {
+      const response = await fetch(`/api/admin/orders/${orderId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -66,8 +66,8 @@ const OrderTable = ({ orders: initialOrders }) => {
 
       setOrders(
         orders.map((order) =>
-          order._id === orderId ? { ...order, status: newStatus } : order
-        )
+          order._id === orderId ? { ...order, status: newStatus } : order,
+        ),
       );
 
       toast.success('Estado del pedido actualizado correctamente');
@@ -196,8 +196,8 @@ const OrderTable = ({ orders: initialOrders }) => {
                         order.paymentMethod === 'whatsapp'
                           ? 'bg-green-100 text-green-800'
                           : order.paymentMethod === 'mercadopago'
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-gray-100 text-gray-800'
+                            ? 'bg-blue-100 text-blue-800'
+                            : 'bg-gray-100 text-gray-800'
                       }`}
                     >
                       {order.paymentMethod === 'whatsapp' ? (
@@ -218,14 +218,14 @@ const OrderTable = ({ orders: initialOrders }) => {
                           order.status === 'whatsapp_pendiente'
                             ? 'bg-green-100 text-green-800'
                             : order.status === 'pagado'
-                            ? 'bg-green-100 text-green-800'
-                            : order.status === 'pendiente'
-                            ? 'bg-gray-100 text-gray-800'
-                            : order.status === 'enviado'
-                            ? 'bg-blue-100 text-blue-800'
-                            : order.status === 'entregado'
-                            ? 'bg-indigo-100 text-indigo-800'
-                            : 'bg-red-100 text-red-800'
+                              ? 'bg-green-100 text-green-800'
+                              : order.status === 'pendiente'
+                                ? 'bg-gray-100 text-gray-800'
+                                : order.status === 'enviado'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : order.status === 'entregado'
+                                    ? 'bg-indigo-100 text-indigo-800'
+                                    : 'bg-red-100 text-red-800'
                         }`}
                       >
                         {order.status === 'whatsapp_pendiente'
