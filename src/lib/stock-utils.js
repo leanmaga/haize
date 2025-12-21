@@ -54,63 +54,66 @@ export async function reduceStockForOrder(order) {
       let stockInfo = '';
 
       // ========== SISTEMA NUEVO: VARIANTES COMBINADAS ==========
-      if (hasVariants && item.variant) {
-        const { size, color } = item.variant;
+      // Soportar tanto item.variant.size como item.size directamente
+      const itemSize = item.variant?.size || item.size;
+      const itemColor = item.variant?.color || item.color;
 
-        if (size && color) {
-          console.log(
-            `  🔍 [STOCK] Buscando variante: Talle ${size}, Color ${color}`,
-          );
+      if (hasVariants && itemSize && itemColor) {
+        const size = itemSize;
+        const color = itemColor;
 
-          // Buscar la variante específica
-          const variant = product.variants.find(
-            (v) => v.size === size && v.color === color,
-          );
+        console.log(
+          `  🔍 [STOCK] Buscando variante: Talle ${size}, Color ${color}`,
+        );
 
-          if (!variant) {
-            const error = `Variante ${size}/${color} no encontrada`;
-            console.error(`  ❌ [STOCK] ${error}`);
-            results.errors.push({
-              productId: product._id,
-              item: item.title,
-              variant: { size, color },
-              error,
-            });
-            results.success = false;
-            continue;
-          }
+        // Buscar la variante específica
+        const variant = product.variants.find(
+          (v) => v.size === size && v.color === color,
+        );
 
-          // Verificar stock disponible
-          if (variant.stock < item.quantity) {
-            const error = `Stock insuficiente: Disponible ${variant.stock}, Requerido ${item.quantity}`;
-            console.error(`  ❌ [STOCK] ${error}`);
-            results.errors.push({
-              productId: product._id,
-              item: item.title,
-              variant: { size, color },
-              availableStock: variant.stock,
-              requiredStock: item.quantity,
-              error,
-            });
-            results.success = false;
-            continue;
-          }
-
-          // Reducir stock de la variante
-          const previousStock = variant.stock;
-          variant.stock = Math.max(0, variant.stock - item.quantity);
-
-          // Recalcular stock total del producto
-          product.stock = product.variants.reduce(
-            (total, v) => total + v.stock,
-            0,
-          );
-
-          stockReduced = true;
-          stockInfo = `Variante ${size}/${color}: ${previousStock} → ${variant.stock}`;
-
-          console.log(`  ✅ [STOCK] ${stockInfo}`);
+        if (!variant) {
+          const error = `Variante ${size}/${color} no encontrada`;
+          console.error(`  ❌ [STOCK] ${error}`);
+          results.errors.push({
+            productId: product._id,
+            item: item.title,
+            variant: { size, color },
+            error,
+          });
+          results.success = false;
+          continue;
         }
+
+        // Verificar stock disponible
+        if (variant.stock < item.quantity) {
+          const error = `Stock insuficiente: Disponible ${variant.stock}, Requerido ${item.quantity}`;
+          console.error(`  ❌ [STOCK] ${error}`);
+          results.errors.push({
+            productId: product._id,
+            item: item.title,
+            variant: { size, color },
+            availableStock: variant.stock,
+            requiredStock: item.quantity,
+            error,
+          });
+          results.success = false;
+          continue;
+        }
+
+        // Reducir stock de la variante
+        const previousStock = variant.stock;
+        variant.stock = Math.max(0, variant.stock - item.quantity);
+
+        // Recalcular stock total del producto
+        product.stock = product.variants.reduce(
+          (total, v) => total + v.stock,
+          0,
+        );
+
+        stockReduced = true;
+        stockInfo = `Variante ${size}/${color}: ${previousStock} → ${variant.stock}`;
+
+        console.log(`  ✅ [STOCK] ${stockInfo}`);
       }
       // ========== SISTEMA ANTIGUO: SIZES SEPARADOS ==========
       else if (hasSizes && item.variant?.size) {
@@ -314,36 +317,39 @@ export async function restoreStockForOrder(order) {
       let stockInfo = '';
 
       // ========== SISTEMA NUEVO: VARIANTES COMBINADAS ==========
-      if (hasVariants && item.variant) {
-        const { size, color } = item.variant;
+      // Soportar tanto item.variant.size como item.size directamente
+      const itemSize = item.variant?.size || item.size;
+      const itemColor = item.variant?.color || item.color;
 
-        if (size && color) {
-          console.log(
-            `  🔍 [STOCK] Restaurando variante: Talle ${size}, Color ${color}`,
-          );
+      if (hasVariants && itemSize && itemColor) {
+        const size = itemSize;
+        const color = itemColor;
 
-          const variant = product.variants.find(
-            (v) => v.size === size && v.color === color,
-          );
+        console.log(
+          `  🔍 [STOCK] Restaurando variante: Talle ${size}, Color ${color}`,
+        );
 
-          if (!variant) {
-            const error = `Variante ${size}/${color} no encontrada`;
-            console.warn(`  ⚠️ [STOCK] ${error} - Se omitirá`);
-            continue;
-          }
+        const variant = product.variants.find(
+          (v) => v.size === size && v.color === color,
+        );
 
-          const previousStock = variant.stock;
-          variant.stock += item.quantity;
-          product.stock = product.variants.reduce(
-            (total, v) => total + v.stock,
-            0,
-          );
-
-          stockRestored = true;
-          stockInfo = `Variante ${size}/${color}: ${previousStock} → ${variant.stock}`;
-
-          console.log(`  ✅ [STOCK] ${stockInfo}`);
+        if (!variant) {
+          const error = `Variante ${size}/${color} no encontrada`;
+          console.warn(`  ⚠️ [STOCK] ${error} - Se omitirá`);
+          continue;
         }
+
+        const previousStock = variant.stock;
+        variant.stock += item.quantity;
+        product.stock = product.variants.reduce(
+          (total, v) => total + v.stock,
+          0,
+        );
+
+        stockRestored = true;
+        stockInfo = `Variante ${size}/${color}: ${previousStock} → ${variant.stock}`;
+
+        console.log(`  ✅ [STOCK] ${stockInfo}`);
       }
       // ========== SISTEMA ANTIGUO: SIZES ==========
       else if (hasSizes && item.variant?.size) {
