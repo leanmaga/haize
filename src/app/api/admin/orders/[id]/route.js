@@ -1,66 +1,51 @@
-// src/app/api/orders/[id]/route.js - CORREGIDO
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
-import connectDB from "@/lib/db";
-import Order from "@/models/Order";
-import User from "@/models/User";
-import { getPaymentsByExternalReference } from "@/lib/mercadopago";
-import { sendPaymentConfirmedEmails } from "@/lib/order-emails";
+// src/app/api/admin/orders/[id]/route.js - CON REDUCCIÓN DE STOCK
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
+import connectDB from '@/lib/db';
+import Order from '@/models/Order';
+import User from '@/models/User';
+import { getPaymentById } from '@/lib/mercadopago';
+import { sendPaymentConfirmedEmails } from '@/lib/order-emails';
+import { reduceStockForOrder, restoreStockForOrder } from '@/lib/stock-utils'; // ← NUEVA IMPORTACIÓN
 
+// GET para obtener detalles de una orden específica
 export async function GET(request, { params }) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ message: "No autorizado" }, { status: 401 });
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ message: 'No autorizado' }, { status: 403 });
     }
 
-    // ✅ CORRECTO: Await params antes de usar sus propiedades
+    // ✅ AWAIT params
     const { id: orderId } = await params;
 
-    // Validar que el ID existe
     if (!orderId) {
       return NextResponse.json(
-        { message: "ID de orden no proporcionado" },
-        { status: 400 }
+        { message: 'ID de orden no proporcionado' },
+        { status: 400 },
       );
     }
 
-    // Conectar a la base de datos
     await connectDB();
 
-    // Buscar la orden
-    const order = await Order.findById(orderId);
+    const order = await Order.findById(orderId).populate('user', 'name email');
+
     if (!order) {
       return NextResponse.json(
-        { message: "Orden no encontrada" },
-        { status: 404 }
+        { message: 'Orden no encontrada' },
+        { status: 404 },
       );
     }
 
-    // Verificar que la orden pertenezca al usuario (a menos que sea admin)
-    if (
-      session.user.role !== "admin" &&
-      order.user.toString() !== session.user.id
-    ) {
-      return NextResponse.json(
-        { message: "No autorizado para ver esta orden" },
-        { status: 403 }
-      );
-    }
-
-    // Si la orden tiene MercadoPago como método de pago, obtener detalles adicionales
+    // Intentar obtener detalles del pago de MercadoPago si existe
     let paymentDetails = null;
-    if (order.paymentMethod === "mercadopago" && order.paymentId) {
+    if (order.paymentId) {
       try {
-        const payments = await getPaymentsByExternalReference(
-          order._id.toString()
-        );
-        if (payments && payments.length > 0) {
-          paymentDetails = payments[0];
-        }
+        const paymentInfo = await getPaymentById(order.paymentId);
+        paymentDetails = paymentInfo;
       } catch (error) {
-        console.error("Error al obtener detalles del pago:", error);
+        console.error('Error al obtener detalles del pago:', error);
       }
     }
 
@@ -69,21 +54,21 @@ export async function GET(request, { params }) {
       paymentDetails,
     });
   } catch (error) {
-    console.error("Error al obtener orden:", error);
+    console.error('Error al obtener orden:', error);
     return NextResponse.json(
-      { message: "Error al obtener la orden: " + error.message },
-      { status: 500 }
+      { message: 'Error al obtener la orden: ' + error.message },
+      { status: 500 },
     );
   }
 }
 
-// PATCH para actualizar el estado de una orden (solo para admins) - CORREGIDO
+// PATCH para actualizar el estado de una orden (solo para admins)
 export async function PATCH(request, { params }) {
   try {
     // Verificar la sesión del usuario
     const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== "admin") {
-      return NextResponse.json({ message: "No autorizado" }, { status: 403 });
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ message: 'No autorizado' }, { status: 403 });
     }
 
     // ✅ CORRECCIÓN: Usar await params consistentemente
@@ -91,8 +76,8 @@ export async function PATCH(request, { params }) {
 
     if (!orderId) {
       return NextResponse.json(
-        { message: "ID de orden no proporcionado" },
-        { status: 400 }
+        { message: 'ID de orden no proporcionado' },
+        { status: 400 },
       );
     }
 
@@ -105,8 +90,8 @@ export async function PATCH(request, { params }) {
     const order = await Order.findById(orderId);
     if (!order) {
       return NextResponse.json(
-        { message: "Orden no encontrada" },
-        { status: 404 }
+        { message: 'Orden no encontrada' },
+        { status: 404 },
       );
     }
 
@@ -114,38 +99,86 @@ export async function PATCH(request, { params }) {
     const user = await User.findById(order.user);
     if (!user) {
       return NextResponse.json(
-        { message: "Usuario de la orden no encontrado" },
-        { status: 404 }
+        { message: 'Usuario de la orden no encontrado' },
+        { status: 404 },
       );
     }
 
     // Guardar el estado anterior
     const previousStatus = order.status;
     let emailResults = null;
+    let stockResults = null;
 
     // Actualizar el estado de la orden si se proporciona
     if (data.status) {
       // Validar que sea un estado permitido
       const validStatuses = [
-        "whatsapp_pendiente",
-        "pendiente",
-        "pagado",
-        "enviado",
-        "entregado",
-        "cancelado",
+        'whatsapp_pendiente',
+        'pendiente',
+        'pagado',
+        'enviado',
+        'entregado',
+        'cancelado',
       ];
 
       if (!validStatuses.includes(data.status)) {
         return NextResponse.json(
-          { message: "Estado no válido" },
-          { status: 400 }
+          { message: 'Estado no válido' },
+          { status: 400 },
         );
       }
 
       order.status = data.status;
 
-      // 🆕 ENVIAR EMAILS CUANDO EL ESTADO CAMBIA A "PAGADO"
-      if (data.status === "pagado" && previousStatus !== "pagado") {
+      // 🆕 REDUCIR STOCK CUANDO SE MARCA COMO "PAGADO"
+      if (data.status === 'pagado' && previousStatus !== 'pagado') {
+        try {
+          console.log(`📦 [ADMIN] Reduciendo stock para orden ${order._id}`);
+
+          stockResults = await reduceStockForOrder(order);
+
+          console.log(`📦 [ADMIN] Resultado reducción de stock:`, {
+            success: stockResults.success,
+            updated: stockResults.updated.length,
+            errors: stockResults.errors.length,
+          });
+
+          // Guardar información del stock en la orden
+          if (!order.paymentDetails) {
+            order.paymentDetails = {};
+          }
+
+          order.paymentDetails.stockReduction = {
+            timestamp: new Date(),
+            success: stockResults.success,
+            updatedProducts: stockResults.updated,
+            errors: stockResults.errors,
+            triggeredBy: session.user.email,
+            manualUpdate: true,
+          };
+
+          if (stockResults.success) {
+            console.log(`✅ [ADMIN] Stock reducido exitosamente`);
+          } else {
+            console.error(`❌ [ADMIN] Error reduciendo stock:`, {
+              errors: stockResults.errors,
+            });
+          }
+        } catch (stockError) {
+          console.error(`💥 [ADMIN] Error crítico reduciendo stock:`, {
+            message: stockError.message,
+            stack: stockError.stack,
+          });
+
+          // Guardar el error pero no fallar la actualización
+          order.paymentDetails.stockError = {
+            timestamp: new Date(),
+            error: stockError.message,
+            triggeredBy: session.user.email,
+          };
+        }
+
+        // ENVIAR EMAILS CUANDO EL ESTADO CAMBIA A "PAGADO"
         try {
           emailResults = await sendPaymentConfirmedEmails(order, user);
 
@@ -163,16 +196,71 @@ export async function PATCH(request, { params }) {
             };
           } else {
             console.error(
-              "❌ Error enviando emails tras cambio manual:",
-              emailResults
+              '❌ Error enviando emails tras cambio manual:',
+              emailResults,
             );
           }
         } catch (emailError) {
           console.error(
-            "❌ Error crítico enviando emails tras cambio manual:",
-            emailError
+            '❌ Error crítico enviando emails tras cambio manual:',
+            emailError,
           );
           // No fallar la actualización por errores de email
+        }
+      }
+
+      // 🆕 RESTAURAR STOCK SI SE CANCELA UNA ORDEN PAGADA
+      if (
+        data.status === 'cancelado' &&
+        (previousStatus === 'pagado' ||
+          previousStatus === 'enviado' ||
+          previousStatus === 'entregado')
+      ) {
+        try {
+          console.log(
+            `🔄 [ADMIN] Restaurando stock para orden cancelada ${order._id}`,
+          );
+
+          stockResults = await restoreStockForOrder(order);
+
+          console.log(`🔄 [ADMIN] Resultado restauración de stock:`, {
+            success: stockResults.success,
+            restored: stockResults.restored.length,
+            errors: stockResults.errors.length,
+          });
+
+          // Guardar información de la restauración
+          if (!order.paymentDetails) {
+            order.paymentDetails = {};
+          }
+
+          order.paymentDetails.stockRestoration = {
+            timestamp: new Date(),
+            success: stockResults.success,
+            restoredProducts: stockResults.restored,
+            errors: stockResults.errors,
+            triggeredBy: session.user.email,
+            reason: 'Order cancelled',
+          };
+
+          if (stockResults.success) {
+            console.log(`✅ [ADMIN] Stock restaurado exitosamente`);
+          } else {
+            console.error(`❌ [ADMIN] Error restaurando stock:`, {
+              errors: stockResults.errors,
+            });
+          }
+        } catch (stockError) {
+          console.error(`💥 [ADMIN] Error crítico restaurando stock:`, {
+            message: stockError.message,
+            stack: stockError.stack,
+          });
+
+          order.paymentDetails.stockRestorationError = {
+            timestamp: new Date(),
+            error: stockError.message,
+            triggeredBy: session.user.email,
+          };
         }
       }
     }
@@ -187,13 +275,15 @@ export async function PATCH(request, { params }) {
       timestamp: new Date(),
       changedBy: session.user.email,
       previousStatus,
+      stockReduced: stockResults?.success || false,
+      emailsSent: emailResults?.success || false,
     });
 
     await order.save();
 
     // Preparar respuesta
     const response = {
-      message: "Orden actualizada correctamente",
+      message: 'Orden actualizada correctamente',
       order,
       statusChange: {
         previous: previousStatus,
@@ -202,6 +292,16 @@ export async function PATCH(request, { params }) {
       },
     };
 
+    // Incluir resultados de stock si aplica
+    if (stockResults) {
+      response.stockResults = {
+        success: stockResults.success,
+        updated: stockResults.updated?.length || 0,
+        restored: stockResults.restored?.length || 0,
+        errors: stockResults.errors?.length || 0,
+      };
+    }
+
     // Incluir resultados de email si se enviaron
     if (emailResults) {
       response.emailResults = emailResults;
@@ -209,10 +309,10 @@ export async function PATCH(request, { params }) {
 
     return NextResponse.json(response);
   } catch (error) {
-    console.error("Error al actualizar la orden:", error);
+    console.error('Error al actualizar la orden:', error);
     return NextResponse.json(
       { message: `Error al actualizar la orden: ${error.message}` },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -220,8 +320,8 @@ export async function PATCH(request, { params }) {
 export async function DELETE(request, { params }) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== "admin") {
-      return NextResponse.json({ message: "No autorizado" }, { status: 403 });
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ message: 'No autorizado' }, { status: 403 });
     }
 
     // ✅ AWAIT params
@@ -229,8 +329,8 @@ export async function DELETE(request, { params }) {
 
     if (!orderId) {
       return NextResponse.json(
-        { message: "ID de orden no proporcionado" },
-        { status: 400 }
+        { message: 'ID de orden no proporcionado' },
+        { status: 400 },
       );
     }
 
@@ -239,38 +339,58 @@ export async function DELETE(request, { params }) {
     const order = await Order.findById(orderId);
     if (!order) {
       return NextResponse.json(
-        { message: "Orden no encontrada" },
-        { status: 404 }
+        { message: 'Orden no encontrada' },
+        { status: 404 },
       );
     }
 
     // Solo permitir cancelar órdenes que no estén entregadas
-    if (order.status === "entregado") {
+    if (order.status === 'entregado') {
       return NextResponse.json(
-        { message: "No se puede cancelar una orden entregada" },
-        { status: 400 }
+        { message: 'No se puede cancelar una orden entregada' },
+        { status: 400 },
       );
     }
 
-    order.status = "cancelado";
+    // 🆕 RESTAURAR STOCK SI LA ORDEN ESTABA PAGADA
+    const previousStatus = order.status;
+    if (previousStatus === 'pagado' || previousStatus === 'enviado') {
+      try {
+        console.log(
+          `🔄 [ADMIN] Restaurando stock para orden eliminada ${order._id}`,
+        );
+
+        const stockResults = await restoreStockForOrder(order);
+
+        console.log(`🔄 [ADMIN] Resultado restauración:`, {
+          success: stockResults.success,
+          restored: stockResults.restored.length,
+        });
+      } catch (stockError) {
+        console.error(`❌ [ADMIN] Error restaurando stock:`, stockError);
+        // Continuar con la cancelación aunque falle la restauración
+      }
+    }
+
+    order.status = 'cancelado';
     order.paymentDetails = {
       ...order.paymentDetails,
       cancelledBy: session.user.email,
       cancelledAt: new Date(),
-      cancelledReason: "Cancelado por administrador",
+      cancelledReason: 'Cancelado por administrador',
     };
 
     await order.save();
 
     return NextResponse.json({
-      message: "Orden cancelada correctamente",
+      message: 'Orden cancelada correctamente',
       order,
     });
   } catch (error) {
-    console.error("Error al cancelar la orden:", error);
+    console.error('Error al cancelar la orden:', error);
     return NextResponse.json(
       { message: `Error al cancelar la orden: ${error.message}` },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
