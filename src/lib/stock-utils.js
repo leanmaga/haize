@@ -18,7 +18,7 @@ export async function reduceStockForOrder(order) {
     errors: [],
   };
 
-  console.log(`📦 [STOCK] Reduciendo stock para orden ${order._id}`);
+  console.log(`[STOCK] Reduciendo stock para orden ${order._id}`);
 
   for (const item of order.items) {
     try {
@@ -33,7 +33,7 @@ export async function reduceStockForOrder(order) {
 
       if (!product) {
         const error = `Producto ${productId} no encontrado`;
-        console.error(`❌ [STOCK] ${error}`);
+        console.error(`[STOCK ERROR] ${error}`);
         results.errors.push({
           productId,
           item: item.title,
@@ -43,7 +43,7 @@ export async function reduceStockForOrder(order) {
         continue;
       }
 
-      console.log(`📦 [STOCK] Procesando producto: ${product.title}`);
+      console.log(`[STOCK] Procesando producto: ${product.title}`);
 
       // Determinar qué sistema de variantes usar
       const hasVariants = product.variants && product.variants.length > 0;
@@ -63,7 +63,7 @@ export async function reduceStockForOrder(order) {
         const color = itemColor;
 
         console.log(
-          `  🔍 [STOCK] Buscando variante: Talle ${size}, Color ${color}`,
+          `  [STOCK] Buscando variante: Talle ${size}, Color ${color}`,
         );
 
         // Buscar la variante específica
@@ -73,7 +73,7 @@ export async function reduceStockForOrder(order) {
 
         if (!variant) {
           const error = `Variante ${size}/${color} no encontrada`;
-          console.error(`  ❌ [STOCK] ${error}`);
+          console.error(`  [STOCK ERROR] ${error}`);
           results.errors.push({
             productId: product._id,
             item: item.title,
@@ -87,7 +87,7 @@ export async function reduceStockForOrder(order) {
         // Verificar stock disponible
         if (variant.stock < item.quantity) {
           const error = `Stock insuficiente: Disponible ${variant.stock}, Requerido ${item.quantity}`;
-          console.error(`  ❌ [STOCK] ${error}`);
+          console.error(`  [STOCK ERROR] ${error}`);
           results.errors.push({
             productId: product._id,
             item: item.title,
@@ -111,21 +111,21 @@ export async function reduceStockForOrder(order) {
         );
 
         stockReduced = true;
-        stockInfo = `Variante ${size}/${color}: ${previousStock} → ${variant.stock}`;
+        stockInfo = `Variante ${size}/${color}: ${previousStock} -> ${variant.stock}`;
 
-        console.log(`  ✅ [STOCK] ${stockInfo}`);
+        console.log(`  [STOCK SUCCESS] ${stockInfo}`);
       }
       // ========== SISTEMA ANTIGUO: SIZES SEPARADOS ==========
       else if (hasSizes && item.variant?.size) {
         const { size } = item.variant;
 
-        console.log(`  🔍 [STOCK] Buscando talle: ${size}`);
+        console.log(`  [STOCK] Buscando talle: ${size}`);
 
         const sizeVariant = product.sizes.find((s) => s.size === size);
 
         if (!sizeVariant) {
           const error = `Talle ${size} no encontrado`;
-          console.error(`  ❌ [STOCK] ${error}`);
+          console.error(`  [STOCK ERROR] ${error}`);
           results.errors.push({
             productId: product._id,
             item: item.title,
@@ -138,7 +138,7 @@ export async function reduceStockForOrder(order) {
 
         if (sizeVariant.stock < item.quantity) {
           const error = `Stock insuficiente: Disponible ${sizeVariant.stock}, Requerido ${item.quantity}`;
-          console.error(`  ❌ [STOCK] ${error}`);
+          console.error(`  [STOCK ERROR] ${error}`);
           results.errors.push({
             productId: product._id,
             item: item.title,
@@ -156,21 +156,21 @@ export async function reduceStockForOrder(order) {
         product.stock = product.sizes.reduce((total, s) => total + s.stock, 0);
 
         stockReduced = true;
-        stockInfo = `Talle ${size}: ${previousStock} → ${sizeVariant.stock}`;
+        stockInfo = `Talle ${size}: ${previousStock} -> ${sizeVariant.stock}`;
 
-        console.log(`  ✅ [STOCK] ${stockInfo}`);
+        console.log(`  [STOCK SUCCESS] ${stockInfo}`);
       }
       // ========== SISTEMA ANTIGUO: COLORS SEPARADOS ==========
       else if (hasColors && item.variant?.color) {
         const { color } = item.variant;
 
-        console.log(`  🔍 [STOCK] Buscando color: ${color}`);
+        console.log(`  [STOCK] Buscando color: ${color}`);
 
         const colorVariant = product.colors.find((c) => c.name === color);
 
         if (!colorVariant) {
           const error = `Color ${color} no encontrado`;
-          console.error(`  ❌ [STOCK] ${error}`);
+          console.error(`  [STOCK ERROR] ${error}`);
           results.errors.push({
             productId: product._id,
             item: item.title,
@@ -183,7 +183,7 @@ export async function reduceStockForOrder(order) {
 
         if (colorVariant.stock < item.quantity) {
           const error = `Stock insuficiente: Disponible ${colorVariant.stock}, Requerido ${item.quantity}`;
-          console.error(`  ❌ [STOCK] ${error}`);
+          console.error(`  [STOCK ERROR] ${error}`);
           results.errors.push({
             productId: product._id,
             item: item.title,
@@ -201,19 +201,17 @@ export async function reduceStockForOrder(order) {
         product.stock = product.colors.reduce((total, c) => total + c.stock, 0);
 
         stockReduced = true;
-        stockInfo = `Color ${color}: ${previousStock} → ${colorVariant.stock}`;
+        stockInfo = `Color ${color}: ${previousStock} -> ${colorVariant.stock}`;
 
-        console.log(`  ✅ [STOCK] ${stockInfo}`);
+        console.log(`  [STOCK SUCCESS] ${stockInfo}`);
       }
       // ========== PRODUCTO SIMPLE (SIN VARIANTES) ==========
       else {
-        console.log(
-          `  🔍 [STOCK] Producto simple, stock total: ${product.stock}`,
-        );
+        console.log(`  [STOCK] Producto simple, stock total: ${product.stock}`);
 
         if (product.stock < item.quantity) {
           const error = `Stock insuficiente: Disponible ${product.stock}, Requerido ${item.quantity}`;
-          console.error(`  ❌ [STOCK] ${error}`);
+          console.error(`  [STOCK ERROR] ${error}`);
           results.errors.push({
             productId: product._id,
             item: item.title,
@@ -229,9 +227,9 @@ export async function reduceStockForOrder(order) {
         product.stock = Math.max(0, product.stock - item.quantity);
 
         stockReduced = true;
-        stockInfo = `Stock total: ${previousStock} → ${product.stock}`;
+        stockInfo = `Stock total: ${previousStock} -> ${product.stock}`;
 
-        console.log(`  ✅ [STOCK] ${stockInfo}`);
+        console.log(`  [STOCK SUCCESS] ${stockInfo}`);
       }
 
       // Guardar cambios en el producto
@@ -246,10 +244,10 @@ export async function reduceStockForOrder(order) {
           newTotalStock: product.stock,
         });
 
-        console.log(`  💾 [STOCK] Producto guardado exitosamente`);
+        console.log(`  [STOCK] Producto guardado exitosamente`);
       }
     } catch (error) {
-      console.error(`❌ [STOCK] Error procesando item:`, error);
+      console.error(`[STOCK ERROR] Error procesando item:`, error);
       results.errors.push({
         item: item.title,
         error: error.message,
@@ -258,7 +256,7 @@ export async function reduceStockForOrder(order) {
     }
   }
 
-  console.log(`📦 [STOCK] Resumen:`, {
+  console.log(`[STOCK] Resumen:`, {
     totalItems: order.items.length,
     updated: results.updated.length,
     errors: results.errors.length,
@@ -284,7 +282,7 @@ export async function restoreStockForOrder(order) {
     errors: [],
   };
 
-  console.log(`🔄 [STOCK] Restaurando stock para orden ${order._id}`);
+  console.log(`[STOCK] Restaurando stock para orden ${order._id}`);
 
   for (const item of order.items) {
     try {
@@ -297,7 +295,7 @@ export async function restoreStockForOrder(order) {
 
       if (!product) {
         const error = `Producto ${productId} no encontrado`;
-        console.error(`❌ [STOCK] ${error}`);
+        console.error(`[STOCK ERROR] ${error}`);
         results.errors.push({
           productId,
           item: item.title,
@@ -307,7 +305,7 @@ export async function restoreStockForOrder(order) {
         continue;
       }
 
-      console.log(`🔄 [STOCK] Procesando producto: ${product.title}`);
+      console.log(`[STOCK] Procesando producto: ${product.title}`);
 
       const hasVariants = product.variants && product.variants.length > 0;
       const hasSizes = product.sizes && product.sizes.length > 0;
@@ -326,7 +324,7 @@ export async function restoreStockForOrder(order) {
         const color = itemColor;
 
         console.log(
-          `  🔍 [STOCK] Restaurando variante: Talle ${size}, Color ${color}`,
+          `  [STOCK] Restaurando variante: Talle ${size}, Color ${color}`,
         );
 
         const variant = product.variants.find(
@@ -335,7 +333,7 @@ export async function restoreStockForOrder(order) {
 
         if (!variant) {
           const error = `Variante ${size}/${color} no encontrada`;
-          console.warn(`  ⚠️ [STOCK] ${error} - Se omitirá`);
+          console.warn(`  [STOCK WARNING] ${error} - Se omitira`);
           continue;
         }
 
@@ -347,9 +345,9 @@ export async function restoreStockForOrder(order) {
         );
 
         stockRestored = true;
-        stockInfo = `Variante ${size}/${color}: ${previousStock} → ${variant.stock}`;
+        stockInfo = `Variante ${size}/${color}: ${previousStock} -> ${variant.stock}`;
 
-        console.log(`  ✅ [STOCK] ${stockInfo}`);
+        console.log(`  [STOCK SUCCESS] ${stockInfo}`);
       }
       // ========== SISTEMA ANTIGUO: SIZES ==========
       else if (hasSizes && item.variant?.size) {
@@ -357,7 +355,9 @@ export async function restoreStockForOrder(order) {
         const sizeVariant = product.sizes.find((s) => s.size === size);
 
         if (!sizeVariant) {
-          console.warn(`  ⚠️ [STOCK] Talle ${size} no encontrado - Se omitirá`);
+          console.warn(
+            `  [STOCK WARNING] Talle ${size} no encontrado - Se omitira`,
+          );
           continue;
         }
 
@@ -366,9 +366,9 @@ export async function restoreStockForOrder(order) {
         product.stock = product.sizes.reduce((total, s) => total + s.stock, 0);
 
         stockRestored = true;
-        stockInfo = `Talle ${size}: ${previousStock} → ${sizeVariant.stock}`;
+        stockInfo = `Talle ${size}: ${previousStock} -> ${sizeVariant.stock}`;
 
-        console.log(`  ✅ [STOCK] ${stockInfo}`);
+        console.log(`  [STOCK SUCCESS] ${stockInfo}`);
       }
       // ========== SISTEMA ANTIGUO: COLORS ==========
       else if (hasColors && item.variant?.color) {
@@ -377,7 +377,7 @@ export async function restoreStockForOrder(order) {
 
         if (!colorVariant) {
           console.warn(
-            `  ⚠️ [STOCK] Color ${color} no encontrado - Se omitirá`,
+            `  [STOCK WARNING] Color ${color} no encontrado - Se omitira`,
           );
           continue;
         }
@@ -387,9 +387,9 @@ export async function restoreStockForOrder(order) {
         product.stock = product.colors.reduce((total, c) => total + c.stock, 0);
 
         stockRestored = true;
-        stockInfo = `Color ${color}: ${previousStock} → ${colorVariant.stock}`;
+        stockInfo = `Color ${color}: ${previousStock} -> ${colorVariant.stock}`;
 
-        console.log(`  ✅ [STOCK] ${stockInfo}`);
+        console.log(`  [STOCK SUCCESS] ${stockInfo}`);
       }
       // ========== PRODUCTO SIMPLE ==========
       else {
@@ -397,9 +397,9 @@ export async function restoreStockForOrder(order) {
         product.stock += item.quantity;
 
         stockRestored = true;
-        stockInfo = `Stock total: ${previousStock} → ${product.stock}`;
+        stockInfo = `Stock total: ${previousStock} -> ${product.stock}`;
 
-        console.log(`  ✅ [STOCK] ${stockInfo}`);
+        console.log(`  [STOCK SUCCESS] ${stockInfo}`);
       }
 
       if (stockRestored) {
@@ -413,10 +413,10 @@ export async function restoreStockForOrder(order) {
           newTotalStock: product.stock,
         });
 
-        console.log(`  💾 [STOCK] Producto guardado exitosamente`);
+        console.log(`  [STOCK] Producto guardado exitosamente`);
       }
     } catch (error) {
-      console.error(`❌ [STOCK] Error restaurando item:`, error);
+      console.error(`[STOCK ERROR] Error restaurando item:`, error);
       results.errors.push({
         item: item.title,
         error: error.message,
@@ -425,7 +425,7 @@ export async function restoreStockForOrder(order) {
     }
   }
 
-  console.log(`🔄 [STOCK] Resumen restauración:`, {
+  console.log(`[STOCK] Resumen restauracion:`, {
     totalItems: order.items.length,
     restored: results.restored.length,
     errors: results.errors.length,
