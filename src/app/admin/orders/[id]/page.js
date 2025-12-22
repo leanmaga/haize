@@ -165,7 +165,7 @@ export default async function OrderDetailPage({ params }) {
       notFound();
     }
 
-    const order = await fetchOrderFromDB(params.id);
+    const order = await fetchOrderFromDB(resolvedParams.id);
 
     if (!order) {
       notFound();
