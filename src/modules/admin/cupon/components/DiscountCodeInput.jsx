@@ -87,7 +87,7 @@ export default function DiscountCodeInput() {
           <button
             type="submit"
             disabled={!code.trim() || isApplying}
-            className="px-4 py-2 bg-black text-white text-sm font-medium hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            className="cursor-pointer px-4 py-2 bg-black text-white text-sm font-medium hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
           >
             {isApplying ? 'Validando...' : 'Aplicar'}
           </button>

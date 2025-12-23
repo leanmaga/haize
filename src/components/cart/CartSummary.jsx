@@ -1,6 +1,3 @@
-// ACTUALIZACIÓN DE CartSummary.jsx (src/components/cart/CartSummary.jsx)
-// Reemplazar el componente existente con esta versión actualizada:
-
 'use client';
 
 import { useCartStore } from '@/lib/store';
@@ -49,84 +46,86 @@ const CartSummary = () => {
   };
 
   return (
-    <div className="bg-white border border-gray-300 sticky top-4">
-      {/* Header */}
-      <div className="p-6 border-b border-gray-200">
-        <h2 className="text-lg font-sora-regular">RESUMEN DE COMPRA</h2>
-        <p className="text-sm text-gray-600 mt-1">
-          ({items.length} producto{items.length !== 1 ? 's' : ''})
-        </p>
-      </div>
-
-      {/* Summary details */}
-      <div className="p-6">
-        {/* Subtotal */}
-        <div className="flex justify-between items-center mb-3">
-          <span className="text-gray-700">Subtotal</span>
-          <span className="font-sora-regular">
-            ${subtotal.toLocaleString('es-AR')}
-          </span>
+    <>
+      <div className="bg-white border border-gray-300 sticky top-4">
+        {/* Header */}
+        <div className="p-6 border-b border-gray-200">
+          <h2 className="text-lg font-sora-regular">RESUMEN DE COMPRA</h2>
+          <p className="text-sm text-gray-600 mt-1">
+            ({items.length} producto{items.length !== 1 ? 's' : ''})
+          </p>
         </div>
 
-        {/* Descuento aplicado */}
-        {discountInfo && (
+        {/* Summary details */}
+        <div className="p-6">
+          {/* Subtotal */}
           <div className="flex justify-between items-center mb-3">
-            <span className="text-green-600">
-              Descuento ({discountInfo.code})
-            </span>
-            <span className="font-sora-regular text-green-600">
-              -${discountInfo.amount.toLocaleString('es-AR')}
+            <span className="text-gray-700">Subtotal</span>
+            <span className="font-sora-regular">
+              ${subtotal.toLocaleString('es-AR')}
             </span>
           </div>
-        )}
 
-        {/* Subtotal without taxes */}
-        <div className="flex justify-between items-center mb-4">
-          <span className="text-sm text-gray-500">
-            Subtotal sin impuestos nacionales
-          </span>
-          <span className="text-sm text-gray-500">
-            $
-            {subtotalWithoutTax.toLocaleString('es-AR', {
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 0,
-            })}
-          </span>
-        </div>
+          {/* Descuento aplicado */}
+          {discountInfo && (
+            <div className="flex justify-between items-center mb-3">
+              <span className="text-green-600">
+                Descuento ({discountInfo.code})
+              </span>
+              <span className="font-sora-regular text-green-600">
+                -${discountInfo.amount.toLocaleString('es-AR')}
+              </span>
+            </div>
+          )}
 
-        {/* Discount Code Input */}
-        <DiscountCodeInput />
-
-        {/* Total */}
-        <div className="flex justify-between items-center pt-4 border-t border-gray-200 mb-6 mt-4">
-          <span className="text-lg font-semibold">TOTAL</span>
-          <span className="text-lg font-semibold">
-            ${total.toLocaleString('es-AR')}
-          </span>
-        </div>
-
-        {/* Checkout button */}
-        <button
-          onClick={handleCheckout}
-          className="w-full bg-black text-white py-3 px-6 hover:bg-gray-800 transition-colors mb-6 font-sora-regular"
-          disabled={isEmpty}
-        >
-          Iniciar Compra
-        </button>
-
-        {/* Free shipping message */}
-        {remainingForFreeShipping > 0 ? (
-          <div className="text-sm text-center text-gray-600">
-            Te faltan ${remainingForFreeShipping.toLocaleString('es-AR')} para
-            <span className="font-semibold"> envío gratis</span>
+          {/* Subtotal without taxes */}
+          <div className="flex justify-between items-center mb-4">
+            <span className="text-sm text-gray-500">
+              Subtotal sin impuestos nacionales
+            </span>
+            <span className="text-sm text-gray-500">
+              $
+              {subtotalWithoutTax.toLocaleString('es-AR', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              })}
+            </span>
           </div>
-        ) : (
-          <div className="text-sm text-center text-green-600 font-semibold">
-            ¡Envío gratis en tu compra!
+
+          {/* Discount Code Input */}
+          <DiscountCodeInput />
+
+          {/* Total */}
+          <div className="flex justify-between items-center pt-4 border-t border-gray-200 mb-6 mt-4">
+            <span className="text-lg font-semibold">TOTAL</span>
+            <span className="text-lg font-semibold">
+              ${total.toLocaleString('es-AR')}
+            </span>
           </div>
-        )}
+
+          {/* Checkout button */}
+          <button
+            onClick={handleCheckout}
+            className="cursor-pointer w-full bg-black text-white py-3 px-6 hover:bg-gray-800 transition-colors mb-3 font-sora-regular"
+            disabled={isEmpty}
+          >
+            Iniciar Compra
+          </button>
+
+          {/* Free shipping message */}
+          {remainingForFreeShipping > 0 ? (
+            <div className="text-sm text-center text-gray-600">
+              Te faltan ${remainingForFreeShipping.toLocaleString('es-AR')} para
+              <span className="font-semibold"> envío gratis</span>
+            </div>
+          ) : (
+            <div className="text-sm text-center text-green-600 font-semibold">
+              ¡Envío gratis en tu compra!
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -75,7 +75,7 @@ const CartItem = ({ item }) => {
                 min="1"
                 value={item.quantity}
                 onChange={handleQuantityChange}
-                className="w-16 px-2 py-1 border border-gray-300 text-center focus:outline-none focus:border-gray-400"
+                className="cursor-pointer w-16 px-2 py-1 border border-gray-300 text-center focus:outline-none focus:border-gray-400"
               />
             </div>
           </div>
@@ -83,7 +83,7 @@ const CartItem = ({ item }) => {
           {/* Remove button */}
           <button
             onClick={handleRemove}
-            className="text-gray-400 hover:text-black transition-colors"
+            className="text-gray-400 hover:text-black transition-colors cursor-pointer"
             aria-label="Eliminar producto"
           >
             <XMarkIcon className="h-5 w-5" />
