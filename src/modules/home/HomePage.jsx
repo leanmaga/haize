@@ -61,7 +61,7 @@ export default async function Home() {
       <PageLoader />
 
       {/* Hero Section */}
-      <div className="relative w-full h-[100vh] md:h-[120vh] min-h-[600px]">
+      <div className="relative w-full h-screen md:h-[120vh] min-h-150">
         {/* Imagen Desktop */}
         <Image
           src="https://res.cloudinary.com/dz7fsiwnu/image/upload/portada"
@@ -136,7 +136,7 @@ export default async function Home() {
       />
 
       {/* Video  */}
-      <div className="w-full h-[70vh] md:h-[100vh] min-h-[500px]">
+      <div className="w-full h-[70vh] md:h-screen min-h-125">
         <video
           src="/assets/videohero.mp4"
           autoPlay

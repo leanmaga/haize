@@ -212,7 +212,7 @@ export default function AdminContactos() {
             ) : (
               <div className="space-y-2">
                 {filteredContacts.map((contact) => (
-                  <div
+                  <button
                     key={contact._id}
                     onClick={() => {
                       setSelectedContact(contact);
@@ -220,7 +220,7 @@ export default function AdminContactos() {
                         updateEstado(contact._id, 'leido');
                       }
                     }}
-                    className={`bg-white rounded-lg border p-4 cursor-pointer transition-all hover:shadow-md ${
+                    className={`w-full text-left bg-white rounded-lg border p-4 cursor-pointer transition-all hover:shadow-md ${
                       selectedContact?._id === contact._id
                         ? 'border-black shadow-md'
                         : 'border-gray-200'
@@ -252,7 +252,7 @@ export default function AdminContactos() {
                         </p>
                       </div>
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             )}

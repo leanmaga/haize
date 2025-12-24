@@ -1,33 +1,33 @@
 // app/api/admin/reviews/route.js - API PRINCIPAL PARA ADMIN REVIEWS
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import connectDB from "@/lib/db";
-import Review from "@/models/Review";
-import Product from "@/models/Product";
-import User from "@/models/User";
-import { authOptions } from "@/lib/auth";
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import connectDB from '@/lib/db';
+import Review from '@/models/Review';
+import Product from '@/models/Product';
+import User from '@/models/User';
+import { authOptions } from '@/lib/auth';
 
 export async function GET(request) {
   try {
     const session = await getServerSession(authOptions);
 
     // Verificar que sea administrador
-    if (!session?.user || session.user.role !== "admin") {
+    if (!session?.user || session.user.role !== 'admin') {
       return NextResponse.json(
-        { success: false, error: "Acceso denegado" },
-        { status: 403 }
+        { success: false, error: 'Acceso denegado' },
+        { status: 403 },
       );
     }
 
     const { searchParams } = new URL(request.url);
 
     // Parámetros de filtro
-    const type = searchParams.get("type") || ""; // rating, question, ""
-    const rating = searchParams.get("rating") || "all"; // all, 5, 4, 3, 2, 1
-    const status = searchParams.get("status") || "all"; // all, verified, reported, pending
-    const sort = searchParams.get("sort") || "newest"; // newest, oldest, highest, lowest, helpful
-    const page = parseInt(searchParams.get("page")) || 1;
-    const limit = parseInt(searchParams.get("limit")) || 20;
+    const type = searchParams.get('type') || '';
+    const rating = searchParams.get('rating') || 'all';
+    const status = searchParams.get('status') || 'all';
+    const sort = searchParams.get('sort') || 'newest';
+    const page = Number.parseInt(searchParams.get('page'), 10) || 1;
+    const limit = Number.parseInt(searchParams.get('limit'), 10) || 20;
     const skip = (page - 1) * limit;
 
     await connectDB();
@@ -36,27 +36,28 @@ export async function GET(request) {
     let matchQuery = {};
 
     // Filtrar por tipo si se especifica
-    if (type && ["rating", "question"].includes(type)) {
+    if (type && ['rating', 'question'].includes(type)) {
       matchQuery.type = type;
     }
 
     // Filtrar por rating si se especifica y es tipo rating
-    if (rating !== "all" && !isNaN(parseInt(rating))) {
-      matchQuery.rating = parseInt(rating);
+    const parsedRating = Number.parseInt(rating, 10);
+    if (rating !== 'all' && !Number.isNaN(parsedRating)) {
+      matchQuery.rating = parsedRating;
       // Si filtramos por rating, automáticamente filtramos por tipo rating
-      matchQuery.type = "rating";
+      matchQuery.type = 'rating';
     }
 
     // Filtrar por status
-    if (status === "verified") {
+    if (status === 'verified') {
       matchQuery.verified = true;
-    } else if (status === "reported") {
+    } else if (status === 'reported') {
       matchQuery.reported = true;
-    } else if (status === "pending") {
-      matchQuery.type = "question";
+    } else if (status === 'pending') {
+      matchQuery.type = 'question';
       matchQuery.$or = [
         { response: { $exists: false } },
-        { response: "" },
+        { response: '' },
         { response: null },
       ];
     }
@@ -64,19 +65,19 @@ export async function GET(request) {
     // Configurar sort
     let sortQuery = {};
     switch (sort) {
-      case "oldest":
+      case 'oldest':
         sortQuery = { createdAt: 1 };
         break;
-      case "highest":
+      case 'highest':
         sortQuery = { rating: -1, createdAt: -1 };
         break;
-      case "lowest":
+      case 'lowest':
         sortQuery = { rating: 1, createdAt: -1 };
         break;
-      case "helpful":
+      case 'helpful':
         sortQuery = { helpful: -1, createdAt: -1 };
         break;
-      case "newest":
+      case 'newest':
       default:
         sortQuery = { createdAt: -1 };
         break;
@@ -84,8 +85,8 @@ export async function GET(request) {
 
     // Obtener reviews con populate
     const reviews = await Review.find(matchQuery)
-      .populate("user", "name email")
-      .populate("product", "title imageUrl")
+      .populate('user', 'name email')
+      .populate('product', 'title imageUrl')
       .sort(sortQuery)
       .skip(skip)
       .limit(limit);
@@ -108,10 +109,10 @@ export async function GET(request) {
       stats,
     });
   } catch (error) {
-    console.error("Error fetching admin reviews:", error);
+    console.error('Error fetching admin reviews:', error);
     return NextResponse.json(
-      { success: false, error: "Error al obtener reviews: " + error.message },
-      { status: 500 }
+      { success: false, error: 'Error al obtener reviews: ' + error.message },
+      { status: 500 },
     );
   }
 }
@@ -121,18 +122,18 @@ async function calculateReviewStats() {
   try {
     // Estadísticas básicas
     const totalReviews = await Review.countDocuments();
-    const totalRatings = await Review.countDocuments({ type: "rating" });
-    const totalQuestions = await Review.countDocuments({ type: "question" });
+    const totalRatings = await Review.countDocuments({ type: 'rating' });
+    const totalQuestions = await Review.countDocuments({ type: 'question' });
     const verifiedCount = await Review.countDocuments({ verified: true });
     const reportedCount = await Review.countDocuments({ reported: true });
 
     // Promedio de ratings
     const ratingStats = await Review.aggregate([
-      { $match: { type: "rating" } },
+      { $match: { type: 'rating' } },
       {
         $group: {
           _id: null,
-          averageRating: { $avg: "$rating" },
+          averageRating: { $avg: '$rating' },
         },
       },
     ]);
@@ -142,10 +143,10 @@ async function calculateReviewStats() {
 
     // Distribución de ratings
     const distribution = await Review.aggregate([
-      { $match: { type: "rating" } },
+      { $match: { type: 'rating' } },
       {
         $group: {
-          _id: "$rating",
+          _id: '$rating',
           count: { $sum: 1 },
         },
       },
@@ -169,7 +170,7 @@ async function calculateReviewStats() {
       ratingDistribution,
     };
   } catch (error) {
-    console.error("Error calculating stats:", error);
+    console.error('Error calculating stats:', error);
     return {
       totalReviews: 0,
       totalRatings: 0,

@@ -75,12 +75,12 @@ export default function PageLoader() {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-black transition-opacity duration-[600ms] ${
+      className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-black transition-opacity duration-600 ${
         fadeOut ? 'opacity-0' : 'opacity-100'
       }`}
     >
       {/* Círculo con logo */}
-      <div className="relative w-[320px] h-[320px] md:w-[400px] md:h-[400px] rounded-full border-2 border-gray-600 flex items-center justify-center mb-8">
+      <div className="relative w-[320px] h-80 md:w-100 md:h-100 rounded-full border-2 border-gray-600 flex items-center justify-center mb-8">
         {/* Logo HAIZE */}
         <div className="font-nexa-bold text-6xl md:text-7xl tracking-widest flex gap-1">
           {'HAIZE'.split('').map((letter, index) => (

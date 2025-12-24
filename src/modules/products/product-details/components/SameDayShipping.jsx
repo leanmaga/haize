@@ -67,7 +67,7 @@ const SameDayShipping = () => {
   return (
     <div className="mt-6 bg-gray-50 border border-gray-200 p-4 flex gap-3 items-start rounded-lg">
       <svg
-        className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5"
+        className="w-6 h-6 text-green-600 shrink-0 mt-0.5"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"

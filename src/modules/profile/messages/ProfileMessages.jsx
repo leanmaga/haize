@@ -264,7 +264,7 @@ const ProfileMessages = () => {
                     <div className="flex items-start justify-between">
                       <div className="flex items-center space-x-4">
                         {/* Imagen del producto */}
-                        <div className="w-16 h-16 relative flex-shrink-0">
+                        <div className="w-16 h-16 relative shrink-0">
                           <Image
                             src={
                               message.product?.imageUrl || '/placeholder.jpg'
@@ -288,7 +288,7 @@ const ProfileMessages = () => {
                       </div>
 
                       {/* Estado */}
-                      <div className="flex-shrink-0">
+                      <div className="shrink-0">
                         {message.response ? (
                           <span
                             className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium text-gray-700"
@@ -432,8 +432,8 @@ const ProfileMessages = () => {
                 {filter === 'pending'
                   ? 'No tienes preguntas pendientes'
                   : filter === 'answered'
-                  ? 'No tienes preguntas respondidas'
-                  : 'No has hecho preguntas aún'}
+                    ? 'No tienes preguntas respondidas'
+                    : 'No has hecho preguntas aún'}
               </h3>
               <p className="text-gray-600 mb-6">
                 {filter === 'all'

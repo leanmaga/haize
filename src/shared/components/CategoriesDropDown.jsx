@@ -103,7 +103,7 @@ const CategoriesDropdown = () => {
           CATEGORIAS
         </button>
         <span
-          className={`absolute z-80 left-0 -bottom-0.25 h-0.25 w-0 bg-black transition-all duration-300 group-hover:w-full`}
+          className={`absolute z-80 left-0 -bottom-px h-px w-0 bg-black transition-all duration-300 group-hover:w-full`}
           aria-hidden="true"
         />
       </div>
@@ -115,7 +115,7 @@ const CategoriesDropdown = () => {
       >
         {/* Overlay semi-transparente */}
         <div
-          className={`absolute w-[100vw] h-[100dvh] top-0 inset-0 bg-black/20 ${
+          className={`absolute w-screen h-dvh top-0 inset-0 bg-black/20 ${
             isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'
           } transform transition-all duration-100 ease-in-out`}
           style={{
@@ -131,7 +131,7 @@ const CategoriesDropdown = () => {
 
         {/* Dropdown menu */}
         <div
-          className={`max-w-[75vw] h-[100dvh] bg-white fixed left-0 right-0 shadow-2xl top-0 pt-35 z-50 text-black ${
+          className={`max-w-[75vw] h-dvh bg-white fixed left-0 right-0 shadow-2xl top-0 pt-35 z-50 text-black ${
             isOpen ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'
           } transform transition-all duration-500 ease-in-out`}
         >
@@ -178,7 +178,7 @@ const CategoriesDropdown = () => {
               {/* Columna derecha - Imagen (opcional) */}
               <div className="w-80 hidden xl:block">
                 {activeSection && (
-                  <div className="bg-gray-100 rounded-lg overflow-hidden h-full min-h-[300px] relative">
+                  <div className="bg-gray-100 rounded-lg overflow-hidden h-full min-h-75 relative">
                     <Image
                       src="/assets/20251117_183927.jpg"
                       alt="Category preview"

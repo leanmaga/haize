@@ -57,9 +57,6 @@ export async function PUT(request, { params }) {
     const { id } = await params;
     const data = await request.json();
 
-    console.log('📝 Actualizando producto:', id);
-    console.log('📦 Datos recibidos:', JSON.stringify(data, null, 2));
-
     await connectDB();
 
     // Verificar si el producto existe
@@ -88,7 +85,7 @@ export async function PUT(request, { params }) {
     }
 
     // Validar que el precio de venta sea mayor a 0
-    if (parseFloat(data.salePrice) <= 0) {
+    if (Number.parseFloat(data.salePrice) <= 0) {
       return NextResponse.json(
         { message: 'El precio de venta debe ser mayor a 0' },
         { status: 400 },
@@ -119,7 +116,7 @@ export async function PUT(request, { params }) {
     const productData = {
       title: data.title.trim(),
       description: data.description?.trim() || '',
-      salePrice: parseFloat(data.salePrice),
+      salePrice: Number.parseFloat(data.salePrice),
       category: data.category,
       featured: data.featured || false,
       isNew: data.isNew || false,
@@ -140,7 +137,7 @@ export async function PUT(request, { params }) {
     }
 
     if (data.weight !== undefined) {
-      productData.weight = data.weight ? parseFloat(data.weight) : 0;
+      productData.weight = data.weight ? Number.parseFloat(data.weight) : 0;
     }
 
     // Arrays
@@ -169,7 +166,7 @@ export async function PUT(request, { params }) {
               size: v.size,
               color: v.color,
               colorHex: v.colorHex || '#808080',
-              stock: parseInt(v.stock) || 0,
+              stock: Number.parseInt(v.stock, 10) || 0,
               sku: v.sku || '',
             }))
         : [];
@@ -182,11 +179,11 @@ export async function PUT(request, { params }) {
         );
       } else if (data.stock !== undefined) {
         // Si no hay variantes, usar stock manual
-        productData.stock = parseInt(data.stock) || 0;
+        productData.stock = Number.parseInt(data.stock, 10) || 0;
       }
     } else if (data.stock !== undefined) {
       // Si no se enviaron variantes, usar stock manual
-      productData.stock = parseInt(data.stock) || 0;
+      productData.stock = Number.parseInt(data.stock, 10) || 0;
     }
 
     // Variantes de talle (SISTEMA ANTIGUO - backward compatibility)
@@ -196,7 +193,7 @@ export async function PUT(request, { params }) {
             .filter((s) => s.size)
             .map((s) => ({
               size: s.size,
-              stock: parseInt(s.stock) || 0,
+              stock: Number.parseInt(s.stock, 10) || 0,
               sku: s.sku || undefined,
             }))
         : [];
@@ -210,7 +207,7 @@ export async function PUT(request, { params }) {
             .map((c) => ({
               name: c.name,
               hexCode: c.hexCode || undefined,
-              stock: parseInt(c.stock) || 0,
+              stock: Number.parseInt(c.stock, 10) || 0,
               imageUrl: c.imageUrl || undefined,
               imageCloudinaryInfo: c.imageCloudinaryInfo || undefined,
             }))
@@ -258,17 +255,17 @@ export async function PUT(request, { params }) {
     // Campos financieros opcionales
     if (data.promoPrice !== undefined) {
       productData.promoPrice = data.promoPrice
-        ? parseFloat(data.promoPrice)
+        ? Number.parseFloat(data.promoPrice)
         : 0;
     }
 
     if (data.cost !== undefined) {
-      productData.cost = data.cost ? parseFloat(data.cost) : 0;
+      productData.cost = data.cost ? Number.parseFloat(data.cost) : 0;
     }
 
     if (data.profitMargin !== undefined) {
       productData.profitMargin = data.profitMargin
-        ? parseFloat(data.profitMargin)
+        ? Number.parseFloat(data.profitMargin)
         : 0;
     }
 
@@ -294,18 +291,11 @@ export async function PUT(request, { params }) {
       }
     }
 
-    console.log(
-      '💾 Actualizando con datos:',
-      JSON.stringify(productData, null, 2),
-    );
-
     // Actualizar el producto
     const updatedProduct = await Product.findByIdAndUpdate(id, productData, {
       new: true,
       runValidators: true,
     }).lean();
-
-    console.log('✅ Producto actualizado exitosamente');
 
     return NextResponse.json({
       message: 'Producto actualizado correctamente',
@@ -364,8 +354,6 @@ export async function DELETE(request, { params }) {
 
     const { id } = await params;
 
-    console.log('🗑️ Eliminando producto:', id);
-
     await connectDB();
 
     const product = await Product.findByIdAndDelete(id);
@@ -376,8 +364,6 @@ export async function DELETE(request, { params }) {
         { status: 404 },
       );
     }
-
-    console.log('✅ Producto eliminado exitosamente');
 
     return NextResponse.json({
       message: 'Producto eliminado con éxito',

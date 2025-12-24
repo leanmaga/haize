@@ -24,7 +24,7 @@ const CartItem = ({ item }) => {
   return (
     <div className="border-b border-gray-200 p-6 flex gap-6">
       {/* Product Image */}
-      <div className="flex-shrink-0 w-24 h-32">
+      <div className="shrink-0 w-24 h-32">
         <div className="relative w-full h-full bg-gray-100">
           {item.image ? (
             <Image

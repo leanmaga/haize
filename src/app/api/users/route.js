@@ -1,9 +1,9 @@
 // src/app/api/users/route.js
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
-import connectDB from "@/lib/db";
-import User from "@/models/User";
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
+import connectDB from '@/lib/db';
+import User from '@/models/User';
 
 // GET - Obtener todos los usuarios (solo para admin)
 export async function GET(request) {
@@ -13,12 +13,12 @@ export async function GET(request) {
 
     // Verificar autenticación
     if (!session) {
-      return NextResponse.json({ message: "No autorizado" }, { status: 401 });
+      return NextResponse.json({ message: 'No autorizado' }, { status: 401 });
     }
 
     // Verificar si es admin
-    if (session.user.role !== "admin") {
-      return NextResponse.json({ message: "Acceso denegado" }, { status: 403 });
+    if (session.user.role !== 'admin') {
+      return NextResponse.json({ message: 'Acceso denegado' }, { status: 403 });
     }
 
     // Conectar a la base de datos
@@ -26,9 +26,9 @@ export async function GET(request) {
 
     // Parámetros de búsqueda
     const { searchParams } = new URL(request.url);
-    const limit = parseInt(searchParams.get("limit") || "100");
-    const page = parseInt(searchParams.get("page") || "1");
-    const role = searchParams.get("role");
+    const limit = Number.parseInt(searchParams.get('limit'), 10) || 100;
+    const page = Number.parseInt(searchParams.get('page'), 10) || 1;
+    const role = searchParams.get('role');
 
     // Construir la consulta
     let query = {};
@@ -38,7 +38,7 @@ export async function GET(request) {
 
     // Buscar usuarios con paginación
     const users = await User.find(query)
-      .select("-password") // Excluir contraseñas
+      .select('-password') // Excluir contraseñas
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
@@ -50,10 +50,10 @@ export async function GET(request) {
     // Retornar los usuarios
     return NextResponse.json(users);
   } catch (error) {
-    console.error("Error al obtener usuarios:", error);
+    console.error('Error al obtener usuarios:', error);
     return NextResponse.json(
-      { message: "Error al obtener usuarios" },
-      { status: 500 }
+      { message: 'Error al obtener usuarios' },
+      { status: 500 },
     );
   }
 }

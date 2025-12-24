@@ -117,7 +117,7 @@ const SearchDropdown = ({ isMobile = false }) => {
             {/* Input de búsqueda */}
             <div className="bg-white rounded-lg shadow-2xl relative z-80">
               <div className="flex items-center gap-3 p-3 md:p-4">
-                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 flex-shrink-0" />
+                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 shrink-0" />
                 <input
                   ref={inputRef}
                   type="text"
@@ -128,7 +128,7 @@ const SearchDropdown = ({ isMobile = false }) => {
                 />
                 <button
                   onClick={handleClose}
-                  className="p-1 hover:bg-gray-100 rounded transition flex-shrink-0"
+                  className="p-1 hover:bg-gray-100 rounded transition shrink-0"
                   aria-label="Cerrar búsqueda"
                 >
                   <XMarkIcon className="h-5 w-5 text-gray-500" />
@@ -154,7 +154,7 @@ const SearchDropdown = ({ isMobile = false }) => {
                             className="flex items-center gap-3 p-2 md:p-3 hover:bg-gray-50 rounded-lg transition group"
                           >
                             {/* Imagen del producto */}
-                            <div className="relative w-14 h-14 md:w-16 md:h-16 flex-shrink-0 bg-gray-100 rounded overflow-hidden">
+                            <div className="relative w-14 h-14 md:w-16 md:h-16 shrink-0 bg-gray-100 rounded overflow-hidden">
                               <Image
                                 src={product.imageUrl}
                                 alt={product.title}
@@ -175,7 +175,7 @@ const SearchDropdown = ({ isMobile = false }) => {
                             </div>
 
                             {/* Precio */}
-                            <div className="text-right flex-shrink-0">
+                            <div className="text-right shrink-0">
                               {product.onSale && product.promoPrice > 0 ? (
                                 <>
                                   <p className="text-xs md:text-sm text-gray-400 line-through">

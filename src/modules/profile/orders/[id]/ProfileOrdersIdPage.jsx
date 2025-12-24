@@ -380,7 +380,7 @@ Fecha: ${formatDate(order.createdAt)}
                   <div className="divide-y divide-gray-100">
                     {order.items.map((item, index) => (
                       <div key={index} className="p-6 flex items-start">
-                        <div className="relative h-20 w-20 flex-shrink-0 rounded-md overflow-hidden bg-gray-100">
+                        <div className="relative h-20 w-20 shrink-0 rounded-md overflow-hidden bg-gray-100">
                           <Image
                             src={item.imageUrl}
                             alt={item.title || 'Producto'}

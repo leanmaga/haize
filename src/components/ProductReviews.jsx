@@ -11,7 +11,6 @@ import {
   ChevronUpIcon,
   ChatBubbleLeftRightIcon,
   StarIcon,
-  ExclamationTriangleIcon,
   CheckCircleIcon,
 } from '@heroicons/react/24/outline';
 
@@ -300,7 +299,7 @@ const ProductReviews = ({ productId }) => {
       r.user?.name.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesFilter =
-      ratingFilter === 'all' || r.rating === parseInt(ratingFilter);
+      ratingFilter === 'all' || r.rating === Number.parseInt(ratingFilter, 10);
 
     return matchesSearch && matchesFilter;
   });
@@ -715,10 +714,14 @@ const ProductReviews = ({ productId }) => {
             {showRatingForm ? (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-gray-700">
+                  <label
+                    htmlFor="star-rating"
+                    className="block text-sm font-medium mb-2 text-gray-700"
+                  >
                     Tu calificación
                   </label>
                   <StarRating
+                    id="star-rating"
                     rating={ratingForm.rating}
                     interactive={true}
                     onRatingChange={(rating) =>
@@ -729,10 +732,14 @@ const ProductReviews = ({ productId }) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-gray-700">
+                  <label
+                    htmlFor="rating-comment"
+                    className="block text-sm font-medium mb-2 text-gray-700"
+                  >
                     Tu comentario
                   </label>
                   <textarea
+                    id="rating-comment"
                     value={ratingForm.comment}
                     onChange={(e) =>
                       setRatingForm({ ...ratingForm, comment: e.target.value })

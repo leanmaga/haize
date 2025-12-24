@@ -15,13 +15,13 @@ export default function BlackFridayBanner() {
       {/* Contenedor con animación */}
       <div className="flex animate-scroll-infinite">
         {/* Primera copia del texto */}
-        <div className="flex-shrink-0 whitespace-nowrap pr-8">
+        <div className="shrink-0 whitespace-nowrap pr-8">
           <span className="font-nexa-bold text-white text-4xl md:text-6xl lg:text-7xl xl:text-8xl uppercase tracking-wider">
             {repeatedText}
           </span>
         </div>
         {/* Segunda copia del texto para loop infinito */}
-        <div className="flex-shrink-0 whitespace-nowrap pr-8">
+        <div className="shrink-0 whitespace-nowrap pr-8">
           <span className="font-nexa-bold text-white text-4xl md:text-6xl lg:text-7xl xl:text-8xl uppercase tracking-wider">
             {repeatedText}
           </span>

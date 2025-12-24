@@ -141,7 +141,7 @@ export default function OrderSummaryPage() {
             <div className="space-y-6">
               {orderData.items.map((item, index) => (
                 <div key={index} className="flex items-start">
-                  <div className="flex-shrink-0 w-20 h-20 relative bg-gray-100 rounded overflow-hidden">
+                  <div className="shrink-0 w-20 h-20 relative bg-gray-100 rounded overflow-hidden">
                     {item.image ? (
                       <Image
                         src={item.image}

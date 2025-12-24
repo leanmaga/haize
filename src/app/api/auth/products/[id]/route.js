@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
-import connectDB from "@/lib/db";
-import Product from "@/models/Product";
-import { authOptions } from "@/lib/auth";
-import { getServerSession } from "next-auth/next";
-import { uploadImage, deleteImage } from "@/lib/cloudinary";
+import { NextResponse } from 'next/server';
+import connectDB from '@/lib/db';
+import Product from '@/models/Product';
+import { authOptions } from '@/lib/auth';
+import { getServerSession } from 'next-auth/next';
+import { uploadImage, deleteImage } from '@/lib/cloudinary';
 
 // GET - Obtener un producto por ID
 export async function GET(request, { params }) {
@@ -16,8 +16,8 @@ export async function GET(request, { params }) {
 
     if (!product) {
       return NextResponse.json(
-        { message: "Producto no encontrado" },
-        { status: 404 }
+        { message: 'Producto no encontrado' },
+        { status: 404 },
       );
     }
 
@@ -36,10 +36,10 @@ export async function GET(request, { params }) {
 
     return NextResponse.json(processedProduct);
   } catch (error) {
-    console.error("Error al obtener producto:", error);
+    console.error('Error al obtener producto:', error);
     return NextResponse.json(
-      { message: "Error al obtener el producto" },
-      { status: 500 }
+      { message: 'Error al obtener el producto' },
+      { status: 500 },
     );
   }
 }
@@ -50,10 +50,10 @@ export async function PUT(request, { params }) {
     const session = await getServerSession(authOptions);
 
     // Verificar autenticación y permisos
-    if (!session || session.user.role !== "admin") {
+    if (!session || session.user.role !== 'admin') {
       return NextResponse.json(
-        { message: "No tienes permisos para realizar esta acción" },
-        { status: 403 }
+        { message: 'No tienes permisos para realizar esta acción' },
+        { status: 403 },
       );
     }
 
@@ -61,16 +61,16 @@ export async function PUT(request, { params }) {
 
     // Obtener los datos - puede ser formData o JSON
     let updateData;
-    const contentType = request.headers.get("content-type");
+    const contentType = request.headers.get('content-type');
 
-    if (contentType && contentType.includes("multipart/form-data")) {
+    if (contentType && contentType.includes('multipart/form-data')) {
       // Si es formData (para archivos)
       const formData = await request.formData();
 
       // Convertir formData a objeto
       updateData = {};
       for (const [key, value] of formData.entries()) {
-        if (key !== "image") {
+        if (key !== 'image') {
           updateData[key] = value;
         }
       }
@@ -86,8 +86,8 @@ export async function PUT(request, { params }) {
 
     if (!product) {
       return NextResponse.json(
-        { message: "Producto no encontrado" },
-        { status: 404 }
+        { message: 'Producto no encontrado' },
+        { status: 404 },
       );
     }
 
@@ -96,33 +96,33 @@ export async function PUT(request, { params }) {
     product.description = updateData.description || product.description;
     product.category = updateData.category || product.category;
     product.featured =
-      updateData.featured === true || updateData.featured === "true"
+      updateData.featured === true || updateData.featured === 'true'
         ? true
         : !!product.featured;
 
     // Actualizar campos financieros
     if (updateData.salePrice !== undefined) {
-      product.salePrice = parseFloat(updateData.salePrice);
+      product.salePrice = Number.parseFloat(updateData.salePrice);
     } else if (updateData.price !== undefined) {
       // Compatibilidad con campo antiguo
-      product.salePrice = parseFloat(updateData.price);
+      product.salePrice = Number.parseFloat(updateData.price);
     }
 
     if (updateData.promoPrice !== undefined) {
-      product.promoPrice = parseFloat(updateData.promoPrice);
+      product.promoPrice = Number.parseFloat(updateData.promoPrice);
     }
 
     if (updateData.cost !== undefined) {
-      product.cost = parseFloat(updateData.cost);
+      product.cost = Number.parseFloat(updateData.cost);
     }
 
     if (updateData.profitMargin !== undefined) {
-      product.profitMargin = parseFloat(updateData.profitMargin);
+      product.profitMargin = Number.parseFloat(updateData.profitMargin);
     }
 
     // Actualizar stock
     if (updateData.stock !== undefined) {
-      product.stock = parseInt(updateData.stock);
+      product.stock = Number.parseInt(updateData.stock, 10);
     }
 
     // Actualizar campos para indumentaria
@@ -139,7 +139,7 @@ export async function PUT(request, { params }) {
 
     // Campos específicos para calzado
     if (updateData.heelHeight !== undefined)
-      product.heelHeight = parseFloat(updateData.heelHeight);
+      product.heelHeight = Number.parseFloat(updateData.heelHeight);
     if (updateData.soleType !== undefined)
       product.soleType = updateData.soleType;
 
@@ -151,8 +151,8 @@ export async function PUT(request, { params }) {
 
     // Manejar imagen si se proporciona una nueva
     const image =
-      contentType && contentType.includes("multipart/form-data")
-        ? await request.formData().then((formData) => formData.get("image"))
+      contentType && contentType.includes('multipart/form-data')
+        ? await request.formData().then((formData) => formData.get('image'))
         : null;
 
     if (image && image.size > 0) {
@@ -165,7 +165,7 @@ export async function PUT(request, { params }) {
       const bytes = await image.arrayBuffer();
       const buffer = Buffer.from(bytes);
       const imageBase64 = `data:${image.type};base64,${buffer.toString(
-        "base64"
+        'base64',
       )}`;
 
       const { imageUrl, publicId } = await uploadImage(imageBase64);
@@ -177,14 +177,14 @@ export async function PUT(request, { params }) {
     await product.save();
 
     return NextResponse.json({
-      message: "Producto actualizado correctamente",
+      message: 'Producto actualizado correctamente',
       product,
     });
   } catch (error) {
-    console.error("Error al actualizar producto:", error);
+    console.error('Error al actualizar producto:', error);
     return NextResponse.json(
       { message: `Error al actualizar el producto: ${error.message}` },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -195,10 +195,10 @@ export async function DELETE(request, { params }) {
     const session = await getServerSession(authOptions);
 
     // Verificar autenticación y permisos
-    if (!session || session.user.role !== "admin") {
+    if (!session || session.user.role !== 'admin') {
       return NextResponse.json(
-        { message: "No tienes permisos para realizar esta acción" },
-        { status: 403 }
+        { message: 'No tienes permisos para realizar esta acción' },
+        { status: 403 },
       );
     }
 
@@ -211,8 +211,8 @@ export async function DELETE(request, { params }) {
 
     if (!product) {
       return NextResponse.json(
-        { message: "Producto no encontrado" },
-        { status: 404 }
+        { message: 'Producto no encontrado' },
+        { status: 404 },
       );
     }
 
@@ -224,12 +224,12 @@ export async function DELETE(request, { params }) {
     // Eliminar producto de la base de datos
     await Product.findByIdAndDelete(id);
 
-    return NextResponse.json({ message: "Producto eliminado correctamente" });
+    return NextResponse.json({ message: 'Producto eliminado correctamente' });
   } catch (error) {
-    console.error("Error al eliminar producto:", error);
+    console.error('Error al eliminar producto:', error);
     return NextResponse.json(
-      { message: "Error al eliminar el producto" },
-      { status: 500 }
+      { message: 'Error al eliminar el producto' },
+      { status: 500 },
     );
   }
 }

@@ -34,7 +34,7 @@ export default function DiscountCodeInput() {
       <div className="bg-green-50 border border-green-200 rounded-lg p-4">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3">
-            <div className="flex-shrink-0 mt-0.5">
+            <div className="shrink-0 mt-0.5">
               <TagIcon className="h-5 w-5 text-green-600" />
             </div>
             <div className="flex-1">
@@ -53,7 +53,7 @@ export default function DiscountCodeInput() {
           </div>
           <button
             onClick={handleRemove}
-            className="flex-shrink-0 text-green-700 hover:text-green-900 transition-colors"
+            className="shrink-0 text-green-700 hover:text-green-900 transition-colors"
             aria-label="Remover cupón"
           >
             <XMarkIcon className="h-5 w-5" />

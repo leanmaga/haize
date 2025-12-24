@@ -15,7 +15,7 @@ const ErrorBanner = ({ errors }) => {
   return (
     <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
       <div className="flex">
-        <ExclamationTriangleIcon className="h-5 w-5 text-red-600 mr-2 flex-shrink-0" />
+        <ExclamationTriangleIcon className="h-5 w-5 text-red-600 mr-2 shrink-0" />
         <div className="flex-1">
           <h3 className="text-sm font-medium text-red-800">
             Por favor completa los campos obligatorios:

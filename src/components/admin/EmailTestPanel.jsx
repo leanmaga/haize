@@ -133,7 +133,7 @@ const EmailTestPanel = () => {
 
       if (adaptedResult.success) {
         console.log(
-          `✅ Email enviado exitosamente: ${emailType} → ${testEmail}`
+          `✅ Email enviado exitosamente: ${emailType} → ${testEmail}`,
         );
       } else {
         console.error(`❌ Error enviando email:`, adaptedResult.error);
@@ -333,14 +333,17 @@ const EmailTestPanel = () => {
 
         {/* Email Type Selection */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-3">
+          <label
+            htmlFor="email-test"
+            className="block text-sm font-medium text-gray-700 mb-3"
+          >
             Tipo de Email a Probar
           </label>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {emailTypes.map((type) => (
-              <div
+              <button
                 key={type.id}
-                className={`relative border rounded-lg p-4 cursor-pointer transition-all ${
+                className={`w-full text-left relative border rounded-lg p-4 cursor-pointer transition-all ${
                   selectedTest === type.id
                     ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
                     : 'border-gray-300 hover:border-gray-400'
@@ -361,8 +364,8 @@ const EmailTestPanel = () => {
                         type.recipient === 'Admin'
                           ? 'bg-red-100 text-red-800'
                           : type.recipient === 'Cliente'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-blue-100 text-blue-800'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-blue-100 text-blue-800'
                       }`}
                     >
                       Para: {type.recipient}
@@ -372,7 +375,7 @@ const EmailTestPanel = () => {
                 {selectedTest === type.id && (
                   <CheckCircleIcon className="absolute top-2 right-2 h-5 w-5 text-blue-500" />
                 )}
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -449,9 +452,9 @@ const EmailTestPanel = () => {
           >
             <div className="flex items-start">
               {results.success ? (
-                <CheckCircleIcon className="h-5 w-5 text-green-500 mt-0.5 mr-3 flex-shrink-0" />
+                <CheckCircleIcon className="h-5 w-5 text-green-500 mt-0.5 mr-3 shrink-0" />
               ) : (
-                <XCircleIcon className="h-5 w-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" />
+                <XCircleIcon className="h-5 w-5 text-red-500 mt-0.5 mr-3 shrink-0" />
               )}
               <div className="flex-1">
                 <h3
@@ -499,9 +502,9 @@ const EmailTestPanel = () => {
                           className="flex items-center text-xs p-2 bg-white rounded border"
                         >
                           {result.success ? (
-                            <CheckCircleIcon className="h-3 w-3 text-green-500 mr-2 flex-shrink-0" />
+                            <CheckCircleIcon className="h-3 w-3 text-green-500 mr-2 shrink-0" />
                           ) : (
-                            <XCircleIcon className="h-3 w-3 text-red-500 mr-2 flex-shrink-0" />
+                            <XCircleIcon className="h-3 w-3 text-red-500 mr-2 shrink-0" />
                           )}
                           <span className="font-medium mr-2 min-w-0 flex-1">
                             {result.type}:
@@ -554,7 +557,7 @@ const EmailTestPanel = () => {
       {/* Information */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
         <div className="flex items-start">
-          <InformationCircleIcon className="h-6 w-6 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
+          <InformationCircleIcon className="h-6 w-6 text-blue-600 mt-0.5 mr-3 shrink-0" />
           <div>
             <h3 className="text-lg font-medium text-blue-900 mb-2">
               Información del Sistema de Emails

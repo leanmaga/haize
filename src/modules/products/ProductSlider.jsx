@@ -79,7 +79,7 @@ export default function ProductSlider({ products = [] }) {
       >
         <div className="pb-2 flex gap-5 items-stretch">
           {featuredProducts.map((product) => (
-            <div key={product.id} className="flex-shrink-0 w-[260px]">
+            <div key={product.id} className="shrink-0 w-65">
               <ProductCard product={product} />
             </div>
           ))}

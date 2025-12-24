@@ -340,7 +340,7 @@ const AdminQuestionsPage = () => {
       {/* Recordatorio importante */}
       <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
         <div className="flex items-start space-x-2">
-          <ExclamationTriangleIcon className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+          <ExclamationTriangleIcon className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
           <div className="text-xs text-amber-800">
             <p className="font-medium">Recordatorio:</p>
             <p>El cliente recibirá un email automático con tu respuesta.</p>
@@ -588,7 +588,7 @@ const AdminQuestionsPage = () => {
                   {/* Información del producto */}
                   {question.product && (
                     <div className="flex items-center space-x-3 mb-3 p-3 bg-gray-50 rounded-lg">
-                      <div className="w-12 h-12 relative flex-shrink-0">
+                      <div className="w-12 h-12 relative shrink-0">
                         <Image
                           src={question.product.imageUrl || '/placeholder.jpg'}
                           alt={question.product.title || 'Producto'}

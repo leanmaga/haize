@@ -76,7 +76,7 @@ export default function OrderDetailsAdmin({ order, statusStyle }) {
                     className="px-6 py-4 flex items-center space-x-4"
                   >
                     {/* Imagen del producto */}
-                    <div className="flex-shrink-0 w-16 h-16 bg-gray-200 rounded-lg overflow-hidden">
+                    <div className="shrink-0 w-16 h-16 bg-gray-200 rounded-lg overflow-hidden">
                       {item.imageUrl ? (
                         <Image
                           src={item.imageUrl}

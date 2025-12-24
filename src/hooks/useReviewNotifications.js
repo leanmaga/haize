@@ -48,12 +48,14 @@ const useReviewNotifications = () => {
         `/api/admin/notifications/${notificationId}/read`,
         {
           method: 'POST',
-        }
+        },
       );
 
       if (response.ok) {
         setNotifications((prev) =>
-          prev.map((n) => (n._id === notificationId ? { ...n, read: true } : n))
+          prev.map((n) =>
+            n._id === notificationId ? { ...n, read: true } : n,
+          ),
         );
         setUnreadCount((prev) => Math.max(0, prev - 1));
       }
@@ -204,7 +206,7 @@ const ReviewNotificationsPanel = () => {
                     }}
                   >
                     <div className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 mt-0.5">
+                      <div className="shrink-0 mt-0.5">
                         {getNotificationIcon(notification.type)}
                       </div>
 
@@ -231,7 +233,7 @@ const ReviewNotificationsPanel = () => {
                       </div>
 
                       {!notification.read && (
-                        <div className="flex-shrink-0">
+                        <div className="shrink-0">
                           <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                         </div>
                       )}
@@ -346,7 +348,7 @@ const useNewReviewAlert = (productId) => {
     const checkForNewReviews = async () => {
       try {
         const response = await fetch(
-          `/api/products/${productId}/reviews/latest`
+          `/api/products/${productId}/reviews/latest`,
         );
         const data = await response.json();
 

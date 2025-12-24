@@ -8,16 +8,16 @@ import Product from '@/models/Product';
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page')) || 1;
-    const limit = parseInt(searchParams.get('limit')) || 20;
+    const page = Number.parseInt(searchParams.get('page'), 10) || 1;
+    const limit = Number.parseInt(searchParams.get('limit'), 10) || 20;
     const category = searchParams.get('category');
     const brand = searchParams.get('brand');
     const season = searchParams.get('season');
     const featured = searchParams.get('featured');
     const isNew = searchParams.get('isNew');
     const onSale = searchParams.get('onSale');
-    const minPrice = parseFloat(searchParams.get('minPrice')) || 0;
-    const maxPrice = parseFloat(searchParams.get('maxPrice'));
+    const minPrice = Number.parseFloat(searchParams.get('minPrice')) || 0;
+    const maxPrice = Number.parseFloat(searchParams.get('maxPrice'));
     const search = searchParams.get('search');
     const skip = (page - 1) * limit;
 
@@ -163,22 +163,24 @@ export async function POST(request) {
     const productData = {
       title: data.title.trim(),
       description: data.description?.trim() || '',
-      salePrice: parseFloat(data.salePrice),
+      salePrice: Number.parseFloat(data.salePrice),
       category: data.category,
       imageUrl: data.imageUrl,
       featured: data.featured || false,
       isNew: data.isNew || false,
       season: data.season || 'todo-el-año',
-      stock: parseInt(data.stock) || 0,
+      stock: Number.parseInt(data.stock, 10) || 0,
 
       // Campos opcionales
-      promoPrice: data.promoPrice ? parseFloat(data.promoPrice) : 0,
-      cost: data.cost ? parseFloat(data.cost) : 0,
-      profitMargin: data.profitMargin ? parseFloat(data.profitMargin) : 0,
+      promoPrice: data.promoPrice ? Number.parseFloat(data.promoPrice) : 0,
+      cost: data.cost ? Number.parseFloat(data.cost) : 0,
+      profitMargin: data.profitMargin
+        ? Number.parseFloat(data.profitMargin)
+        : 0,
       brand: data.brand?.trim() || '',
       material: data.material?.trim() || '',
       origin: data.origin?.trim() || '',
-      weight: data.weight ? parseFloat(data.weight) : 0,
+      weight: data.weight ? Number.parseFloat(data.weight) : 0,
       sku: data.sku || undefined,
 
       // Arrays
@@ -206,7 +208,7 @@ export async function POST(request) {
           size: v.size,
           color: v.color,
           colorHex: v.colorHex || '#808080',
-          stock: parseInt(v.stock) || 0,
+          stock: Number.parseInt(v.stock, 10) || 0,
           sku: v.sku || '',
         }));
 
@@ -218,11 +220,6 @@ export async function POST(request) {
         );
       }
     }
-
-    console.log(
-      '📦 Creando producto con datos:',
-      JSON.stringify(productData, null, 2),
-    );
 
     const product = new Product(productData);
 
@@ -244,8 +241,6 @@ export async function POST(request) {
     }
 
     await product.save();
-
-    console.log('✅ Producto creado con ID:', product._id);
 
     return NextResponse.json(
       {

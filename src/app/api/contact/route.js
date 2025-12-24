@@ -189,8 +189,8 @@ export async function GET(request) {
 
     const { searchParams } = new URL(request.url);
     const estado = searchParams.get('estado');
-    const limit = parseInt(searchParams.get('limit')) || 50;
-    const page = parseInt(searchParams.get('page')) || 1;
+    const limit = Number.parseInt(searchParams.get('limit'), 10) || 50;
+    const page = Number.parseInt(searchParams.get('page'), 10) || 1;
     const skip = (page - 1) * limit;
 
     // Filtros

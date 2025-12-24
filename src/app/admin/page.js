@@ -67,10 +67,10 @@ export default function AdminDashboard() {
   const calculateStats = (orders) => {
     const totalSales = orders.reduce(
       (sum, order) => sum + (order.totalAmount || 0),
-      0
+      0,
     );
     const pendingOrders = orders.filter(
-      (order) => order.status === 'pendiente'
+      (order) => order.status === 'pendiente',
     ).length;
     const recentOrders = orders.slice(0, 5);
 
@@ -159,7 +159,7 @@ export default function AdminDashboard() {
   // Mostrar pantalla de carga mientras se cargan los datos
   if (isDataLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[300px]">
+      <div className="flex items-center justify-center min-h-75">
         <div
           className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2"
           style={{ borderTopColor: '#000000', borderBottomColor: '#000000' }}
@@ -286,7 +286,7 @@ export default function AdminDashboard() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       {(() => {
                         const { className, style } = getOrderStatusStyles(
-                          order.status
+                          order.status,
                         );
                         return (
                           <span

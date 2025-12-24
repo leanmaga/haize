@@ -289,7 +289,7 @@ export default function AddToCartButton({
         type="button"
         onClick={handleAddToCart}
         disabled={isAdding || !hasStock || !canAddToCart || disabled}
-        className={`w-full md:w-[500px] md:h-12 py-4 md:py-0 font-semibold text-center rounded-full transition-all duration-300 cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2 border-2
+        className={`w-full md:w-125 md:h-12 py-4 md:py-0 font-semibold text-center rounded-full transition-all duration-300 cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2 border-2
           ${
             isAdding
               ? 'opacity-70 text-white bg-black border-black'
@@ -377,7 +377,7 @@ export default function AddToCartButton({
         type="button"
         onClick={handleWhatsAppOrder}
         disabled={!hasStock || !canAddToCart || disabled}
-        className={`w-full md:w-[500px] md:h-12 py-4 md:py-0 font-semibold text-center rounded-full transition-all duration-300 cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2 border-2
+        className={`w-full md:w-125 md:h-12 py-4 md:py-0 font-semibold text-center rounded-full transition-all duration-300 cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2 border-2
           ${
             !hasStock || !canAddToCart || disabled
               ? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'

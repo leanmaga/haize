@@ -70,7 +70,7 @@ export default async function ProductDetails({ params }) {
     stock: product.stock,
   });
   return (
-    <div className="container mx-auto px-4 py-6 max-w-[1400px] mt-[80px]">
+    <div className="container mx-auto px-4 py-6 max-w-350 mt-20">
       {/* Breadcrumb - Alineado a la derecha como en la imagen */}
       <div className="mb-4 text-xs text-gray-600 text-right uppercase tracking-wide">
         <Link href="/" className="hover:underline">
@@ -100,7 +100,7 @@ export default async function ProductDetails({ params }) {
         </div>
 
         {/* Columna Derecha - Detalles CENTRADO CON MAX 500PX */}
-        <div className="flex flex-col pt-2 mx-auto w-full max-w-[500px]">
+        <div className="flex flex-col pt-2 mx-auto w-full max-w-125">
           {/* Badge Nuevo y Botón Favorito (desactivado temporalmente) en la misma línea */}
           <div className="flex items-center justify-between mb-4">
             {/* Badge Nuevo (si el producto es destacado) */}

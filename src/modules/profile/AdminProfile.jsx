@@ -123,7 +123,7 @@ export default function AdminProfile({ userData, onUpdate }) {
 
               <div className="p-6">
                 <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
-                  <div className="w-28 h-28 relative flex-shrink-0 rounded-full overflow-hidden bg-gray-50 border-2 border-gray-100">
+                  <div className="w-28 h-28 relative shrink-0 rounded-full overflow-hidden bg-gray-50 border-2 border-gray-100">
                     {hasGoogleImage ? (
                       <Image
                         src={userData.image}

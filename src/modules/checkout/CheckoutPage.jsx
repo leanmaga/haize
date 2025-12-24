@@ -208,7 +208,7 @@ export default function CheckoutPage() {
   // ===========================================
 
   return (
-    <div className="bg-white min-h-screen py-12 mt-[80px]">
+    <div className="bg-white min-h-screen py-12 mt-20">
       <div className="container mx-auto px-4">
         <h1 className="text-2xl font-nexa-bold mb-8 text-center">
           Finalizar Compra
@@ -413,7 +413,7 @@ export default function CheckoutPage() {
                     key={`${item.id}-${item.variant?.variantId || index}`}
                     className="flex items-center py-3 border-b"
                   >
-                    <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden">
+                    <div className="relative h-16 w-16 shrink-0 overflow-hidden">
                       <Image
                         src={item.image}
                         alt={item.title || 'Producto'}

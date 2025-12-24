@@ -218,7 +218,7 @@ export default function ProductImageSlider({ images, product }) {
               <div
                 key={`thumb-${index}`}
                 onClick={() => goToSlide(index)}
-                className={`relative flex-shrink-0 cursor-pointer rounded-md transition-all
+                className={`relative shrink-0 cursor-pointer rounded-md transition-all
                   ${
                     currentIndex === index
                       ? 'shadow-[0px_13px_27px_-5px_rgba(50,50,93,0.25),0px_8px_16px_-8px_rgba(0,0,0,0.3)] z-10 size-20'

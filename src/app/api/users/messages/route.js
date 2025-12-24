@@ -1,9 +1,9 @@
 // app/api/users/messages/route.js - MENSAJES DEL USUARIO
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import connectDB from "@/lib/db";
-import Review from "@/models/Review";
-import { authOptions } from "@/lib/auth";
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import connectDB from '@/lib/db';
+import Review from '@/models/Review';
+import { authOptions } from '@/lib/auth';
 
 export async function GET(request) {
   try {
@@ -11,31 +11,31 @@ export async function GET(request) {
 
     if (!session?.user) {
       return NextResponse.json(
-        { success: false, error: "No autorizado" },
-        { status: 401 }
+        { success: false, error: 'No autorizado' },
+        { status: 401 },
       );
     }
 
     await connectDB();
 
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page")) || 1;
-    const limit = parseInt(searchParams.get("limit")) || 10;
+    const page = Number.parseInt(searchParams.get('page'), 10) || 1;
+    const limit = Number.parseInt(searchParams.get('limit'), 10) || 10;
     const skip = (page - 1) * limit;
 
     // Obtener todas las preguntas del usuario
     const messages = await Review.find({
       user: session.user.id,
-      type: "question",
+      type: 'question',
     })
-      .populate("product", "title imageUrl")
+      .populate('product', 'title imageUrl')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 
     const total = await Review.countDocuments({
       user: session.user.id,
-      type: "question",
+      type: 'question',
     });
 
     // Estadísticas del usuario
@@ -43,17 +43,17 @@ export async function GET(request) {
       total,
       pending: await Review.countDocuments({
         user: session.user.id,
-        type: "question",
+        type: 'question',
         $or: [
           { response: { $exists: false } },
-          { response: "" },
+          { response: '' },
           { response: null },
         ],
       }),
       answered: await Review.countDocuments({
         user: session.user.id,
-        type: "question",
-        response: { $exists: true, $ne: "" },
+        type: 'question',
+        response: { $exists: true, $ne: '' },
       }),
     };
 
@@ -68,10 +68,10 @@ export async function GET(request) {
       stats,
     });
   } catch (error) {
-    console.error("Error fetching user messages:", error);
+    console.error('Error fetching user messages:', error);
     return NextResponse.json(
-      { success: false, error: "Error al obtener mensajes" },
-      { status: 500 }
+      { success: false, error: 'Error al obtener mensajes' },
+      { status: 500 },
     );
   }
 }

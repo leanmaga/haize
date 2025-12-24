@@ -235,7 +235,7 @@ const FilterSidebar = ({
         px-5 py-8 fixed top-0 left-0 h-full bg-white z-50
         transform transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        w-[320px] md:w-[400px] overflow-y-auto shadow-2xl max-md:w-full
+        w-[320px] md:w-100 overflow-y-auto shadow-2xl max-md:w-full
       `}
       >
         {/* Header */}
@@ -282,7 +282,7 @@ const FilterSidebar = ({
               className={`transition-all duration-300 ease-in-out overflow-hidden
              ${
                expandedSection === 'categorias'
-                 ? 'max-h-[400px] opacity-100 mt-3'
+                 ? 'max-h-100 opacity-100 mt-3'
                  : 'max-h-0 opacity-0'
              }`}
             >
@@ -324,7 +324,7 @@ const FilterSidebar = ({
               className={`transition-all duration-300 ease-in-out overflow-hidden
              ${
                expandedSection === 'precio'
-                 ? 'max-h-[200px] opacity-100 mt-3'
+                 ? 'max-h-50 opacity-100 mt-3'
                  : 'max-h-0 opacity-0'
              }`}
             >
@@ -386,7 +386,7 @@ const FilterSidebar = ({
               className={`transition-all duration-300 ease-in-out overflow-hidden
              ${
                expandedSection === 'talle'
-                 ? 'max-h-[200px] opacity-100 mt-3'
+                 ? 'max-h-50 opacity-100 mt-3'
                  : 'max-h-0 opacity-0'
              }`}
             >
@@ -431,7 +431,7 @@ const FilterSidebar = ({
                 className={`transition-all duration-300 ease-in-out overflow-hidden
              ${
                expandedSection === 'color'
-                 ? 'max-h-[400px] opacity-100 mt-3'
+                 ? 'max-h-100 opacity-100 mt-3'
                  : 'max-h-0 opacity-0'
              }`}
               >

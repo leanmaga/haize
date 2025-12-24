@@ -54,8 +54,8 @@ const AdminReviewsPage = () => {
           activeTab === 'all'
             ? ''
             : activeTab === 'ratings'
-            ? 'rating'
-            : 'question',
+              ? 'rating'
+              : 'question',
         rating: ratingFilter === 'all' ? '' : ratingFilter,
         status: statusFilter,
         sort: sortBy,
@@ -211,7 +211,7 @@ const AdminReviewsPage = () => {
         >
           <CheckCircleIcon className="h-3 w-3 mr-1" />
           Verificado
-        </span>
+        </span>,
       );
     }
 
@@ -223,7 +223,7 @@ const AdminReviewsPage = () => {
         >
           <ExclamationTriangleIcon className="h-3 w-3 mr-1" />
           Reportado
-        </span>
+        </span>,
       );
     }
 
@@ -235,7 +235,7 @@ const AdminReviewsPage = () => {
         >
           <ChatBubbleLeftRightIcon className="h-3 w-3 mr-1" />
           Respondida
-        </span>
+        </span>,
       );
     }
 
@@ -373,7 +373,7 @@ const AdminReviewsPage = () => {
       <div className="bg-white rounded-lg shadow p-6">
         {/* Pestañas */}
         <div className="border-b border-gray-200 mb-6">
-          <nav
+          <div
             className="-mb-px flex space-x-8"
             role="tablist"
             aria-label="Filtros de contenido"
@@ -438,7 +438,7 @@ const AdminReviewsPage = () => {
             >
               Todas ({stats.totalReviews || 0})
             </button>
-          </nav>
+          </div>
         </div>
 
         {/* Controles de Filtro - CON ACCESIBILIDAD MEJORADA */}
@@ -718,7 +718,7 @@ const AdminReviewsPage = () => {
               {filteredReviews
                 .slice(
                   (currentPage - 1) * itemsPerPage,
-                  currentPage * itemsPerPage
+                  currentPage * itemsPerPage,
                 )
                 .map((review) => (
                   <div
@@ -812,7 +812,7 @@ const AdminReviewsPage = () => {
 
                     {/* Información del producto */}
                     <div className="flex items-center space-x-3 mb-3 p-3 bg-gray-50 rounded-lg">
-                      <div className="w-12 h-12 relative flex-shrink-0">
+                      <div className="w-12 h-12 relative shrink-0">
                         <Image
                           src={review.product?.imageUrl || '/placeholder.jpg'}
                           alt={review.product?.title || 'Producto'}
@@ -917,7 +917,7 @@ const AdminReviewsPage = () => {
                   >
                     {i + 1}
                   </button>
-                )
+                ),
               )}
 
               <button
@@ -925,8 +925,8 @@ const AdminReviewsPage = () => {
                   setCurrentPage(
                     Math.min(
                       Math.ceil(filteredReviews.length / itemsPerPage),
-                      currentPage + 1
-                    )
+                      currentPage + 1,
+                    ),
                   )
                 }
                 disabled={

@@ -12,6 +12,7 @@ const StarRating = ({
   interactive = false,
   onRatingChange = () => {},
   className = '',
+  id,
 }) => {
   const sizes = {
     xs: 'w-3 h-3',
@@ -28,7 +29,7 @@ const StarRating = ({
   };
 
   return (
-    <div className={`flex items-center gap-1 ${className}`}>
+    <div id={id} className={`flex items-center gap-1 ${className}`}>
       {[...Array(totalStars)].map((_, index) => {
         const isFullStar = index < Math.floor(rating);
         const isPartialStar = index === Math.floor(rating) && rating % 1 !== 0;
@@ -72,10 +73,10 @@ const StarRating = ({
             size === 'xs'
               ? 'text-xs'
               : size === 'sm'
-              ? 'text-sm'
-              : size === 'md'
-              ? 'text-base'
-              : 'text-lg'
+                ? 'text-sm'
+                : size === 'md'
+                  ? 'text-base'
+                  : 'text-lg'
           }`}
         >
           ({numReviews.toLocaleString()})

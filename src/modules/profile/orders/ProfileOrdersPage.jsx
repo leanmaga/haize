@@ -102,7 +102,7 @@ export default function ProfileOrdersPage() {
   }
 
   return (
-    <div className="mt-[80px]">
+    <div className="mt-20">
       <h2 className="font-nexa-bold text-xl font-semibold mb-6 text-gray-800">
         Mis Pedidos
       </h2>
@@ -146,7 +146,7 @@ export default function ProfileOrdersPage() {
                   {/* ✅ MOSTRAR PRODUCTOS CON VARIANTES */}
                   {order.items.slice(0, 2).map((item, idx) => (
                     <div key={idx} className="flex items-center space-x-4">
-                      <div className="h-16 w-16 relative flex-shrink-0">
+                      <div className="h-16 w-16 relative shrink-0">
                         <Image
                           src={item.imageUrl}
                           alt={item.title || 'Producto'}

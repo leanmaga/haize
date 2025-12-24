@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Heart as HeartIcon } from 'lucide-react';
 
 export default function ProductCard({ product }) {
   // ============================================
@@ -16,9 +15,9 @@ export default function ProductCard({ product }) {
 
   return (
     <Link href={`/products/${product.id}`}>
-      <div className="w-full max-w-xs flex justify-center items-center flex-wrap bg-zinc-50 rounded-sm overflow-hidden shadow-[0px_4px_6px_0px_rgba(0,_0,_0,_0.08)] hover:shadow-[0px_4px_8px_0px_rgba(0,_0,_0,_0.2)] transition-all ease-in-out duration-500 cursor-pointer group">
+      <div className="w-full max-w-xs flex justify-center items-center flex-wrap bg-zinc-50 rounded-sm overflow-hidden shadow-[0px_4px_6px_0px_rgba(0,0,0,0.08)] hover:shadow-[0px_4px_8px_0px_rgba(0,0,0,0.2)] transition-all ease-in-out duration-500 cursor-pointer group">
         {/* Imagen del producto */}
-        <div className="relative w-full h-[340px]">
+        <div className="relative w-full h-85">
           <Image
             src={product.imageUrl || '/assets/placeholder.jpg'}
             alt={product.title}

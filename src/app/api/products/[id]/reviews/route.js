@@ -1,25 +1,25 @@
 // src/app/api/products/[id]/reviews/route.js - VERSIÓN CORREGIDA Y COMPLETA
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import connectDB from "@/lib/db";
-import Product from "@/models/Product";
-import Review from "@/models/Review";
-import Order from "@/models/Order";
-import User from "@/models/User";
-import { authOptions } from "@/lib/auth";
-import { sendNewQuestionNotificationToAdmin } from "@/lib/review-emails";
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import connectDB from '@/lib/db';
+import Product from '@/models/Product';
+import Review from '@/models/Review';
+import Order from '@/models/Order';
+import User from '@/models/User';
+import { authOptions } from '@/lib/auth';
+import { sendNewQuestionNotificationToAdmin } from '@/lib/review-emails';
 
 // Función para verificar si el usuario ha comprado el producto
 async function hasUserPurchasedProduct(userId, productId) {
   try {
     const order = await Order.findOne({
       user: userId,
-      "items.product": productId,
-      status: { $in: ["pagado", "enviado", "entregado"] },
+      'items.product': productId,
+      status: { $in: ['pagado', 'enviado', 'entregado'] },
     });
     return !!order;
   } catch (error) {
-    console.error("Error checking purchase:", error);
+    console.error('Error checking purchase:', error);
     return false;
   }
 }
@@ -31,8 +31,8 @@ export async function GET(request, { params }) {
 
     if (!productId) {
       return NextResponse.json(
-        { success: false, error: "Product ID is required" },
-        { status: 400 }
+        { success: false, error: 'Product ID is required' },
+        { status: 400 },
       );
     }
 
@@ -42,19 +42,19 @@ export async function GET(request, { params }) {
     const product = await Product.findById(productId);
     if (!product) {
       return NextResponse.json(
-        { success: false, error: "Producto no encontrado" },
-        { status: 404 }
+        { success: false, error: 'Producto no encontrado' },
+        { status: 404 },
       );
     }
 
     // Obtener todas las reviews del producto
     const reviews = await Review.find({ product: productId })
-      .populate("user", "name")
+      .populate('user', 'name')
       .sort({ createdAt: -1 });
 
     // Separar por tipo
-    const questions = reviews.filter((r) => r.type === "question");
-    const ratings = reviews.filter((r) => r.type === "rating");
+    const questions = reviews.filter((r) => r.type === 'question');
+    const ratings = reviews.filter((r) => r.type === 'rating');
 
     // Calcular estadísticas de ratings
     let ratingStats = {
@@ -90,13 +90,13 @@ export async function GET(request, { params }) {
       },
     });
   } catch (error) {
-    console.error("❌ Error fetching reviews:", error);
+    console.error('❌ Error fetching reviews:', error);
     return NextResponse.json(
       {
         success: false,
-        error: "Error al obtener las reseñas: " + error.message,
+        error: 'Error al obtener las reseñas: ' + error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -110,8 +110,8 @@ export async function POST(request, { params }) {
 
     if (!session?.user) {
       return NextResponse.json(
-        { success: false, error: "Debes iniciar sesión para interactuar" },
-        { status: 401 }
+        { success: false, error: 'Debes iniciar sesión para interactuar' },
+        { status: 401 },
       );
     }
 
@@ -120,19 +120,19 @@ export async function POST(request, { params }) {
     const { type, rating, comment } = await request.json();
 
     // Validar tipo
-    if (!type || !["question", "rating"].includes(type)) {
+    if (!type || !['question', 'rating'].includes(type)) {
       return NextResponse.json(
-        { success: false, error: "Tipo de interacción inválido" },
-        { status: 400 }
+        { success: false, error: 'Tipo de interacción inválido' },
+        { status: 400 },
       );
     }
 
     // Validaciones específicas
-    if (type === "rating") {
+    if (type === 'rating') {
       if (!rating || rating < 1 || rating > 5) {
         return NextResponse.json(
-          { success: false, error: "La calificación debe estar entre 1 y 5" },
-          { status: 400 }
+          { success: false, error: 'La calificación debe estar entre 1 y 5' },
+          { status: 400 },
         );
       }
     }
@@ -141,9 +141,9 @@ export async function POST(request, { params }) {
       return NextResponse.json(
         {
           success: false,
-          error: "El comentario debe tener al menos 10 caracteres",
+          error: 'El comentario debe tener al menos 10 caracteres',
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -156,13 +156,13 @@ export async function POST(request, { params }) {
 
     if (existingReview) {
       const message =
-        type === "rating"
-          ? "Ya has dejado una calificación para este producto"
-          : "Ya has dejado una pregunta para este producto";
+        type === 'rating'
+          ? 'Ya has dejado una calificación para este producto'
+          : 'Ya has dejado una pregunta para este producto';
 
       return NextResponse.json(
         { success: false, error: message },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -170,8 +170,8 @@ export async function POST(request, { params }) {
     const product = await Product.findById(productId);
     if (!product) {
       return NextResponse.json(
-        { success: false, error: "Producto no encontrado" },
-        { status: 404 }
+        { success: false, error: 'Producto no encontrado' },
+        { status: 404 },
       );
     }
 
@@ -179,25 +179,25 @@ export async function POST(request, { params }) {
     const user = await User.findById(session.user.id);
     if (!user) {
       return NextResponse.json(
-        { success: false, error: "Usuario no encontrado" },
-        { status: 404 }
+        { success: false, error: 'Usuario no encontrado' },
+        { status: 404 },
       );
     }
 
     // Verificar permisos de compra para calificaciones
     const hasPurchased = await hasUserPurchasedProduct(
       session.user.id,
-      productId
+      productId,
     );
     // SOLO para calificaciones con estrellas requerir compra
-    if (type === "rating" && !hasPurchased) {
+    if (type === 'rating' && !hasPurchased) {
       return NextResponse.json(
         {
           success: false,
           error:
-            "Solo los clientes que han comprado este producto pueden dejarlo una calificación con estrellas",
+            'Solo los clientes que han comprado este producto pueden dejarlo una calificación con estrellas',
         },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -211,23 +211,23 @@ export async function POST(request, { params }) {
     };
 
     // Solo agregar rating si es tipo "rating"
-    if (type === "rating") {
-      reviewData.rating = parseInt(rating);
+    if (type === 'rating') {
+      reviewData.rating = Number.parseInt(rating, 10);
     }
 
     const review = await Review.create(reviewData);
-    await review.populate("user", "name");
+    await review.populate('user', 'name');
 
     // 🆕 ENVIAR NOTIFICACIÓN AL ADMIN SI ES UNA PREGUNTA
-    if (type === "question") {
+    if (type === 'question') {
       try {
         const emailResult = await sendNewQuestionNotificationToAdmin(
           review,
           product,
-          user
+          user,
         );
       } catch (emailError) {
-        console.error("❌ Error enviando notificación:", emailError);
+        console.error('❌ Error enviando notificación:', emailError);
         // No fallar la creación de la pregunta por error de email
       }
     }
@@ -236,18 +236,18 @@ export async function POST(request, { params }) {
       success: true,
       review,
       message:
-        type === "rating"
-          ? "Calificación enviada con éxito"
-          : "Pregunta enviada con éxito. Recibirás una notificación cuando sea respondida.",
+        type === 'rating'
+          ? 'Calificación enviada con éxito'
+          : 'Pregunta enviada con éxito. Recibirás una notificación cuando sea respondida.',
     });
   } catch (error) {
-    console.error("❌ Error creating review:", error);
+    console.error('❌ Error creating review:', error);
     return NextResponse.json(
       {
         success: false,
-        error: "Error al enviar la interacción: " + error.message,
+        error: 'Error al enviar la interacción: ' + error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
