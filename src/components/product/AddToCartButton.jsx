@@ -209,7 +209,7 @@ export default function AddToCartButton({
     if (selectedColor) variantText += ` - Color: ${selectedColor}`;
 
     const message = `Hola, quiero pedir el siguiente producto:\n${product.title}${variantText}\nCantidad: ${quantity}\nPrecio: $${price}`;
-    const phone = '+5491125528131';
+    const phone = '+5491126205030';
     const url = `https://wa.me/${phone.replace(
       /\D/g,
       '',
