@@ -154,7 +154,7 @@ export default function ProfileOrdersIdPage() {
   const handleWhatsAppContact = () => {
     if (!order) return;
 
-    const phoneNumber = '5491126907696'; // Tu número de WhatsApp
+    const phoneNumber = '5491126205030'; // Tu número de WhatsApp
     const message = encodeURIComponent(
       `Hola, consulto por mi pedido #${order._id.substring(0, 8)}. 
       

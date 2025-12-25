@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 
 const WhatsAppButton = ({
-  phoneNumber = "1234567890",
-  message = "Hola! Me interesa hacer un pedido",
+  phoneNumber = '1126205030',
+  message = 'Hola! Me interesa hacer un pedido',
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleWhatsAppClick = () => {
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-    window.open(whatsappUrl, "_blank");
+    window.open(whatsappUrl, '_blank');
   };
 
   return (
@@ -20,7 +20,7 @@ const WhatsAppButton = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className="fixed top-4 right-4 z-50 p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl"
-      style={{ backgroundColor: "#F1ECE8" }}
+      style={{ backgroundColor: '#F1ECE8' }}
       aria-label="Contactar por WhatsApp"
     >
       {/* Ícono de WhatsApp */}
@@ -31,7 +31,7 @@ const WhatsAppButton = ({
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className={`transition-all duration-200 ${
-          isHovered ? "scale-110" : ""
+          isHovered ? 'scale-110' : ''
         }`}
       >
         <path

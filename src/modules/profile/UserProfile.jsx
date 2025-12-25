@@ -234,7 +234,7 @@ export default function UserProfile({ userData, recentOrders, onUpdate }) {
                             value={formData.phone}
                             onChange={handleChange}
                             className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-colors"
-                            placeholder="+54 9 11 1234-5678"
+                            placeholder="+54 9 11 2620-5030"
                           />
                         </div>
 

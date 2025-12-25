@@ -172,7 +172,7 @@ export default function WhatsAppButton({
       );
 
       // ✅ CREAR MENSAJE DE WHATSAPP CON VARIANTES CORRECTAS
-      const phoneNumber = '5491127764823';
+      const phoneNumber = '5491126205030';
 
       let message =
         '¡Hola! Quiero hacer un pedido con los siguientes productos:\n\n';
