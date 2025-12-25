@@ -439,7 +439,7 @@ async function sendAdminOrderNotificationTestEmail(adminEmail) {
               <h3>📋 Información del Cliente</h3>
               <p><strong>Nombre:</strong> Juan Pérez (Cliente de Prueba)</p>
               <p><strong>Email:</strong> ${adminEmail}</p>
-              <p><strong>Teléfono:</strong> +54 9 11 1234-5678</p>
+              <p><strong>Teléfono:</strong> +54 9 11 2620-5030</p>
               <p><strong>Fecha:</strong> ${new Date().toLocaleDateString(
                 'es-AR',
               )}</p>

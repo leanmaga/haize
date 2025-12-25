@@ -14,8 +14,8 @@ const ProductCard = ({ product }) => {
     product.salePrice !== undefined
       ? product.salePrice
       : product.price !== undefined
-      ? product.price
-      : 0;
+        ? product.price
+        : 0;
 
   const hasPromotion = product.promoPrice && product.promoPrice > 0;
   const displayPrice = hasPromotion ? product.promoPrice : regularPrice;
@@ -65,12 +65,12 @@ const ProductCard = ({ product }) => {
             onClick={(e) => {
               e.preventDefault();
               const message = encodeURIComponent(
-                `Hola! Me interesa este producto: ${product.title}`
+                `Hola! Me interesa este producto: ${product.title}`,
               );
-              const phoneNumber = '1234567890'; // Cambia por tu número
+              const phoneNumber = '+5491126205030'; // Cambia por tu número
               window.open(
                 `https://wa.me/${phoneNumber}?text=${message}`,
-                '_blank'
+                '_blank',
               );
             }}
             className="absolute top-2 right-2 p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 z-10"
