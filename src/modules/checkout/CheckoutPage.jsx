@@ -382,7 +382,7 @@ export default function CheckoutPage() {
                   </button>
 
                   {/* Botón de WhatsApp */}
-                  <WhatsAppButton
+                  {/* <WhatsAppButton
                     userData={watch()}
                     isDisabled={isSubmitting}
                     handleBeforeSubmit={() => {
@@ -394,7 +394,7 @@ export default function CheckoutPage() {
                       }
                       return isValid;
                     }}
-                  />
+                  /> */}
                 </div>
               </form>
             </div>
