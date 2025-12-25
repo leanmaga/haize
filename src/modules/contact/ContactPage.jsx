@@ -14,7 +14,7 @@ const ContactPage = () => {
 
   // Configuración de contacto - Actualizar con tus datos reales
   const contactInfo = {
-    whatsapp: '5491112345678', // Formato: código país + código área + número (sin espacios ni guiones)
+    whatsapp: '5491126205030', // Formato: código país + código área + número (sin espacios ni guiones)
     email: 'info@haize.com.ar',
   };
 

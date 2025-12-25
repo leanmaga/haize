@@ -61,7 +61,7 @@ const ProductCard = ({ product }) => {
             className="object-cover"
           />
           {/* Botón de WhatsApp en esquina superior derecha */}
-          <button
+          {/* <button
             onClick={(e) => {
               e.preventDefault();
               const message = encodeURIComponent(
@@ -89,7 +89,7 @@ const ProductCard = ({ product }) => {
                 fill="#25D366"
               />
             </svg>
-          </button>
+          </button> */}
 
           {/* Mostrar etiqueta de agotado si no hay stock */}
           {product.stock <= 0 && (
@@ -118,7 +118,7 @@ const ProductCard = ({ product }) => {
         </div>
       </Link>
 
-      <div className="p-4 flex flex-col flex-grow">
+      <div className="p-4 flex flex-col grow">
         {/* Título del producto */}
         <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight">
           <Link
