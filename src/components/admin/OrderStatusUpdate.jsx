@@ -43,7 +43,7 @@ const OrderStatusUpdate = ({ order }) => {
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow flex items-center space-x-4">
+    <div className="bg-white p-4 rounded-lg shadow-card flex items-center space-x-4">
       <div>
         <label
           htmlFor="status"
@@ -55,19 +55,7 @@ const OrderStatusUpdate = ({ order }) => {
           id="status"
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none sm:text-sm rounded-md"
-          style={{
-            '--focus-ring-color': '#000000',
-            '--focus-border-color': '#000000',
-          }}
-          onFocus={(e) => {
-            e.target.style.borderColor = '#000000';
-            e.target.style.boxShadow = `0 0 0 3px rgba(246, 195, 67, 0.1)`;
-          }}
-          onBlur={(e) => {
-            e.target.style.borderColor = '#d1d5db';
-            e.target.style.boxShadow = 'none';
-          }}
+          className="block w-full pl-3 pr-10 py-2 text-base border-1 border-gray-200 focus:outline-none focus:border-black sm:text-sm rounded-md transition-all"
         >
           <option value="whatsapp_pendiente">WhatsApp - Pendiente</option>
           <option value="pendiente">Pendiente</option>
@@ -81,14 +69,14 @@ const OrderStatusUpdate = ({ order }) => {
       <button
         onClick={handleUpdateStatus}
         disabled={loading || status === order.status}
-        className="text-white px-4 py-2 rounded-md transition flex items-center justify-center whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed mt-5"
+        className="text-white px-4 py-2 rounded-md transition flex items-center justify-center whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed mt-5 cursor-pointer"
         style={{
           backgroundColor:
             status === order.status || loading ? '#9ca3af' : '#000000',
         }}
         onMouseEnter={(e) => {
           if (!loading && status !== order.status) {
-            e.target.style.backgroundColor = '#E5B63C'; // Versión más oscura del amarillo
+            e.target.style.backgroundColor = '#999999';
           }
         }}
         onMouseLeave={(e) => {

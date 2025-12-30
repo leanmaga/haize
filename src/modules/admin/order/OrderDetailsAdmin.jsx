@@ -2,6 +2,7 @@
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import Image from 'next/image';
+import CopyButton from '@/shared/components/CopyButton';
 import OrderStatusUpdate from '@/components/admin/OrderStatusUpdate';
 
 export default function OrderDetailsAdmin({ order, statusStyle }) {
@@ -30,6 +31,10 @@ export default function OrderDetailsAdmin({ order, statusStyle }) {
     return paymentMethods[paymentMethod] || paymentMethod;
   };
 
+  const customerInfoText = order.shippingInfo
+    ? `Nombre: ${order.shippingInfo.name}\nEmail: ${order.shippingInfo.email}\nTeléfono: ${order.shippingInfo.phone}\nDirección: ${order.shippingInfo.address}, ${order.shippingInfo.city}, ${order.shippingInfo.state || ''} ${order.shippingInfo.zipCode || ''}`
+    : 'No hay información de cliente disponible';
+
   return (
     <div>
       <Link
@@ -37,7 +42,7 @@ export default function OrderDetailsAdmin({ order, statusStyle }) {
         className="inline-flex items-center mb-6 transition-colors"
         style={{ color: '#000000' }}
         onMouseEnter={(e) => {
-          e.target.style.color = '#E5B63C';
+          e.target.style.color = '#777777';
         }}
         onMouseLeave={(e) => {
           e.target.style.color = '#000000';
@@ -47,7 +52,8 @@ export default function OrderDetailsAdmin({ order, statusStyle }) {
         Volver a todos los pedidos
       </Link>
 
-      <div className="flex flex-col lg:flex-row justify-between items-start mb-6 gap-4">
+      {/* <div className="flex flex-col lg:flex-row justify-between items-start mb-6 gap-4"> */}
+      <div className="grid grid-cols-3 mb-6 gap-6">
         <div>
           <h1 className="text-2xl font-nexa-bold">
             Pedido #{order._id.substring(0, 8)}
@@ -56,6 +62,7 @@ export default function OrderDetailsAdmin({ order, statusStyle }) {
             Realizado el {formatDate(order.createdAt)}
           </p>
         </div>
+        <div></div>
 
         <OrderStatusUpdate order={order} />
       </div>
@@ -63,8 +70,8 @@ export default function OrderDetailsAdmin({ order, statusStyle }) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Productos del pedido */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-300">
+          <div className="bg-white rounded-lg shadow-card overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-200">
               <h2 className="text-lg font-sora-regular">Productos</h2>
             </div>
 
@@ -73,10 +80,10 @@ export default function OrderDetailsAdmin({ order, statusStyle }) {
                 order.items.map((item, index) => (
                   <div
                     key={index}
-                    className="px-6 py-4 flex items-center space-x-4"
+                    className="px-6 py-5 flex items-center space-x-4"
                   >
                     {/* Imagen del producto */}
-                    <div className="shrink-0 w-16 h-16 bg-gray-200 rounded-lg overflow-hidden">
+                    <div className="shrink-0 size-18 bg-gray-200 rounded-lg overflow-hidden">
                       {item.imageUrl ? (
                         <Image
                           src={item.imageUrl}
@@ -95,19 +102,21 @@ export default function OrderDetailsAdmin({ order, statusStyle }) {
                     </div>
 
                     {/* Información del producto */}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-nexa-bold text-gray-900 truncate">
+                    <div className="flex-1 min-w-0 self-start">
+                      <div className="w-full mb-2 flex gap-2 items-center">
+                        <p className="py-1 px-2 text-sm bg-gray-100 text-gray-600 rounded-md">
+                          Talle: {item.size || 'N/A'}
+                        </p>
+                        <p className="py-1 px-2 text-sm bg-gray-100 text-gray-600 rounded-md">
+                          Color: {item.color || 'N/A'}
+                        </p>
+                        <p className="py-1 px-2 text-sm bg-gray-100 text-gray-600 rounded-md">
+                          Cantidad: {item.quantity} × ${item.price}
+                        </p>
+                      </div>
+                      <h3 className="text-md font-nexa-bold text-gray-900 truncate">
                         {item.name || item.title}
                       </h3>
-                      <p className="text-sm text-gray-500">
-                        Talle: {item.size || 'N/A'}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        Color: {item.color || 'N/A'}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        Cantidad: {item.quantity} × ${item.price}
-                      </p>
                     </div>
 
                     {/* Subtotal */}
@@ -124,7 +133,7 @@ export default function OrderDetailsAdmin({ order, statusStyle }) {
             </div>
 
             {/* Total */}
-            <div className="px-6 py-4 bg-white border-t border-gray-300">
+            <div className="px-6 py-4 bg-white border-t border-gray-200">
               <div className="flex justify-between items-center">
                 <span className="text-lg font-nexa-bold text-gray-900">
                   Total:
@@ -140,7 +149,7 @@ export default function OrderDetailsAdmin({ order, statusStyle }) {
         {/* Información del pedido */}
         <div className="space-y-6">
           {/* Estado */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow-card p-6">
             <h3 className="text-lg font-nexa-bold mb-4">Estado del Pedido</h3>
             <div>
               <span
@@ -156,46 +165,77 @@ export default function OrderDetailsAdmin({ order, statusStyle }) {
           </div>
 
           {/* Información del cliente */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-nexa-bold mb-4">
-              Información del Cliente
-            </h3>
+          <div className="bg-white rounded-lg shadow-card p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-nexa-bold">
+                Información del Cliente
+              </h3>
+              <CopyButton
+                text={customerInfoText}
+                className="border-none rounded-none shadow-none p-0"
+                shareIcon={true}
+              />
+            </div>
             {order.shippingInfo ? (
               <div className="space-y-3">
-                <div>
-                  <span className="text-sm font-nexa-bold text-gray-500">
-                    Nombre:
-                  </span>
-                  <p className="text-sm text-gray-900">
-                    {order.shippingInfo.name}
-                  </p>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <span className="text-sm font-nexa-bold text-gray-500">
+                      Nombre:
+                    </span>
+                    <p className="text-sm text-gray-900">
+                      {order.shippingInfo.name}
+                    </p>
+                  </div>
+                  <CopyButton
+                    text={order.shippingInfo.name}
+                    className="border-none rounded-none shadow-none p-0"
+                  />
                 </div>
-                <div>
-                  <span className="text-sm font-nexa-bold text-gray-500">
-                    Email:
-                  </span>
-                  <p className="text-sm text-gray-900">
-                    {order.shippingInfo.email}
-                  </p>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <span className="text-sm font-nexa-bold text-gray-500">
+                      Email:
+                    </span>
+                    <p className="text-sm text-gray-900">
+                      {order.shippingInfo.email}
+                    </p>
+                  </div>
+                  <CopyButton
+                    text={order.shippingInfo.email}
+                    className="border-none rounded-none shadow-none p-0"
+                  />
                 </div>
-                <div>
-                  <span className="text-sm font-nexa-bold text-gray-500">
-                    Teléfono:
-                  </span>
-                  <p className="text-sm text-gray-900">
-                    {order.shippingInfo.phone}
-                  </p>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <span className="text-sm font-nexa-bold text-gray-500">
+                      Teléfono:
+                    </span>
+                    <p className="text-sm text-gray-900">
+                      {order.shippingInfo.phone}
+                    </p>
+                  </div>
+                  <CopyButton
+                    text={order.shippingInfo.phone}
+                    className="border-none rounded-none shadow-none p-0"
+                  />
                 </div>
-                <div>
-                  <span className="text-sm font-nexa-bold text-gray-500">
-                    Dirección:
-                  </span>
-                  <p className="text-sm text-gray-900">
-                    {order.shippingInfo.address}
-                    <br />
-                    {order.shippingInfo.city}, {order.shippingInfo.state}{' '}
-                    {order.shippingInfo.zipCode}
-                  </p>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <span className="text-sm font-nexa-bold text-gray-500">
+                      Dirección:
+                    </span>
+                    <p className="text-sm text-gray-900">
+                      {order.shippingInfo.address}
+                      <br />
+                      {order.shippingInfo.city}, {order.shippingInfo.state}{' '}
+                      {order.shippingInfo.zipCode}
+                    </p>
+                  </div>
+                  <CopyButton
+                    text={`${order.shippingInfo.address}, ${order.shippingInfo.city}, ${order.shippingInfo.state || ''} ${order.shippingInfo.zipCode || ''}`}
+                    className="border-none rounded-none shadow-none p-0"
+                  />
                 </div>
               </div>
             ) : (
@@ -206,7 +246,7 @@ export default function OrderDetailsAdmin({ order, statusStyle }) {
           </div>
 
           {/* Información de pago */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow-card p-6">
             <h3 className="text-lg font-nexa-bold mb-4">Información de Pago</h3>
             <div className="space-y-3">
               <div>
