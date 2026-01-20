@@ -1,97 +1,116 @@
-// src/app/api/size-guides/route.js
+// app/api/size-guides/route.js
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
+import connectDB from '@/lib/db';
 import SizeGuide from '@/models/SizeGuide';
+import Product from '@/models/Product';
 
-/**
- * GET /api/size-guides
- * Obtiene todas las guías de talles o una específica por categoría
- */
+// GET - Obtener todas las guías o por productId
 export async function GET(request) {
   try {
-    await dbConnect();
+    await connectDB();
 
     const { searchParams } = new URL(request.url);
-    const category = searchParams.get('category');
+    const productId = searchParams.get('productId');
 
-    // Si se especifica una categoría, buscar solo esa
-    if (category) {
-      const guide = await SizeGuide.findOne({ category, isActive: true });
+    if (productId) {
+      // Buscar por productId
+      const sizeGuide = await SizeGuide.findOne({
+        productId,
+        isActive: true,
+      });
 
-      if (!guide) {
+      if (!sizeGuide) {
         return NextResponse.json(
-          { message: 'No se encontró guía de talles para esta categoría' },
+          { error: 'No se encontró guía de talles para este producto' },
           { status: 404 },
         );
       }
 
-      return NextResponse.json({ success: true, guide });
+      return NextResponse.json(sizeGuide);
     }
 
-    // Si no, devolver todas las guías activas
-    const guides = await SizeGuide.find({ isActive: true }).sort({
-      category: 1,
-    });
+    // Listar todas
+    const sizeGuides = await SizeGuide.find({ isActive: true })
+      .sort({ createdAt: -1 })
+      .limit(50);
 
-    return NextResponse.json({
-      success: true,
-      guides,
-      count: guides.length,
-    });
+    return NextResponse.json(sizeGuides);
   } catch (error) {
-    console.error('❌ Error al obtener guías de talles:', error);
-    return NextResponse.json(
-      { message: 'Error al obtener guías de talles', error: error.message },
-      { status: 500 },
-    );
+    console.error('Error obteniendo guías de talles:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-/**
- * POST /api/size-guides
- * Crea una nueva guía de talles
- */
+// POST - Crear nueva guía de talles
 export async function POST(request) {
   try {
-    await dbConnect();
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
+    }
+
+    await connectDB();
 
     const data = await request.json();
+    const { productId, name, method, sizes } = data;
 
-    // Validar que la categoría no exista ya
-    const existingGuide = await SizeGuide.findOne({ category: data.category });
-
-    if (existingGuide) {
+    // Validar campos requeridos
+    if (!name || !method || !sizes || sizes.length === 0) {
       return NextResponse.json(
-        { message: 'Ya existe una guía para esta categoría' },
+        { error: 'Nombre, método y al menos un talle son requeridos' },
         { status: 400 },
       );
     }
 
-    // Crear nueva guía
-    const guide = new SizeGuide({
-      category: data.category,
-      description:
-        data.description || 'Todas las medidas están en centímetros (cm)',
-      measurements: data.measurements || [],
-      notes: data.notes || '',
-      isActive: data.isActive !== undefined ? data.isActive : true,
+    // Verificar si ya existe una guía para este producto
+    if (productId) {
+      const existingGuide = await SizeGuide.findOne({ productId });
+      if (existingGuide) {
+        return NextResponse.json(
+          { error: 'Este producto ya tiene una guía de talles' },
+          { status: 400 },
+        );
+      }
+
+      // Verificar que el producto existe
+      const product = await Product.findById(productId);
+      if (!product) {
+        return NextResponse.json(
+          { error: 'Producto no encontrado' },
+          { status: 404 },
+        );
+      }
+    }
+
+    // Crear la guía
+    const sizeGuide = new SizeGuide({
+      productId,
+      name,
+      method,
+      sizes,
     });
 
-    await guide.save();
+    await sizeGuide.save();
+
+    // Actualizar el producto si hay productId
+    if (productId) {
+      await Product.findByIdAndUpdate(productId, {
+        sizeGuide: sizeGuide._id,
+        hasSizeGuide: true,
+      });
+    }
 
     return NextResponse.json(
       {
-        success: true,
-        guide,
         message: 'Guía de talles creada exitosamente',
+        sizeGuide,
       },
       { status: 201 },
     );
   } catch (error) {
-    console.error('❌ Error al crear guía de talles:', error);
-    return NextResponse.json(
-      { message: 'Error al crear guía de talles', error: error.message },
-      { status: 500 },
-    );
+    console.error('Error creando guía de talles:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

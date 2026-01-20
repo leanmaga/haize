@@ -1,102 +1,98 @@
-// src/app/api/size-guides/[id]/route.js
+// app/api/size-guides/[id]/route.js
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
+import connectDB from '@/lib/db';
 import SizeGuide from '@/models/SizeGuide';
 
-/**
- * GET /api/size-guides/[id]
- * Obtiene una guía de talles específica por ID
- */
+// GET - Obtener guía específica
 export async function GET(request, { params }) {
   try {
-    await dbConnect();
+    await connectDB();
 
-    const guide = await SizeGuide.findById(params.id);
+    const { id } = await params;
+    const sizeGuide = await SizeGuide.findById(id);
 
-    if (!guide) {
+    if (!sizeGuide) {
       return NextResponse.json(
-        { message: 'Guía de talles no encontrada' },
+        { error: 'Guía de talles no encontrada' },
         { status: 404 },
       );
     }
 
-    return NextResponse.json({ success: true, guide });
+    return NextResponse.json(sizeGuide);
   } catch (error) {
-    console.error('❌ Error al obtener guía de talles:', error);
-    return NextResponse.json(
-      { message: 'Error al obtener guía de talles', error: error.message },
-      { status: 500 },
-    );
+    console.error('Error obteniendo guía de talles:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-/**
- * PUT /api/size-guides/[id]
- * Actualiza una guía de talles existente
- */
+// PUT - Actualizar guía de talles
 export async function PUT(request, { params }) {
   try {
-    await dbConnect();
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
+    }
 
+    await connectDB();
+
+    const { id } = await params;
     const data = await request.json();
 
-    const guide = await SizeGuide.findById(params.id);
-
-    if (!guide) {
+    const sizeGuide = await SizeGuide.findById(id);
+    if (!sizeGuide) {
       return NextResponse.json(
-        { message: 'Guía de talles no encontrada' },
+        { error: 'Guía de talles no encontrada' },
         { status: 404 },
       );
     }
 
     // Actualizar campos
-    if (data.description !== undefined) guide.description = data.description;
-    if (data.measurements !== undefined) guide.measurements = data.measurements;
-    if (data.notes !== undefined) guide.notes = data.notes;
-    if (data.isActive !== undefined) guide.isActive = data.isActive;
+    if (data.name) sizeGuide.name = data.name;
+    if (data.method) sizeGuide.method = data.method;
+    if (data.sizes) sizeGuide.sizes = data.sizes;
 
-    await guide.save();
+    await sizeGuide.save();
 
     return NextResponse.json({
-      success: true,
-      guide,
       message: 'Guía de talles actualizada exitosamente',
+      sizeGuide,
     });
   } catch (error) {
-    console.error('❌ Error al actualizar guía de talles:', error);
-    return NextResponse.json(
-      { message: 'Error al actualizar guía de talles', error: error.message },
-      { status: 500 },
-    );
+    console.error('Error actualizando guía de talles:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-/**
- * DELETE /api/size-guides/[id]
- * Elimina una guía de talles
- */
+// DELETE - Eliminar guía de talles (soft delete)
 export async function DELETE(request, { params }) {
   try {
-    await dbConnect();
+    const session = await getServerSession(authOptions);
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
+    }
 
-    const guide = await SizeGuide.findByIdAndDelete(params.id);
+    await connectDB();
 
-    if (!guide) {
+    const { id } = await params;
+    const sizeGuide = await SizeGuide.findById(id);
+
+    if (!sizeGuide) {
       return NextResponse.json(
-        { message: 'Guía de talles no encontrada' },
+        { error: 'Guía de talles no encontrada' },
         { status: 404 },
       );
     }
 
+    sizeGuide.isActive = false;
+    await sizeGuide.save();
+
     return NextResponse.json({
-      success: true,
       message: 'Guía de talles eliminada exitosamente',
     });
   } catch (error) {
-    console.error('❌ Error al eliminar guía de talles:', error);
-    return NextResponse.json(
-      { message: 'Error al eliminar guía de talles', error: error.message },
-      { status: 500 },
-    );
+    console.error('Error eliminando guía de talles:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

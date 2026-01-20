@@ -8,7 +8,7 @@ import RelatedProducts from '@/components/product/RelatedProducts';
 import ProductImageSlider from '@/components/product/ProductImageSlider';
 import VariantSelector from '@/components/product/VariantSelector';
 import SameDayShipping from './components/SameDayShipping';
-import SizeGuideTable from '@/components/product/SizeGuideTable';
+import ProductSizeGuideTable from '@/components/product/ProductSizeGuideTable';
 
 export default async function ProductDetails({ params }) {
   // Extract id from params
@@ -248,7 +248,10 @@ export default async function ProductDetails({ params }) {
                 </svg>
               </summary>
               <div className="pb-5">
-                <SizeGuideTable category={product.category} />
+                <ProductSizeGuideTable
+                  sizeGuide={product.sizeGuide}
+                  category={product.category}
+                />
               </div>
             </details>
 

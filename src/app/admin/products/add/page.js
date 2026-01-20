@@ -1,8 +1,10 @@
+// app/admin/products/add/page.js
 'use client';
+
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import ProductForm from '@/modules/products/form/ProductForm';
+import ProductWizard from '@/components/admin/products/ProductWizard';
 
 export default function AddProductPage() {
   const { data: session, status } = useSession();
@@ -38,6 +40,6 @@ export default function AddProductPage() {
     return null;
   }
 
-  // Usar el ProductForm unificado sin pasar producto (modo crear)
-  return <ProductForm />;
+  // Usar el ProductWizard nuevo
+  return <ProductWizard />;
 }

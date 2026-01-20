@@ -1,4 +1,4 @@
-// app/api/products/[id]/route.js - ACTUALIZADO PARA VARIANTES COMBINADAS
+// app/api/products/[id]/route.js - MODIFICADO PARA WIZARD
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import Product from '@/models/Product';
@@ -44,7 +44,7 @@ export async function GET(request, { params }) {
   }
 }
 
-// PUT para actualizar un producto
+// PUT para actualizar un producto (MODIFICADO PARA WIZARD)
 export async function PUT(request, { params }) {
   try {
     const session = await getServerSession(authOptions);
@@ -68,6 +68,56 @@ export async function PUT(request, { params }) {
       );
     }
 
+    // ============ NUEVO: DETECTAR SI ES WIZARD ============
+    const isWizardDraft = data.creationStep && !data.isComplete;
+
+    // Si es wizard draft, validaciones más flexibles
+    if (isWizardDraft) {
+      // Permitir actualización parcial
+      const updateData = {};
+
+      // Paso 1
+      if (data.brand !== undefined) updateData.brand = data.brand;
+      if (data.model !== undefined) updateData.model = data.model;
+      if (data.gender !== undefined) updateData.gender = data.gender;
+
+      // Paso 2
+      if (data.variants !== undefined) updateData.variants = data.variants;
+      if (data.images !== undefined) updateData.images = data.images;
+      if (data.sizeGuide !== undefined) updateData.sizeGuide = data.sizeGuide;
+      if (data.hasSizeGuide !== undefined)
+        updateData.hasSizeGuide = data.hasSizeGuide;
+
+      // Actualizar title si cambió el model
+      if (data.model && !data.title) {
+        updateData.title = `${data.brand || existingProduct.brand} - ${data.model}`;
+      }
+
+      // Metadata del wizard
+      if (data.creationStep !== undefined)
+        updateData.creationStep = data.creationStep;
+      if (data.isComplete !== undefined)
+        updateData.isComplete = data.isComplete;
+
+      // Si se completa el wizard, activar el producto
+      if (data.isComplete === true) {
+        updateData.isActive = true;
+      }
+
+      const updatedProduct = await Product.findByIdAndUpdate(
+        id,
+        { $set: updateData },
+        { new: true, runValidators: false }, // No validar en borradores
+      );
+
+      return NextResponse.json({
+        success: true,
+        product: updatedProduct,
+        message: 'Borrador actualizado',
+      });
+    }
+
+    // ============ PRODUCTO COMPLETO (ORIGINAL) ============
     // Validaciones de campos obligatorios
     if (!data.title || !data.salePrice || !data.category) {
       const missingFields = [];
@@ -92,252 +142,130 @@ export async function PUT(request, { params }) {
       );
     }
 
-    // Validar categorías válidas
-    const validCategories = [
-      'camisas',
-      'remeras',
-      'shorts',
-      'musculosas',
-      'conjuntos',
-    ];
+    // Preparar los datos a actualizar
+    const updateData = {
+      title: data.title.trim(),
+      description:
+        data.description?.trim() || existingProduct.description || '',
+      salePrice: Number.parseFloat(data.salePrice),
+      category: data.category,
+      featured:
+        data.featured !== undefined ? data.featured : existingProduct.featured,
+      isNew: data.isNew !== undefined ? data.isNew : existingProduct.isNew,
+      season: data.season || existingProduct.season || 'todo-el-año',
+      stock: Number.parseInt(data.stock, 10) || existingProduct.stock || 0,
 
-    if (!validCategories.includes(data.category)) {
+      // Campos opcionales
+      promoPrice: data.promoPrice ? Number.parseFloat(data.promoPrice) : 0,
+      cost: data.cost
+        ? Number.parseFloat(data.cost)
+        : existingProduct.cost || 0,
+      profitMargin: data.profitMargin
+        ? Number.parseFloat(data.profitMargin)
+        : existingProduct.profitMargin || 0,
+      brand: data.brand?.trim() || existingProduct.brand || 'Haize',
+      material: data.material?.trim() || existingProduct.material || '',
+      origin: data.origin?.trim() || existingProduct.origin || '',
+      weight: data.weight
+        ? Number.parseFloat(data.weight)
+        : existingProduct.weight || 0,
+
+      // Arrays
+      sizes:
+        data.sizes !== undefined ? data.sizes : existingProduct.sizes || [],
+      colors:
+        data.colors !== undefined ? data.colors : existingProduct.colors || [],
+      composition:
+        data.composition !== undefined
+          ? data.composition
+          : existingProduct.composition || [],
+      careInstructions:
+        data.careInstructions !== undefined
+          ? data.careInstructions
+          : existingProduct.careInstructions || [],
+      tags: data.tags !== undefined ? data.tags : existingProduct.tags || [],
+
+      // Variantes
+      variants:
+        data.variants !== undefined
+          ? data.variants
+          : existingProduct.variants || [],
+
+      // Imágenes
+      imageUrl: data.imageUrl || existingProduct.imageUrl,
+      additionalImages:
+        data.additionalImages !== undefined
+          ? data.additionalImages
+          : existingProduct.additionalImages || [],
+      imageCloudinaryInfo:
+        data.imageCloudinaryInfo || existingProduct.imageCloudinaryInfo || {},
+
+      // Campos del wizard
+      model: data.model || existingProduct.model || '',
+      gender: data.gender || existingProduct.gender || '',
+      sizeGuide:
+        data.sizeGuide !== undefined
+          ? data.sizeGuide
+          : existingProduct.sizeGuide,
+      hasSizeGuide:
+        data.hasSizeGuide !== undefined
+          ? data.hasSizeGuide
+          : existingProduct.hasSizeGuide,
+      creationStep: data.creationStep || existingProduct.creationStep || 6,
+      isComplete:
+        data.isComplete !== undefined
+          ? data.isComplete
+          : existingProduct.isComplete,
+      isActive:
+        data.isActive !== undefined ? data.isActive : existingProduct.isActive,
+    };
+
+    const updatedProduct = await Product.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    });
+
+    return NextResponse.json({
+      success: true,
+      product: updatedProduct,
+      message: 'Producto actualizado exitosamente',
+    });
+  } catch (error) {
+    console.error('❌ Error updating product:', error);
+
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern)[0];
       return NextResponse.json(
         {
-          message: 'Categoría no válida',
-          category: data.category,
-          validCategories,
+          message: `Ya existe un producto con este ${field}`,
+          field,
         },
         { status: 400 },
       );
     }
 
-    // Preparar datos del producto para actualizar
-    const productData = {
-      title: data.title.trim(),
-      description: data.description?.trim() || '',
-      salePrice: Number.parseFloat(data.salePrice),
-      category: data.category,
-      featured: data.featured || false,
-      isNew: data.isNew || false,
-      season: data.season || 'todo-el-año',
-    };
-
-    // Campos opcionales
-    if (data.brand !== undefined) {
-      productData.brand = data.brand?.trim() || '';
-    }
-
-    if (data.material !== undefined) {
-      productData.material = data.material?.trim() || '';
-    }
-
-    if (data.origin !== undefined) {
-      productData.origin = data.origin?.trim() || '';
-    }
-
-    if (data.weight !== undefined) {
-      productData.weight = data.weight ? Number.parseFloat(data.weight) : 0;
-    }
-
-    // Arrays
-    if (data.composition !== undefined) {
-      productData.composition = Array.isArray(data.composition)
-        ? data.composition
-        : [];
-    }
-
-    if (data.careInstructions !== undefined) {
-      productData.careInstructions = Array.isArray(data.careInstructions)
-        ? data.careInstructions
-        : [];
-    }
-
-    if (data.tags !== undefined) {
-      productData.tags = Array.isArray(data.tags) ? data.tags : [];
-    }
-
-    // ✅ VARIANTES COMBINADAS (SISTEMA NUEVO)
-    if (data.variants !== undefined) {
-      productData.variants = Array.isArray(data.variants)
-        ? data.variants
-            .filter((v) => v.size && v.color) // Solo variantes con talle y color
-            .map((v) => ({
-              size: v.size,
-              color: v.color,
-              colorHex: v.colorHex || '#808080',
-              stock: Number.parseInt(v.stock, 10) || 0,
-              sku: v.sku || '',
-            }))
-        : [];
-
-      // Calcular stock total desde variantes
-      if (productData.variants.length > 0) {
-        productData.stock = productData.variants.reduce(
-          (total, v) => total + v.stock,
-          0,
-        );
-      } else if (data.stock !== undefined) {
-        // Si no hay variantes, usar stock manual
-        productData.stock = Number.parseInt(data.stock, 10) || 0;
-      }
-    } else if (data.stock !== undefined) {
-      // Si no se enviaron variantes, usar stock manual
-      productData.stock = Number.parseInt(data.stock, 10) || 0;
-    }
-
-    // Variantes de talle (SISTEMA ANTIGUO - backward compatibility)
-    if (data.sizes !== undefined) {
-      productData.sizes = Array.isArray(data.sizes)
-        ? data.sizes
-            .filter((s) => s.size)
-            .map((s) => ({
-              size: s.size,
-              stock: Number.parseInt(s.stock, 10) || 0,
-              sku: s.sku || undefined,
-            }))
-        : [];
-    }
-
-    // Variantes de color (SISTEMA ANTIGUO - backward compatibility)
-    if (data.colors !== undefined) {
-      productData.colors = Array.isArray(data.colors)
-        ? data.colors
-            .filter((c) => c.name)
-            .map((c) => ({
-              name: c.name,
-              hexCode: c.hexCode || undefined,
-              stock: Number.parseInt(c.stock, 10) || 0,
-              imageUrl: c.imageUrl || undefined,
-              imageCloudinaryInfo: c.imageCloudinaryInfo || undefined,
-            }))
-        : [];
-    }
-
-    // Manejo de imagen principal
-    if (data.imageUrl) {
-      productData.imageUrl = data.imageUrl;
-    }
-
-    // Información adicional de Cloudinary
-    if (data.imageCloudinaryInfo) {
-      productData.imageCloudinaryInfo = {
-        publicId: data.imageCloudinaryInfo.publicId,
-        format: data.imageCloudinaryInfo.format,
-        width: data.imageCloudinaryInfo.width,
-        height: data.imageCloudinaryInfo.height,
-        bytes: data.imageCloudinaryInfo.bytes,
-      };
-    }
-
-    // Procesar imágenes adicionales
-    if (data.additionalImages !== undefined) {
-      if (Array.isArray(data.additionalImages)) {
-        productData.additionalImages = data.additionalImages.map((img) => ({
-          imageUrl: img.imageUrl,
-          description: img.description || '',
-          color: img.color || '',
-          ...(img.imageCloudinaryInfo && {
-            imageCloudinaryInfo: {
-              publicId: img.imageCloudinaryInfo.publicId,
-              format: img.imageCloudinaryInfo.format,
-              width: img.imageCloudinaryInfo.width,
-              height: img.imageCloudinaryInfo.height,
-              bytes: img.imageCloudinaryInfo.bytes,
-            },
-          }),
-        }));
-      } else {
-        productData.additionalImages = [];
-      }
-    }
-
-    // Campos financieros opcionales
-    if (data.promoPrice !== undefined) {
-      productData.promoPrice = data.promoPrice
-        ? Number.parseFloat(data.promoPrice)
-        : 0;
-    }
-
-    if (data.cost !== undefined) {
-      productData.cost = data.cost ? Number.parseFloat(data.cost) : 0;
-    }
-
-    if (data.profitMargin !== undefined) {
-      productData.profitMargin = data.profitMargin
-        ? Number.parseFloat(data.profitMargin)
-        : 0;
-    }
-
-    // SKU
-    if (data.sku !== undefined) {
-      if (data.sku && data.sku !== existingProduct.sku) {
-        // Verificar que no exista otro producto con ese SKU
-        const duplicateSku = await Product.findOne({
-          sku: data.sku,
-          _id: { $ne: id },
-        });
-
-        if (duplicateSku) {
-          return NextResponse.json(
-            { message: 'Ya existe otro producto con ese SKU' },
-            { status: 400 },
-          );
-        }
-
-        productData.sku = data.sku;
-      } else if (!data.sku) {
-        delete productData.sku;
-      }
-    }
-
-    // Actualizar el producto
-    const updatedProduct = await Product.findByIdAndUpdate(id, productData, {
-      new: true,
-      runValidators: true,
-    }).lean();
-
-    return NextResponse.json({
-      message: 'Producto actualizado correctamente',
-      product: updatedProduct,
-    });
-  } catch (error) {
-    console.error('❌ Error al actualizar producto:', error);
-    console.error('Stack:', error.stack);
-
     if (error.name === 'ValidationError') {
-      const validationErrors = {};
-      Object.keys(error.errors).forEach((field) => {
-        validationErrors[field] = error.errors[field].message;
-      });
+      const errors = Object.keys(error.errors).map((key) => ({
+        field: key,
+        message: error.errors[key].message,
+      }));
 
       return NextResponse.json(
         {
           message: 'Error de validación',
-          validationErrors,
+          errors,
         },
         { status: 400 },
-      );
-    }
-
-    if (error.name === 'CastError') {
-      return NextResponse.json(
-        { message: 'ID de producto inválido' },
-        { status: 400 },
-      );
-    }
-
-    if (error.code === 11000) {
-      return NextResponse.json(
-        { message: 'Ya existe un producto con ese SKU' },
-        { status: 409 },
       );
     }
 
     return NextResponse.json(
       {
         message: 'Error al actualizar producto',
-        error: error.message,
+        error:
+          process.env.NODE_ENV === 'development'
+            ? error.message
+            : 'Error interno',
       },
       { status: 500 },
     );
@@ -348,6 +276,7 @@ export async function PUT(request, { params }) {
 export async function DELETE(request, { params }) {
   try {
     const session = await getServerSession(authOptions);
+
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ message: 'No autorizado' }, { status: 403 });
     }
@@ -356,9 +285,9 @@ export async function DELETE(request, { params }) {
 
     await connectDB();
 
-    const product = await Product.findByIdAndDelete(id);
+    const deletedProduct = await Product.findByIdAndDelete(id);
 
-    if (!product) {
+    if (!deletedProduct) {
       return NextResponse.json(
         { message: 'Producto no encontrado' },
         { status: 404 },
@@ -366,11 +295,11 @@ export async function DELETE(request, { params }) {
     }
 
     return NextResponse.json({
-      message: 'Producto eliminado con éxito',
-      deletedId: id,
+      success: true,
+      message: 'Producto eliminado exitosamente',
     });
   } catch (error) {
-    console.error('❌ Error al eliminar producto:', error);
+    console.error('❌ Error deleting product:', error);
 
     if (error.name === 'CastError') {
       return NextResponse.json(
@@ -380,10 +309,7 @@ export async function DELETE(request, { params }) {
     }
 
     return NextResponse.json(
-      {
-        message: 'Error al eliminar producto',
-        error: error.message,
-      },
+      { message: 'Error al eliminar producto' },
       { status: 500 },
     );
   }

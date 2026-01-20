@@ -1,106 +1,50 @@
-// app/api/products/route.js - ACTUALIZADO PARA VARIANTES COMBINADAS
+// app/api/products/route.js - MODIFICADO PARA WIZARD
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
+import Product from '@/models/Product';
 import { authOptions } from '@/lib/auth';
 import { getServerSession } from 'next-auth/next';
-import Product from '@/models/Product';
 
+// GET - Obtener todos los productos con filtros y paginación
 export async function GET(request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const page = Number.parseInt(searchParams.get('page'), 10) || 1;
-    const limit = Number.parseInt(searchParams.get('limit'), 10) || 20;
-    const category = searchParams.get('category');
-    const brand = searchParams.get('brand');
-    const season = searchParams.get('season');
-    const featured = searchParams.get('featured');
-    const isNew = searchParams.get('isNew');
-    const onSale = searchParams.get('onSale');
-    const minPrice = Number.parseFloat(searchParams.get('minPrice')) || 0;
-    const maxPrice = Number.parseFloat(searchParams.get('maxPrice'));
-    const search = searchParams.get('search');
-    const skip = (page - 1) * limit;
-
     await connectDB();
 
-    // Construir query
+    const { searchParams } = new URL(request.url);
+    const category = searchParams.get('category');
+    const page = Number.parseInt(searchParams.get('page')) || 1;
+    const limit = Number.parseInt(searchParams.get('limit')) || 10;
+    const skip = (page - 1) * limit;
+
     let query = { isActive: true };
 
     if (category && category !== 'all') {
       query.category = category;
     }
 
-    if (brand) {
-      query.brand = brand;
-    }
-
-    if (season && season !== 'all') {
-      query.season = season;
-    }
-
-    if (featured === 'true') {
-      query.featured = true;
-    }
-
-    if (isNew === 'true') {
-      query.isNew = true;
-    }
-
-    if (onSale === 'true') {
-      query.onSale = true;
-    }
-
-    // Filtro de precio
-    if (minPrice > 0 || maxPrice) {
-      query.salePrice = {};
-      if (minPrice > 0) query.salePrice.$gte = minPrice;
-      if (maxPrice) query.salePrice.$lte = maxPrice;
-    }
-
-    // Búsqueda por texto
-    if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-        { brand: { $regex: search, $options: 'i' } },
-        { tags: { $regex: search, $options: 'i' } },
-      ];
-    }
-
-    const total = await Product.countDocuments(query);
     const products = await Product.find(query)
-      .sort({ featured: -1, createdAt: -1 })
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .lean();
 
-    // Obtener filtros únicos
-    const [categories, brands, seasons] = await Promise.all([
-      Product.distinct('category', { isActive: true }),
-      Product.distinct('brand', { isActive: true }),
-      Product.distinct('season', { isActive: true }),
-    ]);
+    const total = await Product.countDocuments(query);
 
     return NextResponse.json({
       products,
       pagination: {
-        total,
         page,
         limit,
+        total,
         pages: Math.ceil(total / limit),
-      },
-      filters: {
-        categories,
-        brands,
-        seasons,
       },
     });
   } catch (error) {
-    console.error('❌ Error al obtener productos:', error);
+    console.error('Error al obtener productos:', error);
     return NextResponse.json(
       {
-        message: 'Error al obtener productos',
-        error:
+        error: 'Error al obtener productos',
+        message:
           process.env.NODE_ENV === 'development'
             ? error.message
             : 'Error interno',
@@ -110,6 +54,7 @@ export async function GET(request) {
   }
 }
 
+// POST - Crear nuevo producto (MODIFICADO PARA WIZARD)
 export async function POST(request) {
   try {
     // Autenticación: solo admins pueden crear productos
@@ -120,8 +65,99 @@ export async function POST(request) {
 
     await connectDB();
 
-    const data = await request.json();
+    // Validar que el body tenga contenido
+    let data;
+    try {
+      const text = await request.text();
+      if (!text || text.trim() === '') {
+        return NextResponse.json(
+          { error: 'Body vacío - no se enviaron datos' },
+          { status: 400 },
+        );
+      }
+      data = JSON.parse(text);
+    } catch (parseError) {
+      console.error('❌ Error parseando JSON:', parseError);
+      return NextResponse.json(
+        {
+          error: 'JSON inválido',
+          message: parseError.message,
+        },
+        { status: 400 },
+      );
+    }
 
+    // Validar que data tenga al menos algunos campos
+    if (!data || typeof data !== 'object') {
+      return NextResponse.json(
+        { error: 'Datos inválidos - se esperaba un objeto JSON' },
+        { status: 400 },
+      );
+    }
+
+    // ============ NUEVO: DETECTAR SI ES WIZARD ============
+    const isWizardDraft = data.creationStep && !data.isComplete;
+
+    // Si es wizard draft, validaciones más flexibles
+    if (isWizardDraft) {
+      // Solo validar campos del paso actual
+      if (data.creationStep === 1) {
+        // Paso 1: Características principales
+        if (!data.model || !data.gender || !data.category) {
+          return NextResponse.json(
+            {
+              error: 'Faltan campos del Paso 1',
+              missingFields: ['model', 'gender', 'category'],
+            },
+            { status: 400 },
+          );
+        }
+      }
+
+      // Crear producto borrador
+      const productData = {
+        // Paso 1
+        brand: data.brand || 'Haize',
+        model: data.model,
+        gender: data.gender,
+        category: data.category, // ← Respetar el valor enviado, sin default
+
+        // Campos con valores por defecto para cumplir schema
+        title:
+          data.title ||
+          `${data.brand || 'Haize'} - ${data.model || 'Producto'}`,
+        salePrice: data.salePrice || 0,
+        imageUrl: data.imageUrl || 'https://via.placeholder.com/400',
+
+        // Paso 2
+        variants: data.variants || [],
+        images: data.images || [],
+        sizeGuide: data.sizeGuide || null,
+        hasSizeGuide: data.hasSizeGuide || false,
+
+        // Metadata del wizard
+        creationStep: data.creationStep,
+        isComplete: false,
+        isActive: false, // No mostrar borradores en la tienda
+
+        // Otros campos opcionales
+        description: data.description || '',
+        featured: false,
+        isNew: false,
+        season: 'todo-el-año',
+        stock: 0,
+      };
+
+      const newProduct = await Product.create(productData);
+
+      return NextResponse.json({
+        success: true,
+        product: newProduct,
+        message: 'Borrador guardado',
+      });
+    }
+
+    // ============ PRODUCTO COMPLETO (ORIGINAL) ============
     // Validar campos requeridos
     if (!data.title || !data.salePrice || !data.category || !data.imageUrl) {
       const missingFields = [];
@@ -141,8 +177,9 @@ export async function POST(request) {
 
     // Validar que category esté en el enum
     const validCategories = [
-      'camisas',
       'remeras',
+      'camisas',
+      'pantalones',
       'shorts',
       'musculosas',
       'conjuntos',
@@ -177,114 +214,63 @@ export async function POST(request) {
       profitMargin: data.profitMargin
         ? Number.parseFloat(data.profitMargin)
         : 0,
-      brand: data.brand?.trim() || '',
+      brand: data.brand?.trim() || 'Haize',
       material: data.material?.trim() || '',
       origin: data.origin?.trim() || '',
       weight: data.weight ? Number.parseFloat(data.weight) : 0,
-      sku: data.sku || undefined,
 
       // Arrays
+      sizes: data.sizes || [],
+      colors: data.colors || [],
       composition: data.composition || [],
       careInstructions: data.careInstructions || [],
       tags: data.tags || [],
 
-      // ✅ VARIANTES COMBINADAS (SISTEMA NUEVO)
+      // Variantes combinadas
       variants: data.variants || [],
 
-      // Variantes separadas (SISTEMA ANTIGUO - backward compatibility)
-      sizes: data.sizes || [],
-      colors: data.colors || [],
-
       // Imágenes
-      imageCloudinaryInfo: data.imageCloudinaryInfo || {},
       additionalImages: data.additionalImages || [],
+      imageCloudinaryInfo: data.imageCloudinaryInfo || {},
+
+      // Campos del wizard
+      model: data.model || '',
+      gender: data.gender || '',
+      sizeGuide: data.sizeGuide || null,
+      hasSizeGuide: data.hasSizeGuide || false,
+      creationStep: data.creationStep || 6,
+      isComplete: data.isComplete !== undefined ? data.isComplete : true,
+      isActive: data.isActive !== undefined ? data.isActive : true,
     };
 
-    // ✅ Si se enviaron variantes combinadas, procesar y filtrar
-    if (data.variants && Array.isArray(data.variants)) {
-      productData.variants = data.variants
-        .filter((v) => v.size && v.color) // Solo variantes con talle y color
-        .map((v) => ({
-          size: v.size,
-          color: v.color,
-          colorHex: v.colorHex || '#808080',
-          stock: Number.parseInt(v.stock, 10) || 0,
-          sku: v.sku || '',
-        }));
+    const newProduct = await Product.create(productData);
 
-      // Calcular stock total desde variantes
-      if (productData.variants.length > 0) {
-        productData.stock = productData.variants.reduce(
-          (total, v) => total + v.stock,
-          0,
-        );
-      }
-    }
-
-    const product = new Product(productData);
-
-    // Validar antes de guardar
-    const validationError = product.validateSync();
-    if (validationError) {
-      const errors = {};
-      Object.keys(validationError.errors).forEach((key) => {
-        errors[key] = validationError.errors[key].message;
-      });
-
-      return NextResponse.json(
-        {
-          error: 'Error de validación',
-          validationErrors: errors,
-        },
-        { status: 400 },
-      );
-    }
-
-    await product.save();
-
-    return NextResponse.json(
-      {
-        success: true,
-        product,
-        message: 'Producto creado exitosamente',
-      },
-      { status: 201 },
-    );
+    return NextResponse.json({
+      success: true,
+      product: newProduct,
+      message: 'Producto creado exitosamente',
+    });
   } catch (error) {
-    console.error('❌ Error al crear producto:', error);
-    console.error('Stack:', error.stack);
+    console.error('❌ Error creating product:', error);
 
-    // Error de validación de Mongoose
-    if (error.name === 'ValidationError') {
-      const errors = {};
-      Object.keys(error.errors).forEach((key) => {
-        errors[key] = error.errors[key].message;
-      });
-
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern)[0];
       return NextResponse.json(
         {
-          error: 'Error de validación',
-          validationErrors: errors,
+          error: `Ya existe un producto con este ${field}`,
+          field,
         },
         { status: 400 },
-      );
-    }
-
-    // Error de duplicado (SKU único)
-    if (error.code === 11000) {
-      return NextResponse.json(
-        {
-          error: 'Ya existe un producto con ese SKU',
-          duplicateField: Object.keys(error.keyPattern)[0],
-        },
-        { status: 409 },
       );
     }
 
     return NextResponse.json(
       {
         error: 'Error al crear producto',
-        message: error.message,
+        message:
+          process.env.NODE_ENV === 'development'
+            ? error.message
+            : 'Error interno',
       },
       { status: 500 },
     );

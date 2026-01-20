@@ -1,64 +1,106 @@
-// src/models/SizeGuide.js
+// models/SizeGuide.js - SCHEMA CORREGIDO CON TODOS LOS CAMPOS
 import mongoose from 'mongoose';
 
-/**
- * Modelo para almacenar las guías de talles con medidas físicas
- * Cada categoría tiene sus propias medidas por talle
- */
-const sizeGuideSchema = new mongoose.Schema(
+const SizeGuideSchema = new mongoose.Schema(
   {
-    // Categoría del producto
+    productId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+      required: false, // Puede ser una guía genérica sin producto asociado
+    },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     category: {
       type: String,
-      required: [true, 'La categoría es obligatoria'],
-      unique: true,
-      enum: ['camisas', 'remeras', 'conjuntos', 'shorts', 'musculosas'],
-    },
-
-    // Descripción opcional de la guía
-    description: {
-      type: String,
-      default: 'Todas las medidas están en centímetros (cm)',
-    },
-
-    // Medidas por talle
-    measurements: {
-      type: [
-        {
-          size: {
-            type: String,
-            required: true,
-            enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
-          },
-          // Largo de la prenda (en cm)
-          length: {
-            type: Number,
-            required: true,
-            min: [0, 'El largo no puede ser negativo'],
-          },
-          // Ancho de la prenda (en cm)
-          width: {
-            type: Number,
-            required: true,
-            min: [0, 'El ancho no puede ser negativo'],
-          },
-          // Ancho estirado (para shorts con elasticidad)
-          stretchedWidth: {
-            type: Number,
-            min: [0, 'El ancho estirado no puede ser negativo'],
-          },
-        },
+      enum: [
+        'remeras',
+        'camisas',
+        'pantalones',
+        'shorts',
+        'musculosas',
+        'conjuntos',
       ],
-      default: [],
+      required: false, // Opcional para guías genéricas
     },
-
-    // Notas adicionales (ej: "medidas tomadas de forma recta")
-    notes: {
+    method: {
       type: String,
-      default: '',
+      required: true,
+      enum: ['corporales', 'prenda', 'ambas'],
+      default: 'corporales',
     },
+    sizes: [
+      {
+        // Talle etiqueta (ej: "S", "M", "38", "40")
+        labelSize: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        // Equivalencias (ej: ["S", "Small", "Chico"])
+        equivalencies: [
+          {
+            type: String,
+            trim: true,
+          },
+        ],
+        // Medidas corporales
+        bodyMeasurements: {
+          bustCircumference: Number, // Contorno de busto
+          waistCircumference: Number, // Contorno de cintura
+          hipCircumference: Number, // Contorno de cadera
+          neckCircumference: Number, // Contorno de cuello
+          height: Number, // Altura
+        },
+        // ✅ MEDIDAS DE LA PRENDA - SCHEMA UNIVERSAL
+        garmentMeasurements: {
+          // ═══════════════════════════════════════
+          // CAMPOS COMUNES
+          // ═══════════════════════════════════════
+          length: Number, // Largo total
 
-    // Si está activa o no
+          // ═══════════════════════════════════════
+          // REMERAS / CAMISAS / MUSCULOSAS
+          // ═══════════════════════════════════════
+          chestWidth: Number, // Ancho de pecho (también puede llamarse 'chest')
+          chest: Number, // Alias de chestWidth
+          shoulderWidth: Number, // Ancho de hombros (también puede llamarse 'shoulder')
+          shoulder: Number, // Alias de shoulderWidth
+          sleeveLength: Number, // Largo de manga (también puede llamarse 'sleeve')
+          sleeve: Number, // Alias de sleeveLength
+          neck: Number, // Contorno de cuello (camisas)
+
+          // ═══════════════════════════════════════
+          // PANTALONES / SHORTS
+          // ═══════════════════════════════════════
+          waist: Number, // Cintura
+          hip: Number, // Cadera
+          inseam: Number, // Tiro / entrepierna
+          thigh: Number, // Pierna / muslo
+
+          // ═══════════════════════════════════════
+          // CONJUNTOS (híbrido)
+          // ═══════════════════════════════════════
+          topLength: Number, // Largo del buzo/remera
+          topChest: Number, // Pecho del buzo
+          bottomLength: Number, // Largo del pantalón
+
+          // ═══════════════════════════════════════
+          // CAMPOS ADICIONALES
+          // ═══════════════════════════════════════
+          rise: Number, // Tiro (alternativo a inseam)
+          legOpening: Number, // Boca de pierna
+          armhole: Number, // Sisa
+          bicep: Number, // Circunferencia de bíceps
+          forearm: Number, // Circunferencia de antebrazo
+          wrist: Number, // Circunferencia de muñeca
+          backLength: Number, // Largo de espalda
+          frontLength: Number, // Largo de frente
+        },
+      },
+    ],
     isActive: {
       type: Boolean,
       default: true,
@@ -66,26 +108,18 @@ const sizeGuideSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    // ✅ IMPORTANTE: Permitir campos adicionales sin definir en el schema
+    strict: false, // Esto permite guardar campos no definidos en garmentMeasurements
   },
 );
 
-// Método para obtener las medidas de un talle específico
-sizeGuideSchema.methods.getMeasurementsBySize = function (size) {
-  return this.measurements.find((m) => m.size === size);
-};
+// Índices
+SizeGuideSchema.index({ productId: 1 });
+SizeGuideSchema.index({ name: 1 });
+SizeGuideSchema.index({ isActive: 1 });
+SizeGuideSchema.index({ category: 1 });
 
-// Método para verificar si un talle existe en la guía
-sizeGuideSchema.methods.hasSizeMeasurements = function (size) {
-  return this.measurements.some((m) => m.size === size);
-};
-
-// Método para obtener todos los talles disponibles
-sizeGuideSchema.methods.getAvailableSizes = function () {
-  return this.measurements.map((m) => m.size);
-};
-
-// Prevenir sobrescritura del modelo en desarrollo (hot reload)
 const SizeGuide =
-  mongoose.models.SizeGuide || mongoose.model('SizeGuide', sizeGuideSchema);
+  mongoose.models.SizeGuide || mongoose.model('SizeGuide', SizeGuideSchema);
 
 export default SizeGuide;
