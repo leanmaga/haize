@@ -89,7 +89,7 @@ export default function Footer() {
 
       <div className="w-full mt-8 order-2 max-md:mt-4">
         <p className="mb-0.5 font-nexa-bold">
-          &copy; 2025{' '}
+          &copy; {new Date().getFullYear()}{' '}
           <span className="font-nexa-bold uppercase">
             <CustomLink href="/">Haize</CustomLink>.{' '}
           </span>
