@@ -109,6 +109,11 @@ const AdminSidebar = () => {
           href: '/admin/settings/payment/mercado-pago',
         },
         {
+          title: 'Mercado Libre',
+          icon: BanknotesIcon,
+          href: '/admin/settings/integrations/mercado-libre',
+        },
+        {
           title: 'Cuenta',
           icon: KeyIcon,
           href: '/admin/settings',

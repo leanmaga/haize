@@ -81,6 +81,24 @@ const ProductSchema = new mongoose.Schema(
       trim: true,
     },
 
+    // Vinculación opcional con una publicación de Mercado Libre. El SKU sigue
+    // siendo la referencia de inventario de Haize; estos IDs identifican el
+    // ítem o la variante que hay que actualizar remotamente.
+    mercadoLibre: {
+      itemId: { type: String, trim: true },
+      variationMappings: {
+        type: [
+          {
+            variationId: { type: String, required: true },
+            sku: { type: String, trim: true },
+            size: { type: String, trim: true },
+            color: { type: String, trim: true },
+          },
+        ],
+        default: [],
+      },
+    },
+
     // ============ PASO 2: VARIANTES COMBINADAS (Color + Size) ============
     variants: [
       {
