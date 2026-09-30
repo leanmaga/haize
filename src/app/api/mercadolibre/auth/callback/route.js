@@ -28,7 +28,11 @@ export async function GET(request) {
       }),
     });
     const data = await response.json();
-    if (!response.ok || !data.access_token || !data.refresh_token || !data.user_id) throw new Error(data.message || 'Respuesta de autorización inválida');
+    if (!response.ok || !data.access_token || !data.refresh_token || !data.user_id) {
+      const error = new Error(data.error || data.message || 'Respuesta de autorización inválida');
+      error.status = response.status;
+      throw error;
+    }
     await connectDB();
     await MercadoLibreConfig.updateMany({ isActive: true }, { isActive: false });
     await MercadoLibreConfig.findOneAndUpdate(
@@ -38,7 +42,16 @@ export async function GET(request) {
     );
     return NextResponse.redirect(`${baseUrl}/admin/settings/integrations/mercado-libre?success=connected`);
   } catch (error) {
-    console.error('[MERCADOLIBRE] Error al vincular cuenta:', error);
-    return NextResponse.redirect(`${baseUrl}/admin/settings/integrations/mercado-libre?error=token_exchange_failed`);
+    const reason = error.message === 'invalid_client'
+      ? 'invalid_client'
+      : error.message === 'invalid_grant'
+        ? 'invalid_grant'
+        : 'provider_error';
+    console.error('[MERCADOLIBRE] Error al vincular cuenta:', {
+      reason,
+      status: error.status,
+      message: error.message,
+    });
+    return NextResponse.redirect(`${baseUrl}/admin/settings/integrations/mercado-libre?error=token_exchange_failed&reason=${reason}`);
   }
 }
