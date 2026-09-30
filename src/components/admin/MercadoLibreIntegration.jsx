@@ -42,6 +42,19 @@ export default function MercadoLibreIntegration() {
     window.location.assign(data.authUrl);
   };
 
+  const disconnect = async () => {
+    if (!window.confirm('¿Desconectar la cuenta de Mercado Libre de este entorno?')) return;
+    try {
+      const response = await fetch('/api/mercadolibre/auth/unlink', { method: 'DELETE' });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error);
+      setStatus({ isConnected: false });
+      toast.success('Cuenta de Mercado Libre desconectada');
+    } catch (error) {
+      toast.error(error.message || 'No se pudo desconectar la cuenta');
+    }
+  };
+
   const saveLink = async (product) => {
     setSaving(product._id);
     try {
@@ -77,7 +90,7 @@ export default function MercadoLibreIntegration() {
           {status?.isConnected ? 'Conectada' : 'Sin conectar'}
         </span>
       </div>
-      {status?.isConnected ? <p className="mt-4 text-sm text-gray-700">Cuenta vendedora: {status.sellerId}. Las ventas confirmadas de Mercado Libre descuentan Haize automáticamente.</p>
+      {status?.isConnected ? <div className="mt-4 flex flex-wrap items-center gap-3"><p className="text-sm text-gray-700">Cuenta vendedora: {status.sellerId}. Las ventas confirmadas de Mercado Libre descuentan Haize automáticamente.</p><button onClick={disconnect} className="text-sm text-red-700 underline">Desconectar</button></div>
         : <button onClick={connect} className="mt-5 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-medium px-4 py-2 rounded-md">Conectar cuenta de Mercado Libre</button>}
       <div className="mt-5 rounded-md bg-blue-50 p-4 text-sm text-blue-900">
         En el administrador de aplicaciones de Mercado Libre configurá la URL de notificaciones como <code className="font-mono">/api/mercadolibre/webhook</code> sobre el dominio público de Haize y suscribí el tema <code className="font-mono">orders_v2</code>.
