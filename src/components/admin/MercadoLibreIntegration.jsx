@@ -15,6 +15,7 @@ export default function MercadoLibreIntegration() {
       const messages = {
         invalid_client: 'Mercado Libre rechazó el Client ID o Client Secret.',
         invalid_grant: 'El código de autorización expiró o ya fue usado. Volvé a conectar la cuenta.',
+        invalid_request: 'Mercado Libre rechazó los datos enviados para obtener el token.',
         provider_error: 'Mercado Libre rechazó el intercambio de autorización. Revisá la configuración de la app.',
       };
       toast.error(messages[params.get('reason')] || messages.provider_error);

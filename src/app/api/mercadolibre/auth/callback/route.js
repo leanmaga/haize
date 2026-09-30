@@ -16,21 +16,26 @@ export async function GET(request) {
   if (!session || session.user?.role !== 'admin') return NextResponse.redirect(`${baseUrl}/admin/settings/integrations/mercado-libre?error=unauthorized`);
 
   try {
+    const tokenRequest = new URLSearchParams({
+      grant_type: 'authorization_code',
+      client_id: process.env.MERCADOLIBRE_CLIENT_ID || '',
+      client_secret: process.env.MERCADOLIBRE_CLIENT_SECRET || '',
+      code,
+      redirect_uri: getMercadoLibreRedirectUri(),
+    });
     const response = await fetch('https://api.mercadolibre.com/oauth/token', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        grant_type: 'authorization_code',
-        client_id: process.env.MERCADOLIBRE_CLIENT_ID || '',
-        client_secret: process.env.MERCADOLIBRE_CLIENT_SECRET || '',
-        code,
-        redirect_uri: getMercadoLibreRedirectUri(),
-      }),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: tokenRequest.toString(),
     });
     const data = await response.json();
     if (!response.ok || !data.access_token || !data.refresh_token || !data.user_id) {
       const error = new Error(data.error || data.message || 'Respuesta de autorización inválida');
       error.status = response.status;
+      error.providerDetails = data.error_description || data.message;
       throw error;
     }
     await connectDB();
@@ -46,11 +51,14 @@ export async function GET(request) {
       ? 'invalid_client'
       : error.message === 'invalid_grant'
         ? 'invalid_grant'
+        : error.message === 'invalid_request'
+          ? 'invalid_request'
         : 'provider_error';
     console.error('[MERCADOLIBRE] Error al vincular cuenta:', {
       reason,
       status: error.status,
       message: error.message,
+      providerDetails: error.providerDetails,
     });
     return NextResponse.redirect(`${baseUrl}/admin/settings/integrations/mercado-libre?error=token_exchange_failed&reason=${reason}`);
   }
