@@ -1,19 +1,38 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
+import { cookies } from 'next/headers';
 import { authOptions } from '@/lib/auth';
 import connectDB from '@/lib/db';
 import MercadoLibreConfig from '@/models/MercadoLibreConfig';
 import { getMercadoLibreRedirectUri } from '@/lib/mercadolibre';
 
+const PKCE_VERIFIER_COOKIE = 'ml_oauth_verifier';
+const PKCE_STATE_COOKIE = 'ml_oauth_state';
+
+function redirectAndClearOAuthCookies(url) {
+  const response = NextResponse.redirect(url);
+  response.cookies.set(PKCE_VERIFIER_COOKIE, '', { path: '/api/mercadolibre/auth/callback', maxAge: 0 });
+  response.cookies.set(PKCE_STATE_COOKIE, '', { path: '/api/mercadolibre/auth/callback', maxAge: 0 });
+  return response;
+}
+
 export async function GET(request) {
   const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000').replace(/\/$/, '');
   const { searchParams } = new URL(request.url);
   const code = searchParams.get('code');
+  const state = searchParams.get('state');
   const oauthError = searchParams.get('error');
-  if (oauthError || !code) return NextResponse.redirect(`${baseUrl}/admin/settings/integrations/mercado-libre?error=${encodeURIComponent(oauthError || 'no_code')}`);
+  if (oauthError || !code) return redirectAndClearOAuthCookies(`${baseUrl}/admin/settings/integrations/mercado-libre?error=${encodeURIComponent(oauthError || 'no_code')}`);
+
+  const cookieStore = await cookies();
+  const verifier = cookieStore.get(PKCE_VERIFIER_COOKIE)?.value;
+  const expectedState = cookieStore.get(PKCE_STATE_COOKIE)?.value;
+  if (!verifier || !state || state !== expectedState) {
+    return redirectAndClearOAuthCookies(`${baseUrl}/admin/settings/integrations/mercado-libre?error=invalid_oauth_state`);
+  }
 
   const session = await getServerSession(authOptions);
-  if (!session || session.user?.role !== 'admin') return NextResponse.redirect(`${baseUrl}/admin/settings/integrations/mercado-libre?error=unauthorized`);
+  if (!session || session.user?.role !== 'admin') return redirectAndClearOAuthCookies(`${baseUrl}/admin/settings/integrations/mercado-libre?error=unauthorized`);
 
   try {
     const tokenRequest = new URLSearchParams({
@@ -22,6 +41,7 @@ export async function GET(request) {
       client_secret: process.env.MERCADOLIBRE_CLIENT_SECRET || '',
       code,
       redirect_uri: getMercadoLibreRedirectUri(),
+      code_verifier: verifier,
     });
     const response = await fetch('https://api.mercadolibre.com/oauth/token', {
       method: 'POST',
@@ -45,7 +65,7 @@ export async function GET(request) {
       { userId: session.user.id, accessToken: data.access_token, refreshToken: data.refresh_token, sellerId: String(data.user_id), expiresAt: new Date(Date.now() + data.expires_in * 1000), isActive: true, lastUpdated: new Date() },
       { upsert: true, new: true },
     );
-    return NextResponse.redirect(`${baseUrl}/admin/settings/integrations/mercado-libre?success=connected`);
+    return redirectAndClearOAuthCookies(`${baseUrl}/admin/settings/integrations/mercado-libre?success=connected`);
   } catch (error) {
     const reason = error.message === 'invalid_client'
       ? 'invalid_client'
@@ -60,6 +80,6 @@ export async function GET(request) {
       message: error.message,
       providerDetails: error.providerDetails,
     });
-    return NextResponse.redirect(`${baseUrl}/admin/settings/integrations/mercado-libre?error=token_exchange_failed&reason=${reason}`);
+    return redirectAndClearOAuthCookies(`${baseUrl}/admin/settings/integrations/mercado-libre?error=token_exchange_failed&reason=${reason}`);
   }
 }

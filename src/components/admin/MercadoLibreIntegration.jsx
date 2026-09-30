@@ -11,14 +11,16 @@ export default function MercadoLibreIntegration() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('success') === 'connected') toast.success('Cuenta de Mercado Libre conectada');
-    if (params.get('error') === 'token_exchange_failed') {
+    if (params.get('error') === 'token_exchange_failed' || params.get('error') === 'invalid_oauth_state') {
       const messages = {
         invalid_client: 'Mercado Libre rechazó el Client ID o Client Secret.',
         invalid_grant: 'El código de autorización expiró o ya fue usado. Volvé a conectar la cuenta.',
         invalid_request: 'Mercado Libre rechazó los datos enviados para obtener el token.',
+        invalid_oauth_state: 'La sesión de autorización expiró. Volvé a conectar la cuenta.',
         provider_error: 'Mercado Libre rechazó el intercambio de autorización. Revisá la configuración de la app.',
       };
-      toast.error(messages[params.get('reason')] || messages.provider_error);
+      const key = params.get('error') === 'invalid_oauth_state' ? 'invalid_oauth_state' : params.get('reason');
+      toast.error(messages[key] || messages.provider_error);
     }
   }, []);
 
