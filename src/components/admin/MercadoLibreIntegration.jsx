@@ -7,6 +7,8 @@ export default function MercadoLibreIntegration() {
   const [status, setStatus] = useState(null);
   const [products, setProducts] = useState([]);
   const [saving, setSaving] = useState(null);
+  const [loadingVariations, setLoadingVariations] = useState(null);
+  const [marketplaceVariations, setMarketplaceVariations] = useState({});
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -81,6 +83,24 @@ export default function MercadoLibreIntegration() {
     return { ...product, mercadoLibre: { ...(product.mercadoLibre || {}), variationMappings: [...mappings.filter((mapping) => !keyMatches(mapping)), ...(variationId ? [next] : [])] } };
   }));
 
+  const loadVariations = async (product) => {
+    const itemId = product.mercadoLibre?.itemId?.trim();
+    if (!itemId) return toast.error('Primero ingresá el ID MLA de la publicación');
+
+    setLoadingVariations(product._id);
+    try {
+      const response = await fetch(`/api/mercadolibre/items/${encodeURIComponent(itemId)}`);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error);
+      setMarketplaceVariations((current) => ({ ...current, [product._id]: data }));
+      toast.success(data.variations.length ? 'Variantes consultadas' : 'La publicación no tiene variantes');
+    } catch (error) {
+      toast.error(error.message || 'No se pudieron consultar las variantes');
+    } finally {
+      setLoadingVariations(null);
+    }
+  };
+
   return <div className="space-y-6">
     <section className="bg-white rounded-lg shadow-md p-6">
       <div className="flex items-start justify-between gap-4">
@@ -101,11 +121,13 @@ export default function MercadoLibreIntegration() {
       <p className="text-sm text-gray-600 mt-1 mb-4">Pegá el ID de publicación (por ejemplo, MLA123456789). Un producto sin ID no se sincroniza.</p>
       <div className="space-y-3">
         {products.map((product, index) => <div key={product._id} className="border rounded-md p-3">
-          <div className="grid md:grid-cols-[1fr_180px_auto] gap-3 items-center">
+          <div className="grid md:grid-cols-[1fr_180px_auto_auto] gap-3 items-center">
           <div><p className="font-medium text-gray-900">{product.title}</p><p className="text-xs text-gray-500">SKU: {product.sku} · Stock Haize: {product.stock}</p></div>
           <input aria-label={`ID de Mercado Libre para ${product.title}`} value={product.mercadoLibre?.itemId || ''} onChange={(event) => setItemId(index, event.target.value.toUpperCase())} placeholder="MLA…" className="border rounded px-3 py-2 text-sm" />
+          <button onClick={() => loadVariations(product)} disabled={loadingVariations === product._id || !status?.isConnected} className="border border-blue-700 text-blue-700 rounded px-3 py-2 text-sm hover:bg-blue-50 disabled:opacity-50">{loadingVariations === product._id ? 'Consultando…' : 'Consultar variantes'}</button>
           <button onClick={() => saveLink(product)} disabled={saving === product._id} className="border border-gray-900 rounded px-3 py-2 text-sm hover:bg-gray-900 hover:text-white disabled:opacity-50">{saving === product._id ? 'Guardando…' : 'Guardar'}</button>
           </div>
+          {marketplaceVariations[product._id] && <div className="mt-3 rounded bg-blue-50 p-3 text-xs text-blue-950"><p className="font-medium">{marketplaceVariations[product._id].title}</p>{marketplaceVariations[product._id].variations.length ? <ul className="mt-2 space-y-1">{marketplaceVariations[product._id].variations.map((variation) => <li key={variation.id}><code className="font-mono">{variation.id}</code> · {variation.attributes.map((attribute) => `${attribute.name}: ${attribute.value}`).join(' · ')} · Stock ML: {variation.availableQuantity}</li>)}</ul> : <p className="mt-1">Esta publicación no tiene variantes.</p>}</div>}
           {product.variants?.length > 0 && <details className="mt-3 text-sm"><summary className="cursor-pointer text-gray-700">IDs de variantes de Mercado Libre</summary><div className="mt-2 space-y-2">
             {product.variants.map((variant) => { const mapping = product.mercadoLibre?.variationMappings?.find((entry) => (variant.sku && entry.sku === variant.sku) || (!variant.sku && entry.size === variant.size && entry.color === variant.color)); return <label key={variant._id || `${variant.size}-${variant.color}`} className="flex items-center gap-3 text-xs text-gray-600"><span className="min-w-32">{variant.size} / {variant.color} ({variant.sku || 'sin SKU'})</span><input value={mapping?.variationId || ''} onChange={(event) => setVariationId(index, variant, event.target.value)} placeholder="ID de variante ML" className="border rounded px-2 py-1 text-sm" /></label>; })}
           </div></details>}
