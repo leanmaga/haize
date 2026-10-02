@@ -82,8 +82,12 @@ const Step6Review = ({ data, onBack, onCancel, loading, errors }) => {
         console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
         console.error('❌ Error del servidor:', error);
         console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        const details = error.errors
+          ?.map((item) => item.message || item.field)
+          .filter(Boolean)
+          .join('. ');
         throw new Error(
-          error.message || error.error || 'Error guardando producto',
+          details || error.message || error.error || 'Error guardando producto',
         );
       }
 
@@ -278,19 +282,21 @@ const Step6Review = ({ data, onBack, onCancel, loading, errors }) => {
                             {variant.colorName || variant.color}
                           </p>
                           <p className="text-xs text-gray-600">
-                            {variant.sizes?.length || 0} talle
-                            {variant.sizes?.length !== 1 ? 's' : ''}
-                            {variant.sizes && `: ${variant.sizes.join(', ')}`}
+                            {variant.sizes
+                              ? `${variant.sizes.length} talle${variant.sizes.length !== 1 ? 's' : ''}`
+                              : variant.size || 'Sin talle'}
                           </p>
                         </div>
                       </div>
                       <div className="text-right">
                         <p className="text-sm text-gray-600">Stock total</p>
                         <p className="font-bold text-gray-900">
-                          {variant.sizes?.reduce(
-                            (sum, size) => sum + (size.stock || 0),
-                            0,
-                          ) || 0}
+                          {variant.sizes
+                            ? variant.sizes.reduce(
+                                (sum, size) => sum + (size.stock || 0),
+                                0,
+                              )
+                            : variant.stock || 0}
                         </p>
                       </div>
                     </div>

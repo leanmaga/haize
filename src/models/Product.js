@@ -238,7 +238,16 @@ const ProductSchema = new mongoose.Schema(
     ],
     season: {
       type: String,
-      enum: ['verano', 'otoño', 'invierno', 'primavera', 'todo-el-año'],
+      // Se mantienen las estaciones agrupadas que ya ofrece el wizard.
+      enum: [
+        'verano',
+        'otoño',
+        'invierno',
+        'primavera',
+        'primavera-verano',
+        'otoño-invierno',
+        'todo-el-año',
+      ],
       default: 'todo-el-año',
     },
 

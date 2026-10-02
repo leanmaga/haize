@@ -159,6 +159,23 @@ export async function PUT(request, { params }) {
       );
     }
 
+    const updatedVariants =
+      data.variants !== undefined
+        ? data.variants
+        : existingProduct.variants || [];
+    const variantStock = updatedVariants.reduce((total, variant) => {
+      if (Array.isArray(variant.sizes)) {
+        return total + variant.sizes.reduce(
+          (sizeTotal, size) => sizeTotal + (Number.parseInt(size.stock, 10) || 0),
+          0,
+        );
+      }
+
+      return total + (Number.parseInt(variant.stock, 10) || 0);
+    }, 0);
+    const hasVariants = updatedVariants.length > 0;
+    const requestedStock = Number.parseInt(data.stock, 10);
+
     // Preparar los datos a actualizar
     const updateData = {
       title: data.title.trim(),
@@ -170,7 +187,13 @@ export async function PUT(request, { params }) {
         data.featured !== undefined ? data.featured : existingProduct.featured,
       isNew: data.isNew !== undefined ? data.isNew : existingProduct.isNew,
       season: data.season || existingProduct.season || 'todo-el-año',
-      stock: Number.parseInt(data.stock, 10) || existingProduct.stock || 0,
+      // Las variantes son la fuente de verdad del inventario. Así un stock
+      // cargado en el wizard queda también disponible en el producto.
+      stock: hasVariants
+        ? variantStock
+        : Number.isNaN(requestedStock)
+          ? existingProduct.stock || 0
+          : requestedStock,
 
       // Campos opcionales
       promoPrice: data.promoPrice ? Number.parseFloat(data.promoPrice) : 0,
@@ -204,10 +227,7 @@ export async function PUT(request, { params }) {
       tags: data.tags !== undefined ? data.tags : existingProduct.tags || [],
 
       // Variantes
-      variants:
-        data.variants !== undefined
-          ? data.variants
-          : existingProduct.variants || [],
+      variants: updatedVariants,
 
       // Imágenes
       imageUrl: data.imageUrl || existingProduct.imageUrl,
