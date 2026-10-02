@@ -42,6 +42,24 @@ function getSafeCloudinaryError(error) {
   };
 }
 
+function uploadImageStream(buffer, options = {}) {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      { ...options, disable_promises: true },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      },
+    );
+
+    uploadStream.end(buffer);
+  });
+}
+
+function isInvalidCloudinaryRequest(error) {
+  return error?.http_code === 400 && error?.message === 'Invalid request parameters';
+}
+
 // Configurar Cloudinary (ya deberías tenerlo en lib/cloudinary.js)
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -117,35 +135,53 @@ export async function POST(request) {
       // Subir a Cloudinary
       let result;
       try {
-        result = await new Promise((resolve, reject) => {
-          const uploadStream = cloudinary.uploader.upload_stream(
-            {
-              folder: 'haize/products',
-              transformation: [
-                { width: 1200, height: 1600, crop: 'limit' },
-                { quality: 'auto' },
-              ],
-            },
-            (error, uploadedResult) => {
-              if (error) reject(error);
-              else resolve(uploadedResult);
-            },
-          );
-
-          uploadStream.end(buffer);
+        result = await uploadImageStream(buffer, {
+          folder: 'haize/products',
+          transformation: [
+            { width: 1200, height: 1600, crop: 'limit' },
+            { quality: 'auto' },
+          ],
         });
       } catch (error) {
+        const cloudinaryError = getSafeCloudinaryError(error);
         console.error('[UPLOAD] Cloudinary rejected image upload', {
           requestId,
           fileIndex: uploadedImages.length,
           fileType: file.type,
           fileBytes: file.size,
-          ...getSafeCloudinaryError(error),
+          cloudinary: cloudinaryError,
         });
-        return NextResponse.json(
-          { error: 'Cloudinary rechazó la imagen', requestId },
-          { status: 502 },
-        );
+
+        // If this account rejects one of the optional transformation/folder
+        // parameters, retry the original image upload with Cloudinary defaults.
+        if (!isInvalidCloudinaryRequest(error)) {
+          return NextResponse.json(
+            { error: 'Cloudinary rechazó la imagen', requestId },
+            { status: 502 },
+          );
+        }
+
+        try {
+          result = await uploadImageStream(buffer);
+          console.warn('[UPLOAD] Image uploaded using Cloudinary defaults', {
+            requestId,
+            fileIndex: uploadedImages.length,
+            fileType: file.type,
+            fileBytes: file.size,
+          });
+        } catch (retryError) {
+          console.error('[UPLOAD] Cloudinary retry without optional parameters failed', {
+            requestId,
+            fileIndex: uploadedImages.length,
+            fileType: file.type,
+            fileBytes: file.size,
+            cloudinary: getSafeCloudinaryError(retryError),
+          });
+          return NextResponse.json(
+            { error: 'Cloudinary rechazó la imagen', requestId },
+            { status: 502 },
+          );
+        }
       }
 
       uploadedImages.push({
