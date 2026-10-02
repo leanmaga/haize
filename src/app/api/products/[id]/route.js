@@ -26,6 +26,23 @@ export async function GET(request, { params }) {
       product.variants = [];
     }
 
+    // Compatibilidad con productos creados antes de que `imageUrl` fuera el
+    // formato canónico. Esto permite que el formulario de edición muestre la
+    // foto previa y que el siguiente guardado la migre sin perderla.
+    const legacyImages = Array.isArray(product.images) ? product.images : [];
+    const primaryLegacyImage = legacyImages.find((image) => image?.isPrimary);
+    const readImageUrl = (image) =>
+      typeof image === 'string' ? image : image?.imageUrl || image?.url;
+
+    if (!product.imageUrl) {
+      product.imageUrl = readImageUrl(primaryLegacyImage) || readImageUrl(legacyImages[0]) || '';
+    }
+
+    product.additionalImages = (product.additionalImages || []).map((image) => ({
+      ...image,
+      imageUrl: readImageUrl(image) || '',
+    }));
+
     return NextResponse.json(product);
   } catch (error) {
     console.error('❌ Error al obtener producto:', error);

@@ -183,9 +183,20 @@ const ProductSchema = new mongoose.Schema(
     },
     additionalImages: [
       {
+        // `url` se conserva por compatibilidad con productos existentes.
         url: String,
+        imageUrl: String,
         publicId: String,
         isPrimary: Boolean,
+        description: String,
+        color: String,
+        imageCloudinaryInfo: {
+          publicId: String,
+          width: Number,
+          height: Number,
+          format: String,
+          bytes: Number,
+        },
       },
     ],
 
