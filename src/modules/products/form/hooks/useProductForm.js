@@ -160,20 +160,12 @@ export const useProductForm = (
     }
 
     // Arrays
-    if (composition.length > 0) {
-      productData.composition = composition;
-    }
-    if (careInstructions.length > 0) {
-      productData.careInstructions = careInstructions;
-    }
-    if (tags.length > 0) {
-      productData.tags = tags;
-    }
+    productData.composition = composition;
+    productData.careInstructions = careInstructions;
+    productData.tags = tags;
 
     // ⭐ NUEVA ESTRUCTURA: Variantes combinadas
-    if (variantsData && variantsData.length > 0) {
-      productData.variants = variantsData;
-    }
+    productData.variants = variantsData || [];
 
     // Imágenes
     const mainImageData = imagesHook.getMainImageData();

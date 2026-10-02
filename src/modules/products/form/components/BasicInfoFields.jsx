@@ -58,6 +58,7 @@ const BasicInfoFields = ({ register, validationErrors }) => {
         options={[
           { value: 'camisas', name: 'Camisas' },
           { value: 'remeras', name: 'Remeras' },
+          { value: 'pantalones', name: 'Pantalones' },
           { value: 'musculosas', name: 'Musculosas' },
           { value: 'conjuntos', name: 'Conjuntos' },
           { value: 'shorts', name: 'Shorts' },

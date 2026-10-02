@@ -164,6 +164,7 @@ export async function PUT(request, { params }) {
         ? Number.parseFloat(data.profitMargin)
         : existingProduct.profitMargin || 0,
       brand: data.brand?.trim() || existingProduct.brand || 'Haize',
+      sku: data.sku?.trim() || existingProduct.sku || undefined,
       material: data.material?.trim() || existingProduct.material || '',
       origin: data.origin?.trim() || existingProduct.origin || '',
       weight: data.weight

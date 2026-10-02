@@ -234,7 +234,8 @@ export default function ProductsAdminPage() {
         >
           <option value="all">Todas las categorías</option>
           <option value="camisas">Camisas</option>
-          <option value="-remeras">Remeras</option>
+          <option value="remeras">Remeras</option>
+          <option value="pantalones">Pantalones</option>
           <option value="musculosas">Musculosas</option>
           <option value="conjuntos">Conjuntos</option>
           <option value="shorts">Shorts</option>
