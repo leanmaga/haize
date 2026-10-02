@@ -60,9 +60,8 @@ const OrderTable = ({ orders: initialOrders }) => {
         body: JSON.stringify({ status: newStatus }),
       });
 
-      if (!response.ok) {
-        throw new Error('Error al actualizar el estado del pedido');
-      }
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Error al actualizar el estado del pedido');
 
       setOrders(
         orders.map((order) =>
@@ -70,7 +69,14 @@ const OrderTable = ({ orders: initialOrders }) => {
         ),
       );
 
-      toast.success('Estado del pedido actualizado correctamente');
+      if (data.stockResults && !data.stockResults.success) {
+        const details = data.stockResults.errors?.map((entry) => entry.error).filter(Boolean).join(' · ');
+        toast.error(`El pedido quedó actualizado, pero el stock no se descontó${details ? `: ${details}` : ''}`);
+      } else if (data.stockResults?.syncErrors?.length) {
+        toast.error(`Stock Haize actualizado; Mercado Libre falló: ${data.stockResults.syncErrors[0].error}`);
+      } else {
+        toast.success('Estado del pedido actualizado correctamente');
+      }
     } catch (error) {
       console.error('Error al actualizar el estado del pedido:', error);
       toast.error('Error al actualizar el estado del pedido');

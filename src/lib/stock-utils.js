@@ -17,6 +17,7 @@ export async function reduceStockForOrder(order) {
     success: true,
     updated: [],
     errors: [],
+    syncErrors: [],
   };
 
   console.log(`[STOCK] Reduciendo stock para orden ${order._id}`);
@@ -245,6 +246,11 @@ export async function reduceStockForOrder(order) {
           await syncProductStockToMercadoLibre(product);
         } catch (syncError) {
           console.error('[MERCADOLIBRE] No se pudo sincronizar stock:', syncError.message);
+          results.syncErrors.push({
+            productId: product._id,
+            title: product.title,
+            error: syncError.message,
+          });
         }
 
         results.updated.push({

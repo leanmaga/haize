@@ -11,13 +11,22 @@ export async function reduceStockForMercadoLibreOrder(order) {
   await connectDB();
 
   try {
-    await MercadoLibreSale.create({ orderId: String(order.id), status: order.status });
-  } catch (error) {
-    if (error?.code === 11000) return { skipped: true, reason: 'Orden ya procesada' };
-    throw error;
-  }
+    const matchingLines = (order.order_items || order.items || []).filter((line) => {
+      const itemId = String(line.item?.id || line.item_id || '');
+      return itemId;
+    });
+    const mappedProducts = await Product.countDocuments({
+      'mercadoLibre.itemId': { $in: matchingLines.map((line) => String(line.item?.id || line.item_id || '')) },
+    });
+    if (!mappedProducts) return { skipped: true, reason: 'La orden no contiene publicaciones vinculadas en Haize' };
 
-  try {
+    try {
+      await MercadoLibreSale.create({ orderId: String(order.id), status: 'processing' });
+    } catch (error) {
+      if (error?.code === 11000) return { skipped: true, reason: 'Orden ya procesada o en proceso' };
+      throw error;
+    }
+
     const updated = [];
     for (const line of order.order_items || order.items || []) {
       const itemId = String(line.item?.id || line.item_id || '');
@@ -29,6 +38,9 @@ export async function reduceStockForMercadoLibreOrder(order) {
       const mapping = variationId
         ? product.mercadoLibre.variationMappings?.find((entry) => String(entry.variationId) === String(variationId))
         : null;
+      if (variationId && !mapping) {
+        throw new Error(`Falta vincular la variante ${variationId} de ${product.title}`);
+      }
       const variant = mapping && product.variants?.find((entry) =>
         (mapping.sku && entry.sku === mapping.sku) ||
         (mapping.size && mapping.color && entry.size === mapping.size && entry.color === mapping.color),
@@ -46,6 +58,10 @@ export async function reduceStockForMercadoLibreOrder(order) {
       await product.save();
       updated.push({ productId: String(product._id), quantity });
     }
+    await MercadoLibreSale.updateOne(
+      { orderId: String(order.id) },
+      { status: order.status, processedAt: new Date() },
+    );
     return { success: true, updated };
   } catch (error) {
     // Permitimos reintentar la notificación si el procesamiento falló.

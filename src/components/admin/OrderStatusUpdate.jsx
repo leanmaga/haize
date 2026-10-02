@@ -19,8 +19,7 @@ const OrderStatusUpdate = ({ order }) => {
     setLoading(true);
 
     try {
-      const response = await fetch(`/api/orders/${order._id}`, {
-        // Cambia la ruta si es necesario
+      const response = await fetch(`/api/admin/orders/${order._id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -28,15 +27,22 @@ const OrderStatusUpdate = ({ order }) => {
         body: JSON.stringify({ status }), // Usar status en lugar de newStatus
       });
 
-      if (!response.ok) {
-        throw new Error('Error al actualizar el estado del pedido');
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Error al actualizar el estado del pedido');
+
+      if (data.stockResults && !data.stockResults.success) {
+        throw new Error('El estado se actualizó, pero el stock no pudo descontarse. Revisá el detalle del pedido.');
       }
 
-      toast.success('Estado del pedido actualizado correctamente');
+      if (data.stockResults?.syncErrors?.length) {
+        toast.error('El stock de Haize se actualizó, pero Mercado Libre no pudo sincronizarse.');
+      } else {
+        toast.success('Estado del pedido actualizado correctamente');
+      }
       router.refresh();
     } catch (error) {
       console.error('Error al actualizar el estado del pedido:', error);
-      toast.error('Error al actualizar el estado del pedido');
+      toast.error(error.message || 'Error al actualizar el estado del pedido');
     } finally {
       setLoading(false);
     }

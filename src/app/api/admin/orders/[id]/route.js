@@ -153,6 +153,7 @@ export async function PATCH(request, { params }) {
             success: stockResults.success,
             updatedProducts: stockResults.updated,
             errors: stockResults.errors,
+            syncErrors: stockResults.syncErrors,
             triggeredBy: session.user.email,
             manualUpdate: true,
           };
@@ -298,7 +299,8 @@ export async function PATCH(request, { params }) {
         success: stockResults.success,
         updated: stockResults.updated?.length || 0,
         restored: stockResults.restored?.length || 0,
-        errors: stockResults.errors?.length || 0,
+        errors: stockResults.errors || [],
+        syncErrors: stockResults.syncErrors || [],
       };
     }
 
