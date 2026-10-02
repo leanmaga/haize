@@ -148,8 +148,25 @@ const ProductWizard = ({ isEdit = false, productId = null }) => {
         variantsCount: product.variants?.length,
       });
 
-      // ✅ CRÍTICO: Guardar AMBOS IDs
-      setProductData(product);
+      const legacyImages = Array.isArray(product.images) ? product.images : [];
+      const readImageUrl = (image) =>
+        typeof image === 'string' ? image : image?.url || image?.imageUrl;
+      const primaryLegacyImage = legacyImages.find((image) => image?.isPrimary);
+
+      // La creación y edición usan el mismo contrato del wizard. Normalizamos
+      // productos antiguos para que sus fotos aparezcan en el paso 3.
+      const normalizedProduct = {
+        ...product,
+        model: product.model || product.title || '',
+        gender: product.gender || 'Unisex',
+        imageUrl:
+          product.imageUrl ||
+          readImageUrl(primaryLegacyImage) ||
+          readImageUrl(legacyImages[0]) ||
+          '',
+      };
+
+      setProductData(normalizedProduct);
       setEditingProductId(product._id || product.id);
 
       console.log('💾 [STATE] Estado actualizado con producto');
@@ -370,24 +387,10 @@ const ProductWizard = ({ isEdit = false, productId = null }) => {
                 {isEdit ? 'Editar Producto' : 'Crear Nuevo Producto'}
               </h1>
 
-              {/* 🔍 DEBUG INFO EN UI */}
-              <div className="mt-2 text-xs space-y-1">
+              <div className="mt-2 text-xs">
                 <p className="text-gray-500">
                   {isEdit ? '✏️ Modo edición' : '✨ Modo creación'}
                 </p>
-                {isEdit && (
-                  <>
-                    <p className="text-blue-600">
-                      🆔 Prop ID: {productId || 'N/A'}
-                    </p>
-                    <p className="text-green-600">
-                      💾 State ID: {editingProductId || 'N/A'}
-                    </p>
-                    <p className="text-purple-600">
-                      📦 Data ID: {productData._id || productData.id || 'N/A'}
-                    </p>
-                  </>
-                )}
               </div>
             </div>
 
@@ -466,6 +469,7 @@ const ProductWizard = ({ isEdit = false, productId = null }) => {
             errors={errors}
             isFirstStep={currentStep === 1}
             isLastStep={isLastStep}
+            isEdit={isEdit}
           />
         ) : (
           <div className="bg-white rounded-lg shadow p-8">

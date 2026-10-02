@@ -45,6 +45,19 @@ const Step3VariantsAndPhotos = ({
 
   // Inicializar variantes desde data si existen
   useEffect(() => {
+    const readImageUrl = (image) =>
+      typeof image === 'string' ? image : image?.url || image?.imageUrl;
+    const fallbackPhotos = [
+      ...(Array.isArray(data.images) ? data.images : []),
+      data.imageUrl,
+      ...(Array.isArray(data.additionalImages) ? data.additionalImages : []),
+    ]
+      .map(readImageUrl)
+      .filter(Boolean);
+    const hasVariantPhotos = data.variants?.some(
+      (variant) => Array.isArray(variant.images) && variant.images.length > 0,
+    );
+
     if (data.variants && data.variants.length > 0) {
       // Reconstruir variantes desde el formato del modelo
       const variantsMap = new Map();
@@ -56,13 +69,17 @@ const Step3VariantsAndPhotos = ({
             id: Date.now() + Math.random(),
             color: v.color,
             fabricDesign: v.fabricDesign || '',
-            photos: v.images
-              ? v.images.map((url, i) => ({
+            photos: (v.images?.length
+              ? v.images
+              : !hasVariantPhotos
+                ? fallbackPhotos
+                : [])
+              .map((image, i) => ({
                   id: Date.now() + i,
-                  url,
-                  publicId: `existing_${i}`,
+                  url: readImageUrl(image),
+                  publicId: image?.publicId || `existing_${i}`,
                 }))
-              : [],
+              .filter((photo) => photo.url),
             sizes: [],
             isPrimary: v.isPrimary || false,
           });
@@ -81,14 +98,28 @@ const Step3VariantsAndPhotos = ({
 
       setVariants(Array.from(variantsMap.values()));
     } else {
-      // Crear primera variante vacía
+      // Producto antiguo sin variantes: conservar sus fotos para que el
+      // editor no obligue a cargarlas de nuevo.
       setVariants([
         {
           id: Date.now(),
-          color: '',
+          color: data.colors?.[0] || 'Sin color',
           fabricDesign: '',
-          photos: [],
-          sizes: [],
+          photos: fallbackPhotos.map((url, index) => ({
+            id: Date.now() + index,
+            url,
+            publicId: `existing_${index}`,
+          })),
+          sizes: data.sizes?.length
+            ? data.sizes.map((size, index) => ({
+                id: Date.now() + index,
+                size,
+                stock: index === 0 ? data.stock || 0 : 0,
+                universalCode: '',
+                sku: '',
+                noCode: true,
+              }))
+            : [],
           isPrimary: true,
         },
       ]);
