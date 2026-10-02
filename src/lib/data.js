@@ -2,6 +2,7 @@ import connectDB from './db';
 import Product from '@/models/Product';
 import User from '@/models/User';
 import Order from '@/models/Order';
+import SizeGuide from '@/models/SizeGuide';
 
 // Función para obtener productos destacados
 export async function getFeaturedProducts() {
@@ -221,7 +222,7 @@ export async function getProductById(id) {
 
     // ✅ POPULATE sizeGuide para traer medidas completas
     const product = await Product.findById(id)
-      .populate('sizeGuide') // ← NUEVO: Trae la guía completa
+      .populate({ path: 'sizeGuide', model: SizeGuide })
       .lean();
 
     if (!product) {
