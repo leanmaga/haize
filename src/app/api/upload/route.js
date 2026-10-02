@@ -3,6 +3,44 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { v2 as cloudinary } from 'cloudinary';
+import { randomUUID } from 'node:crypto';
+
+const CLOUDINARY_ENV_KEYS = [
+  'CLOUDINARY_CLOUD_NAME',
+  'CLOUDINARY_API_KEY',
+  'CLOUDINARY_API_SECRET',
+];
+
+function sanitizeProviderMessage(message) {
+  if (typeof message !== 'string') return undefined;
+
+  return message
+    .replace(
+      /(api[_-]?(?:key|secret)|authorization|(?:access|refresh)[_-]?token|signature)(["'\s:=]+)[^\s,"'&}]+/gi,
+      '$1$2[REDACTED]',
+    )
+    .slice(0, 500);
+}
+
+function getSafeCloudinaryError(error) {
+  return {
+    name: typeof error?.name === 'string' ? error.name.slice(0, 100) : undefined,
+    code: typeof error?.code === 'string' || typeof error?.code === 'number'
+      ? error.code
+      : undefined,
+    httpStatus: Number.isInteger(error?.http_code)
+      ? error.http_code
+      : Number.isInteger(error?.statusCode)
+        ? error.statusCode
+        : undefined,
+    requestId: typeof error?.request_id === 'string'
+      ? error.request_id.slice(0, 150)
+      : typeof error?.requestId === 'string'
+        ? error.requestId.slice(0, 150)
+        : undefined,
+    message: sanitizeProviderMessage(error?.message),
+  };
+}
 
 // Configurar Cloudinary (ya deberías tenerlo en lib/cloudinary.js)
 cloudinary.config({
@@ -12,11 +50,26 @@ cloudinary.config({
 });
 
 export async function POST(request) {
+  const requestId = randomUUID();
   try {
     // Verificar autenticación
     const session = await getServerSession(authOptions);
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
+    }
+
+    const missingCloudinaryEnv = CLOUDINARY_ENV_KEYS.filter(
+      (key) => !process.env[key]?.trim(),
+    );
+    if (missingCloudinaryEnv.length > 0) {
+      console.error('[UPLOAD] Cloudinary configuration is incomplete', {
+        requestId,
+        missingEnvironmentKeys: missingCloudinaryEnv,
+      });
+      return NextResponse.json(
+        { error: 'Configuración de imágenes incompleta', requestId },
+        { status: 500 },
+      );
     }
 
     const formData = await request.formData();
@@ -62,23 +115,38 @@ export async function POST(request) {
       const buffer = Buffer.from(bytes);
 
       // Subir a Cloudinary
-      const result = await new Promise((resolve, reject) => {
-        const uploadStream = cloudinary.uploader.upload_stream(
-          {
-            folder: 'haize/products',
-            transformation: [
-              { width: 1200, height: 1600, crop: 'limit' },
-              { quality: 'auto' },
-            ],
-          },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          },
-        );
+      let result;
+      try {
+        result = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            {
+              folder: 'haize/products',
+              transformation: [
+                { width: 1200, height: 1600, crop: 'limit' },
+                { quality: 'auto' },
+              ],
+            },
+            (error, uploadedResult) => {
+              if (error) reject(error);
+              else resolve(uploadedResult);
+            },
+          );
 
-        uploadStream.end(buffer);
-      });
+          uploadStream.end(buffer);
+        });
+      } catch (error) {
+        console.error('[UPLOAD] Cloudinary rejected image upload', {
+          requestId,
+          fileIndex: uploadedImages.length,
+          fileType: file.type,
+          fileBytes: file.size,
+          ...getSafeCloudinaryError(error),
+        });
+        return NextResponse.json(
+          { error: 'Cloudinary rechazó la imagen', requestId },
+          { status: 502 },
+        );
+      }
 
       uploadedImages.push({
         url: result.secure_url,
@@ -95,9 +163,12 @@ export async function POST(request) {
       images: uploadedImages,
     });
   } catch (error) {
-    console.error('Error subiendo imágenes:', error);
+    console.error('[UPLOAD] Unexpected image upload failure', {
+      requestId,
+      ...getSafeCloudinaryError(error),
+    });
     return NextResponse.json(
-      { error: error.message || 'Error al subir imágenes' },
+      { error: 'Error interno al subir imágenes', requestId },
       { status: 500 },
     );
   }
