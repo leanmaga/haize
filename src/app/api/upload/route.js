@@ -5,11 +5,18 @@ import { authOptions } from '@/lib/auth';
 import { v2 as cloudinary } from 'cloudinary';
 import { randomUUID } from 'node:crypto';
 
-const CLOUDINARY_ENV_KEYS = [
-  'CLOUDINARY_CLOUD_NAME',
-  'CLOUDINARY_API_KEY',
-  'CLOUDINARY_API_SECRET',
-];
+const cloudinaryEnv = {
+  cloudName:
+    process.env.CLOUDINARY_CLOUD_NAME ||
+    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  apiKey:
+    process.env.CLOUDINARY_API_KEY || process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+  apiSecret: process.env.CLOUDINARY_API_SECRET,
+  folder:
+    process.env.CLOUDINARY_FOLDER ||
+    process.env.NEXT_PUBLIC_CLOUDINARY_FOLDER ||
+    'haizeecommerce/haize-staging',
+};
 
 function sanitizeProviderMessage(message) {
   if (typeof message !== 'string') return undefined;
@@ -62,9 +69,9 @@ function isInvalidCloudinaryRequest(error) {
 
 // Configurar Cloudinary (ya deberías tenerlo en lib/cloudinary.js)
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: cloudinaryEnv.cloudName,
+  api_key: cloudinaryEnv.apiKey,
+  api_secret: cloudinaryEnv.apiSecret,
 });
 
 export async function POST(request) {
@@ -76,9 +83,10 @@ export async function POST(request) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
     }
 
-    const missingCloudinaryEnv = CLOUDINARY_ENV_KEYS.filter(
-      (key) => !process.env[key]?.trim(),
-    );
+    const missingCloudinaryEnv = Object.entries(cloudinaryEnv)
+      .filter(([key]) => key !== 'folder')
+      .filter(([, value]) => !value?.trim())
+      .map(([key]) => key);
     if (missingCloudinaryEnv.length > 0) {
       console.error('[UPLOAD] Cloudinary configuration is incomplete', {
         requestId,
@@ -136,7 +144,7 @@ export async function POST(request) {
       let result;
       try {
         result = await uploadImageStream(buffer, {
-          folder: 'haize/products',
+          folder: cloudinaryEnv.folder,
           transformation: [
             { width: 1200, height: 1600, crop: 'limit' },
             { quality: 'auto' },
@@ -152,8 +160,8 @@ export async function POST(request) {
           cloudinary: cloudinaryError,
         });
 
-        // If this account rejects one of the optional transformation/folder
-        // parameters, retry the original image upload with Cloudinary defaults.
+        // Retry without the optional transformation first, preserving the
+        // environment-specific folder.
         if (!isInvalidCloudinaryRequest(error)) {
           return NextResponse.json(
             { error: 'Cloudinary rechazó la imagen', requestId },
@@ -162,7 +170,9 @@ export async function POST(request) {
         }
 
         try {
-          result = await uploadImageStream(buffer);
+          result = await uploadImageStream(buffer, {
+            folder: cloudinaryEnv.folder,
+          });
           console.warn('[UPLOAD] Image uploaded using Cloudinary defaults', {
             requestId,
             fileIndex: uploadedImages.length,
@@ -177,10 +187,18 @@ export async function POST(request) {
             fileBytes: file.size,
             cloudinary: getSafeCloudinaryError(retryError),
           });
-          return NextResponse.json(
-            { error: 'Cloudinary rechazó la imagen', requestId },
-            { status: 502 },
-          );
+          try {
+            result = await uploadImageStream(buffer);
+          } catch (finalError) {
+            console.error('[UPLOAD] Cloudinary final retry failed', {
+              requestId,
+              cloudinary: getSafeCloudinaryError(finalError),
+            });
+            return NextResponse.json(
+              { error: 'Cloudinary rechazó la imagen', requestId },
+              { status: 502 },
+            );
+          }
         }
       }
 
