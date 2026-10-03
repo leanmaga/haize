@@ -52,7 +52,7 @@ function getSafeCloudinaryError(error) {
 function uploadImageStream(buffer, options = {}) {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
-      { ...options, disable_promises: true },
+      options,
       (error, result) => {
         if (error) reject(error);
         else resolve(result);
