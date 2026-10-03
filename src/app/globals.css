@@ -10,6 +10,58 @@ body {
   background: rgb(var(--background-rgb));
 }
 
+/* Product wizard: visual language shared with checkout (black, white and
+   neutral grays). Destructive controls retain their red affordance. */
+.product-wizard [class*='bg-blue-'],
+.product-wizard [class*='bg-indigo-'],
+.product-wizard [class*='bg-green-'],
+.product-wizard [class*='bg-yellow-'],
+.product-wizard [class*='bg-purple-'],
+.product-wizard [class*='bg-pink-'],
+.product-wizard [class*='text-blue-'],
+.product-wizard [class*='text-indigo-'],
+.product-wizard [class*='text-green-'],
+.product-wizard [class*='text-yellow-'],
+.product-wizard [class*='text-purple-'],
+.product-wizard [class*='text-pink-'],
+.product-wizard [class*='border-blue-'],
+.product-wizard [class*='border-indigo-'],
+.product-wizard [class*='border-green-'],
+.product-wizard [class*='border-yellow-'],
+.product-wizard [class*='border-purple-'],
+.product-wizard [class*='border-pink-'] {
+  background-color: #fff !important;
+  border-color: #d1d5db !important;
+  color: #111827 !important;
+}
+
+.product-wizard button[class*='bg-'] {
+  background-color: #000 !important;
+  color: #fff !important;
+  border-color: #000 !important;
+}
+
+.product-wizard button[class*='bg-'] * {
+  color: #fff !important;
+}
+
+.product-wizard button:not([class*='bg-']) {
+  background-color: #fff;
+  color: #111827;
+}
+
+.product-wizard button[class*='bg-']:hover:not(:disabled) {
+  background-color: #262626 !important;
+}
+
+.product-wizard input:focus,
+.product-wizard select:focus,
+.product-wizard textarea:focus {
+  border-color: #111827 !important;
+  --tw-ring-color: #111827 !important;
+  box-shadow: 0 0 0 1px #111827 !important;
+}
+
 body.no-scroll {
   overflow: hidden;
 }

@@ -77,12 +77,12 @@ const Step1MainCharacteristics = ({
 
   // NUEVO: Opciones de categoría
   const categoryOptions = [
-    { value: 'remeras', label: 'Remeras', icon: '👕' },
-    { value: 'camisas', label: 'Camisas', icon: '👔' },
-    { value: 'pantalones', label: 'Pantalones', icon: '👖' },
-    { value: 'shorts', label: 'Shorts', icon: '🩳' },
-    { value: 'musculosas', label: 'Musculosas', icon: '🎽' },
-    { value: 'conjuntos', label: 'Conjuntos', icon: '🧥' },
+    { value: 'remeras', label: 'Remeras' },
+    { value: 'camisas', label: 'Camisas' },
+    { value: 'pantalones', label: 'Pantalones' },
+    { value: 'shorts', label: 'Shorts' },
+    { value: 'musculosas', label: 'Musculosas' },
+    { value: 'conjuntos', label: 'Conjuntos' },
   ];
 
   return (
@@ -134,7 +134,6 @@ const Step1MainCharacteristics = ({
                 `}
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">{option.icon}</span>
                   <span className="font-medium text-gray-900">
                     {option.label}
                   </span>
@@ -217,7 +216,6 @@ const Step1MainCharacteristics = ({
               Vista previa:
             </p>
             <p className="text-lg font-semibold text-gray-900">
-              {categoryOptions.find((c) => c.value === formData.category)?.icon}{' '}
               {formData.brand} - {formData.model} ({formData.gender})
             </p>
             <p className="text-xs text-gray-500 mt-1">
