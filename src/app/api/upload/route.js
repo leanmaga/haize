@@ -49,18 +49,9 @@ function getSafeCloudinaryError(error) {
   };
 }
 
-function uploadImageStream(buffer, options = {}) {
-  return new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(
-      options,
-      (error, result) => {
-        if (error) reject(error);
-        else resolve(result);
-      },
-    );
-
-    uploadStream.end(buffer);
-  });
+function uploadImageBuffer(buffer, mimeType, options = {}) {
+  const dataUri = `data:${mimeType};base64,${buffer.toString('base64')}`;
+  return cloudinary.uploader.upload(dataUri, options);
 }
 
 function isInvalidCloudinaryRequest(error) {
@@ -143,7 +134,7 @@ export async function POST(request) {
       // Subir a Cloudinary
       let result;
       try {
-        result = await uploadImageStream(buffer, {
+        result = await uploadImageBuffer(buffer, file.type, {
           folder: cloudinaryEnv.folder,
           transformation: [
             { width: 1200, height: 1600, crop: 'limit' },
@@ -170,7 +161,7 @@ export async function POST(request) {
         }
 
         try {
-          result = await uploadImageStream(buffer, {
+          result = await uploadImageBuffer(buffer, file.type, {
             folder: cloudinaryEnv.folder,
           });
           console.warn('[UPLOAD] Image uploaded using Cloudinary defaults', {
@@ -188,7 +179,7 @@ export async function POST(request) {
             cloudinary: getSafeCloudinaryError(retryError),
           });
           try {
-            result = await uploadImageStream(buffer);
+            result = await uploadImageBuffer(buffer, file.type);
           } catch (finalError) {
             console.error('[UPLOAD] Cloudinary final retry failed', {
               requestId,
