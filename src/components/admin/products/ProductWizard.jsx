@@ -9,6 +9,7 @@ import Step3VariantsAndPhotos from './steps/Step3VariantsAndPhotos';
 import Step4TitleDescription from './steps/Step4TitleDescription';
 import Step5Price from './steps/Step5Price';
 import Step6Review from './steps/Step6Review';
+import { X } from 'lucide-react';
 
 const STORAGE_KEY = 'haize_product_wizard_draft';
 
@@ -17,6 +18,12 @@ const ProductWizard = ({ isEdit = false, productId = null }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [toast, setToast] = useState(null);
+
+  const showToast = (message, type = 'error') => {
+    setToast({ message, type });
+    window.setTimeout(() => setToast(null), 4200);
+  };
 
   // ✅ Estado interno para mantener el ID
   const [editingProductId, setEditingProductId] = useState(null);
@@ -181,7 +188,7 @@ const ProductWizard = ({ isEdit = false, productId = null }) => {
       console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       console.error('❌ [API] Error cargando producto:', error);
       console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      alert('Error al cargar el producto: ' + error.message);
+      showToast('Error al cargar el producto: ' + error.message);
       router.push('/admin/products');
     } finally {
       setLoading(false);
@@ -206,7 +213,7 @@ const ProductWizard = ({ isEdit = false, productId = null }) => {
       return true;
     } catch (error) {
       console.error('❌ [NAVIGATION] Error en handleNext:', error);
-      alert('Error: ' + error.message);
+      showToast('Error: ' + error.message);
       return false;
     }
   };
@@ -333,13 +340,14 @@ const ProductWizard = ({ isEdit = false, productId = null }) => {
         ? '✅ Producto actualizado exitosamente!'
         : '✅ Producto creado exitosamente!';
 
-      alert(successMessage);
+      showToast(successMessage, 'success');
+      await new Promise((resolve) => window.setTimeout(resolve, 900));
       router.push('/admin/products');
     } catch (error) {
       console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       console.error('❌ [FINISH] Error fatal:', error);
       console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      alert('Error: ' + error.message);
+      showToast('Error: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -378,6 +386,26 @@ const ProductWizard = ({ isEdit = false, productId = null }) => {
 
   return (
     <div className="product-wizard min-h-screen bg-gray-50">
+      {toast && (
+        <div
+          role="status"
+          className={`fixed right-6 top-6 z-[80] flex max-w-md items-start gap-3 border bg-white px-5 py-4 text-sm shadow-xl ${
+            toast.type === 'success'
+              ? 'border-black text-black'
+              : 'border-gray-300 text-gray-900'
+          }`}
+        >
+          <span className="flex-1">{toast.message}</span>
+          <button
+            type="button"
+            onClick={() => setToast(null)}
+            className="text-gray-500 hover:text-black"
+            aria-label="Cerrar notificación"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
       {/* Header con progreso */}
       <div className="bg-white shadow-sm border-b sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4">
