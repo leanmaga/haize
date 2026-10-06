@@ -33,8 +33,18 @@ const Step3VariantsAndPhotos = ({
   const [expandedVariant, setExpandedVariant] = useState(null);
   const [formErrors, setFormErrors] = useState({});
   const [uploadingPhotos, setUploadingPhotos] = useState(false);
+  const [generatingVariant, setGeneratingVariant] = useState(null);
+  const [generatedImage, setGeneratedImage] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
   const [sizeGuide, setSizeGuide] = useState(null);
   const [loadingSizeGuide, setLoadingSizeGuide] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [photoToDelete, setPhotoToDelete] = useState(null);
+
+  const showToast = (message, type = 'error') => {
+    setToast({ message, type });
+    window.setTimeout(() => setToast(null), 4200);
+  };
 
   // Cargar guía de talles al montar
   useEffect(() => {
@@ -42,6 +52,14 @@ const Step3VariantsAndPhotos = ({
       loadSizeGuide();
     }
   }, [data.sizeGuide, data.hasSizeGuide]);
+
+  useEffect(() => {
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setPreviewImage(null);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, []);
 
   // Inicializar variantes desde data si existen
   useEffect(() => {
@@ -185,7 +203,7 @@ const Step3VariantsAndPhotos = ({
 
   const handleRemoveVariant = (variantIndex) => {
     if (variants.length === 1) {
-      alert('Debe haber al menos una variante');
+      showToast('Debe haber al menos una variante');
       return;
     }
 
@@ -232,7 +250,7 @@ const Step3VariantsAndPhotos = ({
   const handleRemoveSize = (variantIndex, sizeIndex) => {
     const updatedVariants = [...variants];
     if (updatedVariants[variantIndex].sizes.length === 1) {
-      alert('Debe haber al menos un talle por variante');
+      showToast('Debe haber al menos un talle por variante');
       return;
     }
     updatedVariants[variantIndex].sizes.splice(sizeIndex, 1);
@@ -250,7 +268,7 @@ const Step3VariantsAndPhotos = ({
 
     const currentPhotoCount = variants[variantIndex].photos.length;
     if (currentPhotoCount + fileArray.length > 10) {
-      alert('Máximo 10 fotos por variante');
+      showToast('Máximo 10 fotos por variante');
       return;
     }
 
@@ -260,7 +278,7 @@ const Step3VariantsAndPhotos = ({
     );
 
     if (errors.length > 0) {
-      alert('Errores en los archivos:\n' + errors.join('\n'));
+      showToast(`Errores en los archivos: ${errors.join(' · ')}`);
     }
 
     if (validFiles.length === 0) return;
@@ -287,24 +305,27 @@ const Step3VariantsAndPhotos = ({
       setVariants(updatedVariants);
 
       if (uploadedImages.length === 1) {
-        alert('Foto subida exitosamente');
+        showToast('Foto subida exitosamente', 'success');
       } else {
-        alert(`${uploadedImages.length} fotos subidas exitosamente`);
+        showToast(`${uploadedImages.length} fotos subidas exitosamente`, 'success');
       }
     } catch (error) {
       console.error('Error subiendo fotos:', error);
-      alert('Error subiendo fotos: ' + error.message);
+      showToast('Error subiendo fotos: ' + error.message);
     } finally {
       setUploadingPhotos(false);
     }
   };
 
   const handleRemovePhoto = async (variantIndex, photoIndex) => {
-    const photo = variants[variantIndex].photos[photoIndex];
+    setPhotoToDelete({ variantIndex, photoIndex });
+  };
 
-    if (!window.confirm('¿Estás seguro de eliminar esta foto?')) {
-      return;
-    }
+  const confirmRemovePhoto = async () => {
+    if (!photoToDelete) return;
+    const { variantIndex, photoIndex } = photoToDelete;
+    const photo = variants[variantIndex].photos[photoIndex];
+    setPhotoToDelete(null);
 
     if (
       photo.publicId &&
@@ -316,7 +337,7 @@ const Step3VariantsAndPhotos = ({
         console.log('Foto eliminada de Cloudinary');
       } catch (error) {
         console.error('Error eliminando de Cloudinary:', error);
-        alert(
+        showToast(
           'La foto se eliminará localmente pero hubo un error al eliminarla de Cloudinary: ' +
             error.message,
         );
@@ -328,8 +349,58 @@ const Step3VariantsAndPhotos = ({
     setVariants(updatedVariants);
   };
 
-  const handleGeneratePhotosWithAI = (variantIndex) => {
-    alert('Función de generación de fotos con IA - Por implementar');
+  const handleGeneratePhotosWithAI = async (variantIndex) => {
+    const reference = variants[variantIndex]?.photos?.[0];
+    if (!reference?.url) {
+      showToast('Subí primero una foto de la prenda para usarla como referencia.');
+      return;
+    }
+    setGeneratingVariant(variantIndex);
+    setGeneratedImage(null);
+    try {
+      const response = await fetch('/api/admin/ai/product-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageUrl: reference.url,
+          color: variants[variantIndex].color,
+          fabricDesign: variants[variantIndex].fabricDesign,
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'No se pudo generar la imagen');
+      setGeneratedImage({ variantIndex, url: result.image });
+    } catch (error) {
+      showToast(error.message);
+    } finally {
+      setGeneratingVariant(null);
+    }
+  };
+
+  const handleApproveGeneratedImage = async () => {
+    if (!generatedImage) return;
+    setUploadingPhotos(true);
+    try {
+      const response = await fetch(generatedImage.url);
+      const blob = await response.blob();
+      const file = new File([blob], `haize-ai-${Date.now()}.png`, { type: 'image/png' });
+      const uploaded = await uploadImages([file]);
+      const updatedVariants = [...variants];
+      updatedVariants[generatedImage.variantIndex].photos.push({
+        id: Date.now() + Math.random(),
+        url: uploaded[0].url,
+        publicId: uploaded[0].publicId,
+        width: uploaded[0].width,
+        height: uploaded[0].height,
+        format: uploaded[0].format,
+      });
+      setVariants(updatedVariants);
+      setGeneratedImage(null);
+    } catch (error) {
+      showToast(`No se pudo guardar la imagen generada: ${error.message}`);
+    } finally {
+      setUploadingPhotos(false);
+    }
   };
 
   const getTotalStock = (variant) => {
@@ -381,7 +452,7 @@ const Step3VariantsAndPhotos = ({
 
   const handleNext = async () => {
     if (!validateForm()) {
-      alert('Por favor completa todos los campos requeridos');
+      showToast('Por favor completa todos los campos requeridos');
       return;
     }
 
@@ -425,6 +496,59 @@ const Step3VariantsAndPhotos = ({
 
   return (
     <div className="bg-white rounded-lg shadow-md">
+      {toast && (
+        <div
+          role="status"
+          className={`fixed right-6 top-6 z-[60] flex max-w-md items-start gap-3 rounded-lg border bg-white px-4 py-3 text-sm shadow-xl ${
+            toast.type === 'success'
+              ? 'border-black text-black'
+              : 'border-gray-300 text-gray-900'
+          }`}
+        >
+          <span className="flex-1">{toast.message}</span>
+          <button
+            type="button"
+            onClick={() => setToast(null)}
+            className="text-gray-500 hover:text-black"
+            aria-label="Cerrar notificación"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+      {photoToDelete && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-photo-title"
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 p-4"
+        >
+          <div className="w-full max-w-md rounded-lg border border-gray-300 bg-white p-6 shadow-2xl">
+            <h2 id="delete-photo-title" className="text-lg font-semibold text-black">
+              Eliminar foto
+            </h2>
+            <p className="mt-2 text-sm text-gray-600">
+              ¿Estás seguro de que querés eliminar esta foto? Esta acción no se puede deshacer.
+            </p>
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setPhotoToDelete(null)}
+                className="border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-black hover:bg-gray-100"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={confirmRemovePhoto}
+                className="bg-black px-5 py-3 text-sm font-medium text-white hover:bg-gray-800"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Header */}
       <div className="border-b px-6 py-4">
         <h2 className="text-xl font-semibold text-gray-900">
@@ -565,11 +689,43 @@ const Step3VariantsAndPhotos = ({
                       <button
                         type="button"
                         onClick={() => handleGeneratePhotosWithAI(variantIndex)}
-                        className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50"
+                        disabled={generatingVariant === variantIndex || uploadingPhotos}
+                        className="inline-flex items-center border border-black bg-black px-5 py-3 text-sm font-medium text-white hover:bg-gray-800"
                       >
                         <Sparkles className="w-4 h-4 mr-2" />
-                        Generar fotos con IA
+                        {generatingVariant === variantIndex ? 'Generando...' : 'Generar foto con IA'}
                       </button>
+
+                      {generatedImage?.variantIndex === variantIndex && (
+                        <div className="mt-4 border border-gray-300 rounded-lg p-4">
+                          <p className="text-sm font-medium text-gray-900 mb-3">
+                            Vista previa generada
+                          </p>
+                          <img
+                            src={generatedImage.url}
+                            alt="Vista previa generada con IA"
+                            className="w-full max-w-sm h-64 object-contain border rounded-md bg-gray-50"
+                          />
+                          <div className="flex gap-2 mt-3">
+                            <button
+                              type="button"
+                              onClick={handleApproveGeneratedImage}
+                              disabled={uploadingPhotos}
+                              className="bg-black px-5 py-3 text-sm text-white hover:bg-gray-800 disabled:opacity-50"
+                            >
+                              Aprobar y guardar
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setGeneratedImage(null)}
+                              disabled={uploadingPhotos}
+                              className="border border-gray-300 bg-white px-5 py-3 text-sm text-black hover:bg-gray-100"
+                            >
+                              Descartar
+                            </button>
+                          </div>
+                        </div>
+                      )}
 
                       {/* Upload de fotos */}
                       <div>
@@ -615,17 +771,25 @@ const Step3VariantsAndPhotos = ({
                           <div className="mt-4 grid grid-cols-5 gap-3">
                             {variant.photos.map((photo, photoIndex) => (
                               <div key={photo.id} className="relative group">
-                                <img
-                                  src={photo.url}
-                                  alt={`Foto ${photoIndex + 1}`}
-                                  className="w-full h-24 object-cover rounded border"
-                                />
+                                <button
+                                  type="button"
+                                  onClick={() => setPreviewImage(photo.url)}
+                                  className="block w-full cursor-zoom-in"
+                                  aria-label={`Ampliar foto ${photoIndex + 1}`}
+                                >
+                                  <img
+                                    src={photo.url}
+                                    alt={`Foto ${photoIndex + 1}`}
+                                    className="w-full h-24 object-cover rounded border"
+                                  />
+                                </button>
                                 {photoIndex === 0 && (
                                   <div className="absolute bottom-1 left-1 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
                                     PORTADA
                                   </div>
                                 )}
                                 <button
+                                  type="button"
                                   onClick={() =>
                                     handleRemovePhoto(variantIndex, photoIndex)
                                   }
@@ -911,6 +1075,31 @@ const Step3VariantsAndPhotos = ({
           </button>
         )}
       </div>
+
+      {previewImage && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Vista ampliada de la foto"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-6"
+          onClick={() => setPreviewImage(null)}
+        >
+          <button
+            type="button"
+            onClick={() => setPreviewImage(null)}
+            className="absolute right-5 top-5 rounded-full bg-white p-2 text-black shadow-lg"
+            aria-label="Cerrar imagen ampliada"
+          >
+            <X className="h-6 w-6" />
+          </button>
+          <img
+            src={previewImage}
+            alt="Foto ampliada"
+            className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          />
+        </div>
+      )}
 
       {/* Footer */}
       <div className="border-t px-6 py-4 bg-gray-50 flex justify-between items-center rounded-b-lg">
