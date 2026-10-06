@@ -141,7 +141,7 @@ const Step6Review = ({ data, onBack, onCancel, loading, errors }) => {
             <div>
               <h3 className="text-2xl font-bold text-gray-900">{data.title}</h3>
               <p className="text-sm text-gray-600 mt-1">
-                Haize • Hombre • {data.category}
+                Haize • {data.category}
               </p>
             </div>
             <div className="text-right">

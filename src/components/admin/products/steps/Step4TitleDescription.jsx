@@ -174,7 +174,7 @@ const Step4TitleDescription = ({
             type="text"
             value={formData.title}
             onChange={(e) => handleChange('title', e.target.value)}
-            placeholder="Ej: Haize - Short Deportivo Negro - Hombre"
+            placeholder="Ej: Haize - Short Deportivo Negro"
             className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition-colors ${
               formErrors.title
                 ? 'border-red-500 focus:ring-red-500'
