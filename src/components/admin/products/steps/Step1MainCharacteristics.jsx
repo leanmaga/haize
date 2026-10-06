@@ -159,7 +159,7 @@ const Step1MainCharacteristics = ({
               Vista previa:
             </p>
             <p className="text-lg font-semibold text-gray-900">
-              Haize - {formData.model}
+              {formData.model}
             </p>
             <p className="text-xs text-gray-500 mt-1">
               Categoría:{' '}

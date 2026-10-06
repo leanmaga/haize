@@ -296,7 +296,7 @@ ProductSchema.index({ sku: 1 }, { unique: true, sparse: true });
 ProductSchema.pre('save', function (next) {
   if (this.isModified('title') || this.isNew) {
     if (!this.slug || this.isNew) {
-      const baseSlug = (this.title || `Haize-${this.model}`)
+      const baseSlug = (this.title || this.model)
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '');

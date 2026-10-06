@@ -105,7 +105,7 @@ export async function PUT(request, { params }) {
 
       // Actualizar title si cambió el model
       if (data.model && !data.title) {
-        updateData.title = `Haize - ${data.model}`;
+        updateData.title = data.model;
       }
 
       // Metadata del wizard

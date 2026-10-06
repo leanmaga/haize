@@ -123,7 +123,7 @@ export async function POST(request) {
         // Campos con valores por defecto para cumplir schema
         title:
           data.title ||
-          `Haize - ${data.model || 'Producto'}`,
+          data.model || 'Producto',
         salePrice: data.salePrice || 0,
         imageUrl: data.imageUrl || 'https://via.placeholder.com/400',
 

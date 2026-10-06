@@ -270,7 +270,7 @@ const ProductWizard = ({ isEdit = false, productId = null }) => {
       const finalProduct = {
         ...productData,
         title:
-          productData.title || `Haize - ${productData.model}`,
+          productData.title || productData.model,
         salePrice: productData.salePrice || 0,
         isComplete: true,
         isActive: true,
