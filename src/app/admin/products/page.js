@@ -12,6 +12,7 @@ import {
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 import Image from 'next/image';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 
 export default function ProductsAdminPage() {
   const { data: session, status } = useSession();
@@ -22,6 +23,7 @@ export default function ProductsAdminPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [productToDelete, setProductToDelete] = useState(null);
 
   // Función para obtener el precio de forma segura
   const getProductPrice = (product) => {
@@ -139,10 +141,6 @@ export default function ProductsAdminPage() {
 
   // Eliminar producto
   const handleDeleteProduct = async (id) => {
-    if (!confirm('¿Estás seguro de que deseas eliminar este producto?')) {
-      return;
-    }
-
     try {
       const response = await fetch(`/api/products/${id}`, {
         method: 'DELETE',
@@ -175,6 +173,48 @@ export default function ProductsAdminPage() {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
+      {productToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md border border-gray-300 bg-white p-6 shadow-2xl">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-semibold text-black">Eliminar producto</h2>
+                <p className="mt-2 text-sm text-gray-600">
+                  ¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setProductToDelete(null)}
+                className="text-gray-500 hover:text-black"
+                aria-label="Cerrar confirmación"
+              >
+                <XMarkIcon className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setProductToDelete(null)}
+                className="border border-gray-300 bg-white px-5 py-3 text-sm font-medium text-black hover:bg-gray-100"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const id = productToDelete;
+                  setProductToDelete(null);
+                  handleDeleteProduct(id);
+                }}
+                className="bg-black px-5 py-3 text-sm font-medium text-white hover:bg-gray-800"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
         <h1 className="text-2xl font-nexa-bold mb-4 md:mb-0">
           Gestión de Productos
@@ -364,7 +404,7 @@ export default function ProductsAdminPage() {
                             <PencilSquareIcon className="h-5 w-5" />
                           </Link>
                           <button
-                            onClick={() => handleDeleteProduct(product._id)}
+                            onClick={() => setProductToDelete(product._id)}
                             className="text-red-600 hover:text-red-900 cursor-pointer"
                           >
                             <TrashIcon className="h-5 w-5" />
