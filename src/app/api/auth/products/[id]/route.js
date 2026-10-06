@@ -126,7 +126,6 @@ export async function PUT(request, { params }) {
     }
 
     // Actualizar campos para indumentaria
-    if (updateData.gender !== undefined) product.gender = updateData.gender;
     if (updateData.material !== undefined)
       product.material = updateData.material;
     if (updateData.style !== undefined) product.style = updateData.style;

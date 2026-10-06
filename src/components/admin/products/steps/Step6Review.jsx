@@ -26,9 +26,7 @@ const Step6Review = ({ data, onBack, onCancel, loading, errors }) => {
 
       // Construir payload
       const payload = {
-        brand: data.brand,
         model: data.model,
-        gender: data.gender,
         category: data.category,
         sizeGuide: data.sizeGuide,
         hasSizeGuide: data.hasSizeGuide,
@@ -143,7 +141,7 @@ const Step6Review = ({ data, onBack, onCancel, loading, errors }) => {
             <div>
               <h3 className="text-2xl font-bold text-gray-900">{data.title}</h3>
               <p className="text-sm text-gray-600 mt-1">
-                {data.brand} • {data.gender} • {data.category}
+                Haize • Hombre • {data.category}
               </p>
             </div>
             <div className="text-right">
@@ -187,21 +185,9 @@ const Step6Review = ({ data, onBack, onCancel, loading, errors }) => {
           </div>
           <div className="ml-11 grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-gray-600">Marca</p>
-              <p className="text-base font-medium text-gray-900">
-                {data.brand}
-              </p>
-            </div>
-            <div>
               <p className="text-sm text-gray-600">Modelo</p>
               <p className="text-base font-medium text-gray-900">
                 {data.model}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Género</p>
-              <p className="text-base font-medium text-gray-900">
-                {data.gender}
               </p>
             </div>
             <div>

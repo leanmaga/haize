@@ -298,7 +298,6 @@ export default async function ProductDetails({ params }) {
                       product.category.slice(1)}
                   </li>
                   {product.material && <li>Material: {product.material}</li>}
-                  {product.brand && <li>Marca: {product.brand}</li>}
                   {product.origin && <li>Origen: {product.origin}</li>}
                   {product.composition && product.composition.length > 0 && (
                     <li>Composición: {product.composition.join(', ')}</li>

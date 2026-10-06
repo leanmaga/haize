@@ -103,11 +103,11 @@ export async function POST(request) {
       // Solo validar campos del paso actual
       if (data.creationStep === 1) {
         // Paso 1: Características principales
-        if (!data.model || !data.gender || !data.category) {
+        if (!data.model || !data.category) {
           return NextResponse.json(
             {
               error: 'Faltan campos del Paso 1',
-              missingFields: ['model', 'gender', 'category'],
+              missingFields: ['model', 'category'],
             },
             { status: 400 },
           );
@@ -117,15 +117,13 @@ export async function POST(request) {
       // Crear producto borrador
       const productData = {
         // Paso 1
-        brand: data.brand || 'Haize',
         model: data.model,
-        gender: data.gender,
         category: data.category, // ← Respetar el valor enviado, sin default
 
         // Campos con valores por defecto para cumplir schema
         title:
           data.title ||
-          `${data.brand || 'Haize'} - ${data.model || 'Producto'}`,
+          `Haize - ${data.model || 'Producto'}`,
         salePrice: data.salePrice || 0,
         imageUrl: data.imageUrl || 'https://via.placeholder.com/400',
 
@@ -214,7 +212,6 @@ export async function POST(request) {
       profitMargin: data.profitMargin
         ? Number.parseFloat(data.profitMargin)
         : 0,
-      brand: data.brand?.trim() || 'Haize',
       material: data.material?.trim() || '',
       origin: data.origin?.trim() || '',
       weight: data.weight ? Number.parseFloat(data.weight) : 0,
@@ -235,7 +232,6 @@ export async function POST(request) {
 
       // Campos del wizard
       model: data.model || '',
-      gender: data.gender || '',
       sizeGuide: data.sizeGuide || null,
       hasSizeGuide: data.hasSizeGuide || false,
       creationStep: data.creationStep || 6,

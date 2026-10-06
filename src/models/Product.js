@@ -4,22 +4,12 @@ import mongoose from 'mongoose';
 const ProductSchema = new mongoose.Schema(
   {
     // ============ PASO 1: CARACTERÍSTICAS PRINCIPALES ============
-    brand: {
-      type: String,
-      default: 'Haize',
-      trim: true,
-    },
     model: {
       type: String,
       required: true,
       trim: true,
       minlength: 2,
       maxlength: 100,
-    },
-    gender: {
-      type: String,
-      enum: ['Hombre', 'Mujer', 'Unisex', 'Niño', 'Niña'],
-      required: true,
     },
 
     // ============ INFORMACIÓN BÁSICA ============
@@ -292,7 +282,6 @@ const ProductSchema = new mongoose.Schema(
 
 // ============ ÍNDICES ============
 ProductSchema.index({ category: 1, isActive: 1 });
-ProductSchema.index({ brand: 1 });
 ProductSchema.index({ featured: 1, isActive: 1 });
 ProductSchema.index({ isNew: 1, isActive: 1 });
 ProductSchema.index({ season: 1 });
@@ -307,7 +296,7 @@ ProductSchema.index({ sku: 1 }, { unique: true, sparse: true });
 ProductSchema.pre('save', function (next) {
   if (this.isModified('title') || this.isNew) {
     if (!this.slug || this.isNew) {
-      const baseSlug = (this.title || `${this.brand}-${this.model}`)
+      const baseSlug = (this.title || `Haize-${this.model}`)
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '');

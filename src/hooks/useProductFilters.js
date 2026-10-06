@@ -18,8 +18,7 @@ export const useProductFilters = (products) => {
         const searchLower = filters.searchTerm.toLowerCase();
         const matchesSearch =
           product.title.toLowerCase().includes(searchLower) ||
-          product.description?.toLowerCase().includes(searchLower) ||
-          product.brand?.toLowerCase().includes(searchLower);
+          product.description?.toLowerCase().includes(searchLower);
 
         if (!matchesSearch) return false;
       }

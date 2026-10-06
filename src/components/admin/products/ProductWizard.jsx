@@ -30,9 +30,7 @@ const ProductWizard = ({ isEdit = false, productId = null }) => {
 
   // Estado del producto
   const [productData, setProductData] = useState({
-    brand: 'Haize',
     model: '',
-    gender: '',
     category: '',
     sizeGuide: null,
     hasSizeGuide: false,
@@ -165,7 +163,6 @@ const ProductWizard = ({ isEdit = false, productId = null }) => {
       const normalizedProduct = {
         ...product,
         model: product.model || product.title || '',
-        gender: product.gender || 'Unisex',
         imageUrl:
           product.imageUrl ||
           readImageUrl(primaryLegacyImage) ||
@@ -265,7 +262,7 @@ const ProductWizard = ({ isEdit = false, productId = null }) => {
         throw new Error('No se pudo determinar el ID del producto para editar');
       }
 
-      if (!productData.model || !productData.gender || !productData.category) {
+      if (!productData.model || !productData.category) {
         throw new Error('Faltan datos obligatorios');
       }
 
@@ -273,7 +270,7 @@ const ProductWizard = ({ isEdit = false, productId = null }) => {
       const finalProduct = {
         ...productData,
         title:
-          productData.title || `${productData.brand} - ${productData.model}`,
+          productData.title || `Haize - ${productData.model}`,
         salePrice: productData.salePrice || 0,
         isComplete: true,
         isActive: true,

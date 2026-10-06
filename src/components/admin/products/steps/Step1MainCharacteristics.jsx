@@ -14,9 +14,7 @@ const Step1MainCharacteristics = ({
   isFirstStep,
 }) => {
   const [formData, setFormData] = useState({
-    brand: data.brand || 'Haize',
     model: data.model || '',
-    gender: data.gender || '',
     category: data.category || '', // NUEVO: Categoría de producto
   });
 
@@ -47,10 +45,6 @@ const Step1MainCharacteristics = ({
       newErrors.model = 'El modelo debe tener entre 2 y 100 caracteres';
     }
 
-    if (!formData.gender) {
-      newErrors.gender = 'El género es requerido';
-    }
-
     if (!formData.category) {
       newErrors.category = 'La categoría es requerida';
     }
@@ -66,14 +60,6 @@ const Step1MainCharacteristics = ({
 
     const success = await onNext(formData);
   };
-
-  const genderOptions = [
-    { value: 'Hombre', label: 'Hombre' },
-    { value: 'Mujer', label: 'Mujer' },
-    { value: 'Unisex', label: 'Unisex' },
-    { value: 'Niño', label: 'Niño' },
-    { value: 'Niña', label: 'Niña' },
-  ];
 
   // NUEVO: Opciones de categoría
   const categoryOptions = [
@@ -99,20 +85,6 @@ const Step1MainCharacteristics = ({
 
       {/* Contenido */}
       <div className="px-6 py-6 space-y-6">
-        {/* Marca (fijo) */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Marca *
-          </label>
-          <input
-            type="text"
-            value={formData.brand}
-            disabled
-            className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600 cursor-not-allowed"
-          />
-          <p className="text-xs text-gray-500 mt-1">La marca es fija: Haize</p>
-        </div>
-
         {/* NUEVO: Categoría de producto */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -180,43 +152,14 @@ const Step1MainCharacteristics = ({
           </p>
         </div>
 
-        {/* Género */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Género *
-          </label>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            {genderOptions.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => handleChange('gender', option.value)}
-                className={`
-                  px-4 py-2 border-2 rounded-md font-medium transition-all
-                  ${
-                    formData.gender === option.value
-                      ? 'border-blue-500 bg-blue-500 text-white'
-                      : 'border-gray-300 text-gray-700 hover:border-blue-300'
-                  }
-                `}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-          {formErrors.gender && (
-            <p className="text-sm text-red-600 mt-1">{formErrors.gender}</p>
-          )}
-        </div>
-
         {/* Vista previa */}
-        {formData.model && formData.gender && formData.category && (
+        {formData.model && formData.category && (
           <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
             <p className="text-sm font-medium text-gray-700 mb-2">
               Vista previa:
             </p>
             <p className="text-lg font-semibold text-gray-900">
-              {formData.brand} - {formData.model} ({formData.gender})
+              Haize - {formData.model} (Hombre)
             </p>
             <p className="text-xs text-gray-500 mt-1">
               Categoría:{' '}

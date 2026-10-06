@@ -24,9 +24,7 @@ const Step4TitleDescription = ({
   const generateAutoTitle = () => {
     const parts = [];
 
-    if (data.brand) parts.push(data.brand);
     if (data.model) parts.push(data.model);
-    if (data.gender) parts.push(`- ${data.gender}`);
 
     return parts.join(' ');
   };
@@ -213,7 +211,7 @@ const Step4TitleDescription = ({
 
           {!useAutoTitle && (
             <p className="text-xs text-gray-500 mt-2">
-              💡 Tip: Incluye marca, modelo y características clave. Los buenos
+              💡 Tip: Incluye el modelo y las características clave. Los buenos
               títulos ayudan a los clientes a encontrar tu producto.
             </p>
           )}

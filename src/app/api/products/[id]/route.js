@@ -94,9 +94,7 @@ export async function PUT(request, { params }) {
       const updateData = {};
 
       // Paso 1
-      if (data.brand !== undefined) updateData.brand = data.brand;
       if (data.model !== undefined) updateData.model = data.model;
-      if (data.gender !== undefined) updateData.gender = data.gender;
 
       // Paso 2
       if (data.variants !== undefined) updateData.variants = data.variants;
@@ -107,7 +105,7 @@ export async function PUT(request, { params }) {
 
       // Actualizar title si cambió el model
       if (data.model && !data.title) {
-        updateData.title = `${data.brand || existingProduct.brand} - ${data.model}`;
+        updateData.title = `Haize - ${data.model}`;
       }
 
       // Metadata del wizard
@@ -203,7 +201,6 @@ export async function PUT(request, { params }) {
       profitMargin: data.profitMargin
         ? Number.parseFloat(data.profitMargin)
         : existingProduct.profitMargin || 0,
-      brand: data.brand?.trim() || existingProduct.brand || 'Haize',
       sku: data.sku?.trim() || existingProduct.sku || undefined,
       material: data.material?.trim() || existingProduct.material || '',
       origin: data.origin?.trim() || existingProduct.origin || '',
@@ -240,7 +237,6 @@ export async function PUT(request, { params }) {
 
       // Campos del wizard
       model: data.model || existingProduct.model || '',
-      gender: data.gender || existingProduct.gender || '',
       sizeGuide:
         data.sizeGuide !== undefined
           ? data.sizeGuide
