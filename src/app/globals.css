@@ -54,6 +54,12 @@ body {
   background-color: #262626 !important;
 }
 
+/* Botones rectangulares como el checkout; los controles de icono conservan
+   su forma circular cuando declaran rounded-full. */
+.product-wizard button:not([class*='rounded-full']) {
+  border-radius: 0 !important;
+}
+
 .product-wizard input:focus,
 .product-wizard select:focus,
 .product-wizard textarea:focus {
