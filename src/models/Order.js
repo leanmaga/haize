@@ -125,6 +125,8 @@ const orderSchema = new mongoose.Schema(
         type: String,
         required: true,
       },
+      street: { type: String, trim: true },
+      streetNumber: { type: String, trim: true },
       address: {
         type: String,
         required: true,

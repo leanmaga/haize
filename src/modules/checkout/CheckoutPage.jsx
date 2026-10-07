@@ -11,6 +11,7 @@ import Image from 'next/image';
 import { LockClosedIcon, TagIcon } from '@heroicons/react/24/solid';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
+import { normalizeShippingAddress } from '@/lib/shipping-address';
 
 // ========== FUNCIÓN HELPER PARA EXTRAER PRODUCT ID ==========
 const extractProductId = (item) => {
@@ -143,14 +144,15 @@ export default function CheckoutPage() {
         discountAmount: discountInfo ? discountInfo.amount : 0, // ✅ Descuento
         totalAmount: total, // ✅ Total con descuento
         paymentMethod: 'mercadopago',
-        shippingInfo: {
+        shippingInfo: normalizeShippingAddress({
           name: data.name,
           email: data.email,
           phone: data.phone,
-          address: data.address,
+          street: data.street,
+          streetNumber: data.streetNumber,
           city: data.city,
           postalCode: data.postalCode,
-        },
+        }),
         appliedCoupon: discountInfo
           ? {
               code: discountInfo.code,
@@ -296,27 +298,49 @@ export default function CheckoutPage() {
 
                   {/* Dirección */}
                   <div>
-                    <label htmlFor="address" className="block text-sm mb-2">
-                      Dirección
+                    <label htmlFor="street" className="block text-sm mb-2">
+                      Calle *
                     </label>
                     <input
-                      id="address"
+                      id="street"
                       type="text"
+                      required
+                      autoComplete="address-line1"
+                      placeholder="Ej.: Av. Rivadavia"
                       className={`w-full px-3 py-3 border focus:outline-none focus:border-black ${
-                        errors.address ? 'border-red-500' : 'border-gray-300'
+                        errors.street ? 'border-red-500' : 'border-gray-300'
                       }`}
-                      {...register('address', {
-                        required: 'La dirección es requerida',
+                      {...register('street', {
+                        required: 'La calle es obligatoria',
+                        validate: (value) => !!value.trim() || 'La calle es obligatoria',
                       })}
                     />
-                    {errors.address && (
+                    {errors.street && (
                       <p className="mt-1 text-sm text-red-500">
-                        {errors.address.message}
+                        {errors.street.message}
                       </p>
                     )}
                   </div>
 
                   {/* Ciudad */}
+                  <div>
+                    <label htmlFor="streetNumber" className="block text-sm mb-2">Número de la casa *</label>
+                    <input
+                      id="streetNumber"
+                      type="text"
+                      required
+                      placeholder="Ej.: 1234"
+                      aria-invalid={!!errors.streetNumber}
+                      aria-describedby={errors.streetNumber ? 'streetNumber-error' : undefined}
+                      className={`w-full px-3 py-3 border focus:outline-none focus:border-black ${errors.streetNumber ? 'border-red-500' : 'border-gray-300'}`}
+                      {...register('streetNumber', {
+                        required: 'El número de la casa es obligatorio',
+                        validate: (value) => /^\d+[a-zA-Z]?$/.test(value.trim()) || 'Ingresá un número válido, por ejemplo 123 o 123A',
+                      })}
+                    />
+                    {errors.streetNumber && <p id="streetNumber-error" role="alert" className="mt-1 text-sm text-red-500">{errors.streetNumber.message}</p>}
+                  </div>
+
                   <div>
                     <label htmlFor="city" className="block text-sm mb-2">
                       Ciudad

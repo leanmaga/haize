@@ -5,6 +5,7 @@ import { authOptions } from '@/lib/auth';
 import connectDB from '@/lib/db';
 import mongoose from 'mongoose';
 import Order from '@/models/Order';
+import { normalizeShippingAddress } from '@/lib/shipping-address';
 import User from '@/models/User';
 import { createPaymentPreference } from '@/lib/mercadopago';
 import {
@@ -52,6 +53,13 @@ export async function POST(request) {
       return NextResponse.json({ message: 'No autorizado' }, { status: 401 });
     }
 
+    const orderData = await request.json();
+    try {
+      orderData.shippingInfo = normalizeShippingAddress(orderData.shippingInfo);
+    } catch (error) {
+      return NextResponse.json({ message: error.message }, { status: 400 });
+    }
+
     // Conectar a la base de datos
     await connectDB();
 
@@ -65,7 +73,6 @@ export async function POST(request) {
     }
 
     // Obtener datos del body
-    const orderData = await request.json();
 
     console.log('📦 OrderData recibido:', {
       itemsCount: orderData.items?.length,
