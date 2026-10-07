@@ -87,8 +87,6 @@ export default function CheckoutPage() {
         for (const field of ['name', 'email', 'phone', 'street', 'streetNumber', 'city', 'postalCode']) {
           if (!editedFields.current[field]) setValue(field, data.shippingInfo?.[field] || '');
         }
-        // Existing customers can change this order without replacing their usual address.
-        setSaveShippingInfo(!data.hasSavedShippingInfo);
         setShippingNotice(data.hasSavedShippingInfo ? 'Cargamos tus datos guardados. Podés editarlos para enviar este pedido a otro domicilio.' : '');
       })
       .catch((error) => { if (error.name !== 'AbortError') setShippingNotice(error.message); })

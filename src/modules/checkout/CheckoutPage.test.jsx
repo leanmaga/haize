@@ -12,11 +12,13 @@ jest.mock('@/components/ui/WhatsAppButton', () => function WhatsAppButton() { re
 jest.mock('react-hot-toast', () => ({ __esModule: true, default: { error: jest.fn(), success: jest.fn() }, Toaster: () => null }));
 
 const saved = { name: 'Cliente', email: 'buyer@example.com', phone: '123', street: 'Calle original', streetNumber: '42', city: 'Morón', postalCode: '1708' };
-test('restores saved fields and permits a temporary address without selecting save', async () => {
+test('restores saved fields with save checked by default and allows opting out', async () => {
   global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ shippingInfo: saved, hasSavedShippingInfo: true }) });
   render(<CheckoutPage />);
   await waitFor(() => expect(screen.getByLabelText('Calle *')).toHaveValue('Calle original'));
   expect(screen.getByLabelText('Número de la casa *')).toHaveValue('42');
+  expect(screen.getByRole('checkbox')).toBeChecked();
+  fireEvent.click(screen.getByRole('checkbox'));
   expect(screen.getByRole('checkbox')).not.toBeChecked();
   fireEvent.change(screen.getByLabelText('Calle *'), { target: { value: 'Destino temporal' } });
   expect(screen.getByLabelText('Calle *')).toHaveValue('Destino temporal');
