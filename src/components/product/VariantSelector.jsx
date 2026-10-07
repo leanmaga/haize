@@ -254,11 +254,11 @@ export default function VariantSelector({ product }) {
 
         {/* ========== INFORMACIÓN DE STOCK DE LA VARIANTE SELECCIONADA ========== */}
         {selectedVariant && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="bg-white border border-gray-200 rounded-md p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <svg
-                  className="w-5 h-5 text-green-600"
+                  className="w-5 h-5 text-black"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -270,22 +270,22 @@ export default function VariantSelector({ product }) {
                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <span className="text-sm font-medium text-green-800">
+                <span className="text-sm font-medium text-gray-900">
                   Disponible
                 </span>
               </div>
-              <span className="text-sm text-green-700">
+              <span className="text-sm text-gray-900">
                 <strong>{selectedVariant.stock}</strong>{' '}
                 {selectedVariant.stock === 1 ? 'unidad' : 'unidades'}
               </span>
             </div>
 
             {/* Información adicional */}
-            <div className="mt-2 text-xs text-green-700">
+            <div className="mt-2 text-xs text-gray-600">
               Talle <strong>{selectedVariant.size}</strong> · Color{' '}
               <strong>{selectedVariant.color}</strong>
               {selectedVariant.sku && (
-                <span className="ml-2 text-green-600">
+                <span className="ml-2 text-gray-500">
                   SKU: {selectedVariant.sku}
                 </span>
               )}
