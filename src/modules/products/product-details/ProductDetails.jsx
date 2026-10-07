@@ -8,6 +8,7 @@ import RelatedProducts from '@/components/product/RelatedProducts';
 import ProductImageSlider from '@/components/product/ProductImageSlider';
 import VariantSelector from '@/components/product/VariantSelector';
 import SameDayShipping from './components/SameDayShipping';
+import CoverageMap from './components/CoverageMap';
 import ProductSizeGuideTable from '@/components/product/ProductSizeGuideTable';
 
 export default async function ProductDetails({ params }) {
@@ -375,11 +376,12 @@ export default async function ProductDetails({ params }) {
               </summary>
               <div className="pb-5 text-sm text-gray-600 leading-relaxed space-y-2">
                 <p>
-                  <strong>Tiempo de entrega:</strong> Máximo 24 horas en CABA
+                  <strong>Tiempo de entrega:</strong> Same Day en zonas seleccionadas
                 </p>
                 <p>
                   <strong>Zonas de cobertura:</strong> Envios a todo el país.
                 </p>
+                <CoverageMap />
               </div>
             </details>
 

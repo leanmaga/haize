@@ -18,8 +18,8 @@ const SameDayShipping = () => {
       // Verificar si es fin de semana
       const isWeekend = currentDay === 0 || currentDay === 6;
 
-      // Verificar si es antes del mediodía
-      const isBeforeNoon = currentHour < 12;
+      // Same Day: pedidos confirmados antes de las 11:00.
+      const isBeforeCutoff = currentHour < 11;
 
       let deliveryText = '';
       let canShipToday = false;
@@ -28,7 +28,7 @@ const SameDayShipping = () => {
         // Si es fin de semana, calcular próximo día hábil
         const daysUntilMonday = currentDay === 0 ? 1 : 2; // Domingo: 1 día, Sábado: 2 días
         deliveryText = 'el próximo día hábil';
-      } else if (isBeforeNoon) {
+      } else if (isBeforeCutoff) {
         // Si es día hábil y antes del mediodía, puede llegar hoy
         canShipToday = true;
         deliveryText = 'hoy mismo';
@@ -91,7 +91,7 @@ const SameDayShipping = () => {
         </p>
         {!shippingInfo.isWeekend && !shippingInfo.canShipToday && (
           <p className="text-xs text-gray-500 mt-1">
-            Comprá antes del mediodía para{' '}
+            Comprá antes de las 11:00 para{' '}
             <span className="text-green-600 font-semibold">
               envío el mismo día
             </span>
