@@ -1,29 +1,88 @@
 'use client';
-import { useEffect, useState } from 'react';
-import CoverageMap from './GoogleCoverageMap';
+import { useEffect, useMemo, useState } from 'react';
+import GoogleCoverageMap from './GoogleCoverageMap';
+import { mergeCoverage } from '@/lib/delivery-coverage';
 
-const empty = { name: '', slug: '', detail: '', cutoffTime: '11:00', isActive: true, geometry: { type: 'Polygon', coordinates: [[]] } };
 export default function DeliveryZoneManager() {
-  const [zones, setZones] = useState([]); const [catalog, setCatalog] = useState([]); const [selected, setSelected] = useState([]); const [form, setForm] = useState(empty); const [editingId, setEditingId] = useState(null); const [geometryText, setGeometryText] = useState(JSON.stringify(empty.geometry, null, 2)); const [message, setMessage] = useState('');
-  const load = async () => { const response = await fetch('/api/delivery-zones/admin'); const data = await response.json(); setZones(data.zones || []); };
-  useEffect(() => { load(); }, []);
-  const loadCatalog = async () => { const response = await fetch('/api/delivery-zones/catalog'); const data = await response.json(); if (!response.ok) return setMessage(data.error || 'No se pudo consultar GeoRef.'); setCatalog(data.features || []); };
-  const importSelected = async () => {
-    const selectedFeatures = catalog.filter((item) => selected.includes(String(item.properties?.id || item.id || item.properties?.nombre)));
-    const errors = [];
-    let imported = 0;
-    for (const feature of selectedFeatures) {
-      const name = feature.properties?.nombre || feature.properties?.name;
-      const geometry = feature.geometry;
-      const slug = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-      if (!name || !geometry?.type || !Array.isArray(geometry.coordinates)) { errors.push(`${name || 'Municipio'}: GeoJSON sin geometría válida`); continue; }
-      const response = await fetch('/api/delivery-zones', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, slug, detail: 'Municipio de la Provincia de Buenos Aires', geometry, cutoffTime: '11:00', isActive: true }) });
-      if (response.ok) imported += 1;
-      else { const data = await response.json().catch(() => ({})); errors.push(`${name}: ${data.error || `Error ${response.status}`}`); }
-    }
-    setCatalog([]); setSelected([]); setMessage(`${imported} municipio(s) importado(s).${errors.length ? ` Errores: ${errors.join(' | ')}` : ''}`); load();
+  const [features, setFeatures] = useState([]);
+  const [records, setRecords] = useState({});
+  const [dirty, setDirty] = useState([]);
+  const [search, setSearch] = useState('');
+  const [message, setMessage] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([fetch('/api/delivery-zones/catalog'), fetch('/api/delivery-zones/admin', { cache: 'no-store' })])
+      .then(async (responses) => {
+        const data = await Promise.all(responses.map((response) => response.json()));
+        const failed = responses.findIndex((response) => !response.ok);
+        if (failed >= 0) throw new Error(data[failed].error || 'No se pudo cargar la cobertura.');
+        if (cancelled) return;
+        const merged = mergeCoverage(data[0].features, data[1].zones);
+        setFeatures(merged);
+        const ids = {};
+        merged.forEach((feature) => {
+          const record = data[1].zones.find((zone) => zone.slug === feature.properties.slug);
+          if (record) ids[String(feature.id)] = record._id;
+        });
+        setRecords(ids);
+      }).catch((error) => { if (!cancelled) setMessage(error.message); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+  const change = (id, values) => {
+    if (busy) return;
+    setFeatures((current) => current.map((feature) => String(feature.id) === id ? { ...feature, properties: { ...feature.properties, ...values } } : feature));
+    setDirty((current) => current.includes(id) ? current : [...current, id]);
   };
-  const reset = () => { setEditingId(null); setForm(empty); setGeometryText(JSON.stringify(empty.geometry, null, 2)); };
-  const save = async (event) => { event.preventDefault(); let geometry; try { geometry = JSON.parse(geometryText); } catch { return setMessage('La geometría no es un JSON válido.'); } const response = await fetch(editingId ? `/api/delivery-zones/${editingId}` : '/api/delivery-zones', { method: editingId ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...form, geometry }) }); const data = await response.json(); if (!response.ok) return setMessage(data.error || 'No se pudo guardar.'); setMessage('Zona guardada correctamente.'); reset(); load(); };
-  return <div className="space-y-6"><section className="rounded-xl border border-blue-200 bg-blue-50 p-5"><div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="font-semibold text-blue-900">Importar municipios oficiales</h2><p className="mt-1 text-sm text-blue-800">Consulta GeoRef Argentina y trae municipios bonaerenses en GeoJSON.</p></div><button type="button" onClick={loadCatalog} className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white">Consultar GeoRef</button></div>{catalog.length > 0 && <><div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">{catalog.map((feature) => { const id = String(feature.properties?.id || feature.id); return <label key={id} className="flex items-center gap-2 rounded border border-blue-200 bg-white p-2 text-sm"><input type="checkbox" checked={selected.includes(id)} onChange={(event) => setSelected(event.target.checked ? [...selected, id] : selected.filter((item) => item !== id))} />{feature.properties?.nombre || feature.properties?.name}</label>; })}</div>{selected.length > 0 && <CoverageMap zones={catalog.filter((feature) => selected.includes(String(feature.properties?.id || feature.id)))} loadFromApi={false} />}<button type="button" onClick={importSelected} disabled={!selected.length} className="mt-4 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50">Importar seleccionados</button></>}</section><div className="grid gap-6 lg:grid-cols-[1fr_1.35fr]"><form onSubmit={save} className="rounded-xl bg-white p-6 shadow-sm"><h2 className="text-lg font-semibold">{editingId ? 'Editar zona' : 'Nueva zona'}</h2><p className="mt-1 text-xs text-gray-500">También podés pegar una geometría GeoJSON propia.</p><div className="mt-5 space-y-4">{[['name','Nombre'],['slug','Slug'],['detail','Descripción'],['cutoffTime','Hora límite']].map(([field,label]) => <label key={field} className="block text-sm font-medium text-gray-700">{label}<input required={field !== 'detail'} value={form[field] || ''} onChange={(event) => setForm({ ...form, [field]: event.target.value })} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 font-normal" /></label>)}<label className="block text-sm font-medium text-gray-700">GeoJSON<textarea required value={geometryText} onChange={(event) => setGeometryText(event.target.value)} rows={9} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 font-mono text-xs font-normal" /></label><label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.isActive} onChange={(event) => setForm({ ...form, isActive: event.target.checked })} /> Zona activa</label></div>{message && <p className="mt-4 text-sm text-blue-700">{message}</p>}<div className="mt-5 flex gap-3"><button className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white">Guardar zona</button>{editingId && <button type="button" onClick={reset} className="rounded-lg border px-4 py-2 text-sm">Cancelar</button>}</div></form><div className="rounded-xl bg-white p-6 shadow-sm"><div className="flex justify-between"><h2 className="text-lg font-semibold">Zonas configuradas</h2><span className="text-sm text-gray-500">{zones.length} zonas</span></div><div className="mt-4 space-y-3">{zones.map((zone) => <div key={zone._id} className="flex items-center justify-between rounded-lg border p-4"><div><p className="font-medium">{zone.name}</p><p className="text-xs text-gray-500">{zone.detail || 'Sin descripción'} · corte {zone.cutoffTime}</p></div><button className="text-sm text-blue-700" onClick={() => { setEditingId(zone._id); setForm(zone); setGeometryText(JSON.stringify(zone.geometry, null, 2)); }}>Editar</button></div>)}</div></div></div></div>;
+  const toggle = (id) => {
+    const feature = features.find((item) => String(item.id) === id);
+    if (feature) change(id, { isActive: !feature.properties.isActive });
+  };
+  const save = async () => {
+    const pending = features.filter((feature) => dirty.includes(String(feature.id)));
+    if (pending.some((feature) => feature.properties.isActive && (feature.properties.shippingPrice == null || feature.properties.shippingPrice === ''))) {
+      setMessage('Ingresá el precio de cada municipio modificado. Usá 0 para envío sin costo.'); return;
+    }
+    setBusy(true); setMessage('');
+    const errors = [];
+    for (const feature of pending) {
+      const id = String(feature.id);
+      try {
+        const response = await fetch(records[id] ? '/api/delivery-zones/' + records[id] : '/api/delivery-zones', {
+          method: records[id] ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...feature.properties, municipalityId: id, geometry: feature.geometry, shippingPrice: feature.properties.shippingPrice == null || feature.properties.shippingPrice === '' ? null : Number(feature.properties.shippingPrice) }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'No se pudo guardar.');
+        setRecords((current) => ({ ...current, [id]: data._id }));
+        setDirty((current) => current.filter((item) => item !== id));
+      } catch (error) { errors.push(feature.properties.name + ': ' + error.message); }
+    }
+    setMessage(errors.length ? errors.join(' · ') : 'Cobertura y precios guardados. Ya están disponibles en los productos.');
+    setBusy(false);
+  };
+  const visible = useMemo(() => features.filter((feature) => feature.properties.name.toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(search.toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, ''))), [features, search]);
+  if (loading) return <p role="status">Cargando municipios y cobertura…</p>;
+  return <section className="space-y-4 rounded-2xl bg-white p-4 shadow-sm">
+    <div><h2 className="text-xl font-semibold">Municipios y precios de envío</h2><p className="mt-1 text-sm text-slate-600">Marcá los municipios con cobertura. El azul se actualiza al instante. Guardá para publicar en los productos.</p></div>
+    <div className="grid gap-4 lg:grid-cols-[300px_1fr]">
+      <div className="rounded-xl border border-slate-200 p-3">
+        <input aria-label="Buscar municipio" placeholder="Buscar municipio…" value={search} onChange={(event) => setSearch(event.target.value)} className="mb-3 w-full rounded-lg border p-2" />
+        <div className="max-h-[365px] space-y-2 overflow-y-auto">
+          {visible.map((feature) => { const id = String(feature.id); const p = feature.properties; return <div key={id} className="rounded-lg border border-slate-200 p-3">
+            <label className="flex items-center gap-2 text-sm font-medium"><input type="checkbox" disabled={busy} checked={p.isActive} onChange={() => toggle(id)} />{p.name}</label>
+            {(p.isActive || dirty.includes(id)) && <div className="mt-2 flex gap-2">
+              <label className="min-w-0 flex-1 text-xs">Envío (ARS)<input aria-label={'Precio de envío ' + p.name} type="number" min="0" step="0.01" disabled={busy} value={p.shippingPrice ?? ''} placeholder="0 = sin costo" onChange={(event) => change(id, { shippingPrice: event.target.value })} className="mt-1 w-full rounded border p-1.5" /></label>
+              <label className="text-xs">Hora límite<input type="time" disabled={busy} value={p.cutoffTime} onChange={(event) => change(id, { cutoffTime: event.target.value })} className="mt-1 block rounded border p-1.5" /></label>
+            </div>}
+          </div>; })}
+        </div>
+      </div>
+      <GoogleCoverageMap features={features} onToggle={toggle} />
+    </div>
+    <div className="flex flex-wrap items-center justify-between gap-3"><span className="text-sm text-slate-600">{features.filter((feature) => feature.properties.isActive).length} municipios activos · {dirty.length} cambios sin guardar</span><button disabled={busy || !dirty.length} onClick={save} className="rounded-lg bg-blue-700 px-5 py-2 text-white disabled:opacity-50">{busy ? 'Guardando…' : 'Guardar cobertura y precios'}</button></div>
+    {message && <p role="status" className="text-sm">{message}</p>}
+  </section>;
 }
