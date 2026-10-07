@@ -8,7 +8,7 @@ const admin = (s) => s?.user?.role === 'admin';
 const validGeometry = (g) => g && ['Polygon', 'MultiPolygon'].includes(g.type) && Array.isArray(g.coordinates);
 
 export async function GET() {
-  try { await connectDB(); const zones = await DeliveryZone.find({ isActive: true }).sort({ name: 1 }).lean(); return NextResponse.json({ type: 'FeatureCollection', features: zones.map((z) => ({ type: 'Feature', id: z._id, properties: { name: z.name, slug: z.slug, detail: z.detail, cutoffTime: z.cutoffTime }, geometry: z.geometry })) }); }
+  try { await connectDB(); const zones = await DeliveryZone.find({ isActive: true }).sort({ name: 1 }).lean(); return NextResponse.json({ type: 'FeatureCollection', features: zones.map((z) => ({ type: 'Feature', id: String(z._id), properties: { name: z.name, slug: z.slug, detail: z.detail, cutoffTime: z.cutoffTime }, geometry: z.geometry })) }, { headers: { 'Cache-Control': 'no-store' } }); }
   catch (error) { return NextResponse.json({ error: 'No se pudieron cargar las zonas', details: error.message }, { status: 500 }); }
 }
 

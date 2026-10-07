@@ -22,11 +22,13 @@ export default function CoverageMap({ zones = ZONES }) {
 
   useEffect(() => {
     let cancelled = false;
-    fetch('/api/delivery-zones')
+    fetch('/api/delivery-zones', { cache: 'no-store' })
       .then((response) => (response.ok ? response.json() : null))
       .then((collection) => {
         if (cancelled || !collection?.features?.length) return;
-        const coordinates = collection.features.flatMap((feature) => {
+        const validFeatures = collection.features.filter((feature) => feature.geometry?.coordinates?.length);
+        if (!validFeatures.length) return;
+        const coordinates = validFeatures.flatMap((feature) => {
           const rings = feature.geometry.type === 'MultiPolygon' ? feature.geometry.coordinates.flat() : feature.geometry.coordinates;
           return rings.flat();
         });
@@ -34,7 +36,7 @@ export default function CoverageMap({ zones = ZONES }) {
         const lats = coordinates.map(([, lat]) => lat);
         const minLon = Math.min(...lons); const maxLon = Math.max(...lons); const minLat = Math.min(...lats); const maxLat = Math.max(...lats);
         const project = ([lon, lat]) => [25 + ((lon - minLon) / (maxLon - minLon || 1)) * 300, 245 - ((lat - minLat) / (maxLat - minLat || 1)) * 205];
-        setMapZones(collection.features.map((feature) => { const rings = feature.geometry.type === 'MultiPolygon' ? feature.geometry.coordinates.flat() : feature.geometry.coordinates; return { id: String(feature.id), name: feature.properties.name, detail: feature.properties.detail, path: rings.map((ring) => `${ring.map(project).map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ')}Z`).join(' '), label: project(rings[0][0]) }; }));
+        setMapZones(validFeatures.map((feature) => { const rings = feature.geometry.type === 'MultiPolygon' ? feature.geometry.coordinates.flat() : feature.geometry.coordinates; return { id: String(feature.id), name: feature.properties?.name || 'Zona', detail: feature.properties?.detail, path: rings.map((ring) => `${ring.map(project).map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ')}Z`).join(' '), label: project(rings[0][0]) }; }));
       })
       .catch(() => {});
     return () => { cancelled = true; };
