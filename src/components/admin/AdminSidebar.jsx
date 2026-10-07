@@ -39,6 +39,11 @@ const AdminSidebar = () => {
       href: '/admin/products',
       submenu: [
         {
+          title: 'Zonas de entrega',
+          icon: RectangleStackIcon,
+          href: '/admin/delivery-zones',
+        },
+        {
           title: 'Agregar',
           icon: PlusCircleIcon,
           href: '/admin/products/add',

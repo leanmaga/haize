@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const ZONES = [
   { id: 'caba', name: 'CABA', detail: 'Ciudad Autónoma de Buenos Aires', path: 'M220 117 260 103 288 120 282 163 249 181 215 157Z', label: [249, 142] },
@@ -16,8 +16,29 @@ const ZONES = [
 ];
 
 export default function CoverageMap({ zones = ZONES }) {
+  const [mapZones, setMapZones] = useState(zones);
   const [selected, setSelected] = useState(null);
-  const activeZone = zones.find((zone) => zone.id === selected);
+  const activeZone = mapZones.find((zone) => zone.id === selected);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/delivery-zones')
+      .then((response) => (response.ok ? response.json() : null))
+      .then((collection) => {
+        if (cancelled || !collection?.features?.length) return;
+        const coordinates = collection.features.flatMap((feature) => {
+          const rings = feature.geometry.type === 'MultiPolygon' ? feature.geometry.coordinates.flat() : feature.geometry.coordinates;
+          return rings.flat();
+        });
+        const lons = coordinates.map(([lon]) => lon);
+        const lats = coordinates.map(([, lat]) => lat);
+        const minLon = Math.min(...lons); const maxLon = Math.max(...lons); const minLat = Math.min(...lats); const maxLat = Math.max(...lats);
+        const project = ([lon, lat]) => [25 + ((lon - minLon) / (maxLon - minLon || 1)) * 300, 245 - ((lat - minLat) / (maxLat - minLat || 1)) * 205];
+        setMapZones(collection.features.map((feature) => { const rings = feature.geometry.type === 'MultiPolygon' ? feature.geometry.coordinates.flat() : feature.geometry.coordinates; return { id: String(feature.id), name: feature.properties.name, detail: feature.properties.detail, path: rings.map((ring) => `${ring.map(project).map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ')}Z`).join(' '), label: project(rings[0][0]) }; }));
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
 
   return (
     <section className="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm" aria-label="Mapa de cobertura de entregas">
@@ -34,7 +55,7 @@ export default function CoverageMap({ zones = ZONES }) {
           <path d="M0 207 C55 190 70 219 121 202S194 186 244 203 307 194 350 179" className="fill-none stroke-sky-300" strokeWidth="10" opacity=".65" />
           <path d="M0 207 C55 190 70 219 121 202S194 186 244 203 307 194 350 179" className="fill-none stroke-white" strokeWidth="2" opacity=".8" />
           <text x="24" y="25" className="fill-slate-400 text-[9px]">Zárate</text><text x="276" y="44" className="fill-slate-400 text-[9px]">Río de la Plata</text><text x="294" y="247" className="fill-slate-400 text-[9px]">La Plata</text><text x="15" y="255" className="fill-slate-400 text-[9px]">Luján</text>
-          {zones.map((zone) => (
+          {mapZones.map((zone) => (
             <g key={zone.id} onMouseEnter={() => setSelected(zone.id)} onFocus={() => setSelected(zone.id)} onMouseLeave={() => setSelected(null)}>
               <path d={zone.path} tabIndex="0" role="button" aria-label={`Zona ${zone.name}`} onClick={() => setSelected(zone.id)} className={`cursor-pointer stroke-blue-600 transition ${selected === zone.id ? 'fill-blue-500/50 stroke-[2.5]' : 'fill-blue-500/20 hover:fill-blue-500/40'}`} />
               <text x={zone.label[0]} y={zone.label[1]} textAnchor="middle" className="pointer-events-none fill-blue-950 text-[7px] font-semibold">{zone.name}</text>
