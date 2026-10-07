@@ -15,12 +15,23 @@ const ZONES = [
   { id: 'ezeiza', name: 'Ezeiza', detail: 'Zona Sur', path: 'M122 194 156 155 194 192 183 236 144 249 111 227Z', label: [148, 215] },
 ];
 
-export default function CoverageMap({ zones = ZONES }) {
-  const [mapZones, setMapZones] = useState(zones);
+const geometryToZones = (features = []) => {
+  const validFeatures = features.filter((feature) => feature.geometry?.coordinates?.length);
+  if (!validFeatures.length) return [];
+  const coordinates = validFeatures.flatMap((feature) => (feature.geometry.type === 'MultiPolygon' ? feature.geometry.coordinates.flat() : feature.geometry.coordinates).flat());
+  const lons = coordinates.map(([lon]) => lon); const lats = coordinates.map(([, lat]) => lat);
+  const minLon = Math.min(...lons); const maxLon = Math.max(...lons); const minLat = Math.min(...lats); const maxLat = Math.max(...lats);
+  const project = ([lon, lat]) => [25 + ((lon - minLon) / (maxLon - minLon || 1)) * 300, 245 - ((lat - minLat) / (maxLat - minLat || 1)) * 205];
+  return validFeatures.map((feature) => { const rings = feature.geometry.type === 'MultiPolygon' ? feature.geometry.coordinates.flat() : feature.geometry.coordinates; return { id: String(feature.id || feature.properties?.id), name: feature.properties?.nombre || feature.properties?.name || 'Zona', detail: feature.properties?.detail, path: rings.map((ring) => `${ring.map(project).map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ')}Z`).join(' '), label: project(rings[0][0]) }; });
+};
+
+export default function CoverageMap({ zones = ZONES, loadFromApi = true }) {
+  const [mapZones, setMapZones] = useState(() => loadFromApi ? zones : geometryToZones(zones));
   const [selected, setSelected] = useState(null);
   const activeZone = mapZones.find((zone) => zone.id === selected);
 
   useEffect(() => {
+    if (!loadFromApi) return undefined;
     let cancelled = false;
     fetch('/api/delivery-zones', { cache: 'no-store' })
       .then((response) => (response.ok ? response.json() : null))
@@ -28,15 +39,7 @@ export default function CoverageMap({ zones = ZONES }) {
         if (cancelled || !collection?.features?.length) return;
         const validFeatures = collection.features.filter((feature) => feature.geometry?.coordinates?.length);
         if (!validFeatures.length) return;
-        const coordinates = validFeatures.flatMap((feature) => {
-          const rings = feature.geometry.type === 'MultiPolygon' ? feature.geometry.coordinates.flat() : feature.geometry.coordinates;
-          return rings.flat();
-        });
-        const lons = coordinates.map(([lon]) => lon);
-        const lats = coordinates.map(([, lat]) => lat);
-        const minLon = Math.min(...lons); const maxLon = Math.max(...lons); const minLat = Math.min(...lats); const maxLat = Math.max(...lats);
-        const project = ([lon, lat]) => [25 + ((lon - minLon) / (maxLon - minLon || 1)) * 300, 245 - ((lat - minLat) / (maxLat - minLat || 1)) * 205];
-        setMapZones(validFeatures.map((feature) => { const rings = feature.geometry.type === 'MultiPolygon' ? feature.geometry.coordinates.flat() : feature.geometry.coordinates; return { id: String(feature.id), name: feature.properties?.name || 'Zona', detail: feature.properties?.detail, path: rings.map((ring) => `${ring.map(project).map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ')}Z`).join(' '), label: project(rings[0][0]) }; }));
+        setMapZones(geometryToZones(validFeatures));
       })
       .catch(() => {});
     return () => { cancelled = true; };
