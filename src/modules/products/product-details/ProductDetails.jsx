@@ -192,24 +192,6 @@ export default async function ProductDetails({ params }) {
             </p>
           </div>
 
-          {/* Stock info */}
-          <div className="mb-6">
-            {product.stock > 5 ? (
-              <div className="inline-flex items-center px-3 py-1.5 rounded border border-gray-200 bg-white text-sm font-medium text-gray-800">
-                <span className="mr-2 text-black" aria-hidden="true">✓</span>
-                En stock - {product.stock} unidades disponibles
-              </div>
-            ) : product.stock > 0 ? (
-              <div className="inline-flex items-center px-3 py-1.5 rounded text-sm font-medium bg-gray-100 text-gray-700">
-                ⚠ Quedan pocas unidades - {product.stock} disponibles
-              </div>
-            ) : (
-              <div className="inline-flex items-center px-3 py-1.5 rounded text-sm font-medium bg-red-100 text-red-700">
-                ✕ Agotado
-              </div>
-            )}
-          </div>
-
           {/* SELECTOR DE VARIANTES - NUEVO COMPONENTE */}
           <VariantSelector product={product} />
 
