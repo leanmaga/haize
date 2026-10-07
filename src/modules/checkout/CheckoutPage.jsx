@@ -43,6 +43,10 @@ const extractProductId = (item) => {
 export default function CheckoutPage() {
   const [mounted, setMounted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loadingShipping, setLoadingShipping] = useState(true);
+  const [saveShippingInfo, setSaveShippingInfo] = useState(true);
+  const [shippingNotice, setShippingNotice] = useState('');
+  const editedFields = useRef({});
   const idempotencyKey = useRef(
     `order_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`,
   );
@@ -60,32 +64,37 @@ export default function CheckoutPage() {
     handleSubmit,
     setValue,
     watch,
-    formState: { errors },
+    formState: { errors, dirtyFields },
   } = useForm();
+  editedFields.current = dirtyFields;
 
   // Hydration fix
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Cargar datos del usuario
+  // Restore account delivery details without replacing fields already edited.
   useEffect(() => {
-    if (session?.user) {
-      setValue('name', session.user.name || '');
-      setValue('email', session.user.email || '');
-      setValue('phone', session.user.phone || '');
-
-      if (session.user.needsPhoneUpdate && !session.user.phone) {
-        toast(
-          'Por favor, ingresa tu número de teléfono para completar tu perfil',
-          {
-            duration: 6000,
-            icon: '🔔',
-          },
-        );
-      }
-    }
-  }, [session, setValue]);
+    if (!session?.user?.email) return;
+    const controller = new AbortController();
+    setLoadingShipping(true);
+    setShippingNotice('');
+    fetch('/api/users/shipping', { cache: 'no-store', signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error('No se pudieron recuperar tus datos. Podés completarlos para este pedido.');
+        const data = await response.json();
+        if (controller.signal.aborted) return;
+        for (const field of ['name', 'email', 'phone', 'street', 'streetNumber', 'city', 'postalCode']) {
+          if (!editedFields.current[field]) setValue(field, data.shippingInfo?.[field] || '');
+        }
+        // Existing customers can change this order without replacing their usual address.
+        setSaveShippingInfo(!data.hasSavedShippingInfo);
+        setShippingNotice(data.hasSavedShippingInfo ? 'Cargamos tus datos guardados. Podés editarlos para enviar este pedido a otro domicilio.' : '');
+      })
+      .catch((error) => { if (error.name !== 'AbortError') setShippingNotice(error.message); })
+      .finally(() => { if (!controller.signal.aborted) setLoadingShipping(false); });
+    return () => controller.abort();
+  }, [session?.user?.email, setValue]);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -118,7 +127,7 @@ export default function CheckoutPage() {
 
   // ========== SUBMIT PARA MERCADOPAGO ==========
   const onSubmit = async (data) => {
-    if (isSubmitting) return;
+    if (isSubmitting || loadingShipping) return;
     setIsSubmitting(true);
 
     try {
@@ -144,6 +153,7 @@ export default function CheckoutPage() {
         discountAmount: discountInfo ? discountInfo.amount : 0, // ✅ Descuento
         totalAmount: total, // ✅ Total con descuento
         paymentMethod: 'mercadopago',
+        saveShippingInfo,
         shippingInfo: normalizeShippingAddress({
           name: data.name,
           email: data.email,
@@ -225,6 +235,8 @@ export default function CheckoutPage() {
               </h2>
 
               <form onSubmit={handleSubmit(onSubmit)}>
+                {loadingShipping && <p role="status" className="mb-4 text-sm text-gray-600">Cargando tus datos de envío…</p>}
+                {shippingNotice && <p role="status" className="mb-4 text-sm text-gray-600">{shippingNotice}</p>}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   {/* Nombre */}
                   <div>
@@ -386,10 +398,16 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="mt-8 space-y-4">
+                  <label className="flex items-start gap-2 text-sm">
+                    <input type="checkbox" checked={saveShippingInfo} disabled={loadingShipping || isSubmitting} onChange={(event) => setSaveShippingInfo(event.target.checked)} className="mt-1" />
+                    <span>Guardar estos datos de envío para mis próximas compras.
+                      <span className="mt-1 block text-xs text-gray-500">Si enviás a otro domicilio solo esta vez, dejá esta opción desmarcada. Tus datos habituales se conservarán.</span>
+                    </span>
+                  </label>
                   {/* Botón de MercadoPago */}
                   <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || loadingShipping}
                     className="w-full btn-drop py-3 flex items-center justify-center"
                   >
                     {isSubmitting ? (

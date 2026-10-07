@@ -36,6 +36,19 @@ const userSchema = new mongoose.Schema(
       default: '',
       trim: true,
     },
+    savedShippingInfo: {
+      type: new mongoose.Schema({
+        name: { type: String, trim: true },
+        email: { type: String, trim: true },
+        phone: { type: String, trim: true },
+        street: { type: String, trim: true },
+        streetNumber: { type: String, trim: true },
+        address: { type: String, trim: true },
+        city: { type: String, trim: true },
+        postalCode: { type: String, trim: true },
+      }, { _id: false }),
+      default: undefined,
+    },
     role: {
       type: String,
       enum: ['user', 'admin'],

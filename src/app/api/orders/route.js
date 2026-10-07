@@ -6,6 +6,7 @@ import connectDB from '@/lib/db';
 import mongoose from 'mongoose';
 import Order from '@/models/Order';
 import { normalizeShippingAddress } from '@/lib/shipping-address';
+import { rememberShipping } from '@/lib/saved-shipping';
 import User from '@/models/User';
 import { createPaymentPreference } from '@/lib/mercadopago';
 import {
@@ -138,9 +139,12 @@ export async function POST(request) {
     if (orderData.idempotencyKey) {
       const existingOrder = await Order.findOne({
         idempotencyKey: orderData.idempotencyKey,
+        user: user._id,
       });
 
       if (existingOrder) {
+        // A retry uses the same delivery information as the existing order.
+        await rememberShipping(user, { ...orderData, shippingInfo: existingOrder.shippingInfo });
         if (orderData.paymentMethod === 'mercadopago') {
           try {
             const preferenceResponse =
@@ -216,6 +220,7 @@ export async function POST(request) {
       }
 
       await recentPendingOrder.save();
+      await rememberShipping(user, orderData);
 
       if (orderData.paymentMethod === 'mercadopago') {
         try {
@@ -317,6 +322,7 @@ export async function POST(request) {
     });
 
     await order.save();
+    await rememberShipping(user, orderData);
     console.log('✅ Orden guardada exitosamente:', order._id);
 
     // Si hay cupón, registrar su uso DESPUÉS de crear la orden
