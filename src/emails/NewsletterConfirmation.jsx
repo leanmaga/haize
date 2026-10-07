@@ -129,7 +129,7 @@ export default function NewsletterConfirmation({ confirmationUrl }) {
             margin: '10px 0 0 0',
           }}
         >
-          © 2025 HAIZE. Todos los derechos reservados.
+          © 2026 HAIZE. Todos los derechos reservados.
         </p>
       </div>
     </div>

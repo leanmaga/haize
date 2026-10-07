@@ -62,7 +62,7 @@ export default function NewCouponPage() {
           </h3>
           <ul className="text-sm text-gray-700 space-y-2">
             <li>
-              • Usá códigos cortos y fáciles de recordar (ej: VERANO2024,
+              • Usá códigos cortos y fáciles de recordar (ej: VERANO2026,
               ENVIOGRATIS)
             </li>
             <li>

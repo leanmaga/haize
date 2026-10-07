@@ -235,7 +235,7 @@ export default function NewsletterWelcome({ discountCode, email }) {
             margin: '10px 0',
           }}
         >
-          © 2025 HAIZE. Todos los derechos reservados.
+          © 2026 HAIZE. Todos los derechos reservados.
         </p>
         <a
           href={`${

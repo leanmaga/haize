@@ -17,7 +17,7 @@ const CategoriesDropdown = () => {
       title: 'NOVEDADES',
       items: [
         { name: 'Nuevos Ingresos', value: 'nuevos-ingresos', isSpecial: true },
-        { name: 'Verano 2025', value: 'verano-2025', isSpecial: true },
+        { name: 'Verano 2026', value: 'verano-2026', isSpecial: true },
         { name: 'Tiempo de Lino', value: 'tiempo-lino', isSpecial: true },
       ],
     },
@@ -180,7 +180,7 @@ const CategoriesDropdown = () => {
                 {activeSection && (
                   <div className="bg-gray-100 rounded-lg overflow-hidden h-full min-h-75 relative">
                     <Image
-                      src="/assets/20251117_183927.jpg"
+                      src="/assets/20261117_183927.jpg"
                       alt="Category preview"
                       className="object-cover"
                       fill
