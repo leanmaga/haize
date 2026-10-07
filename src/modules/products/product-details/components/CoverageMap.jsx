@@ -15,18 +15,19 @@ const ZONES = [
   { id: 'ezeiza', name: 'Ezeiza', detail: 'Zona Sur', path: 'M122 194 156 155 194 192 183 236 144 249 111 227Z', label: [148, 215] },
 ];
 
-const geometryToZones = (features = []) => {
+const geometryToZones = (features = [], boundsFeatures = features) => {
   const validFeatures = features.filter((feature) => feature.geometry?.coordinates?.length);
+  const validBounds = (boundsFeatures || []).filter((feature) => feature.geometry?.coordinates?.length);
   if (!validFeatures.length) return [];
-  const coordinates = validFeatures.flatMap((feature) => (feature.geometry.type === 'MultiPolygon' ? feature.geometry.coordinates.flat() : feature.geometry.coordinates).flat());
+  const coordinates = validBounds.length ? validBounds.flatMap((feature) => (feature.geometry.type === 'MultiPolygon' ? feature.geometry.coordinates.flat() : feature.geometry.coordinates).flat()) : [[-60, -36], [-57, -36], [-57, -34], [-60, -34]];
   const lons = coordinates.map(([lon]) => lon); const lats = coordinates.map(([, lat]) => lat);
   const minLon = Math.min(...lons); const maxLon = Math.max(...lons); const minLat = Math.min(...lats); const maxLat = Math.max(...lats);
   const project = ([lon, lat]) => [25 + ((lon - minLon) / (maxLon - minLon || 1)) * 300, 245 - ((lat - minLat) / (maxLat - minLat || 1)) * 205];
   return validFeatures.map((feature) => { const rings = feature.geometry.type === 'MultiPolygon' ? feature.geometry.coordinates.flat() : feature.geometry.coordinates; return { id: String(feature.id || feature.properties?.id), name: feature.properties?.nombre || feature.properties?.name || 'Zona', detail: feature.properties?.detail, path: rings.map((ring) => `${ring.map(project).map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ')}Z`).join(' '), label: project(rings[0][0]) }; });
 };
 
-export default function CoverageMap({ zones = ZONES, loadFromApi = true }) {
-  const [mapZones, setMapZones] = useState(() => loadFromApi ? zones : geometryToZones(zones));
+export default function CoverageMap({ zones = ZONES, boundsFeatures, loadFromApi = true, className = '' }) {
+  const [mapZones, setMapZones] = useState(() => loadFromApi ? zones : geometryToZones(zones, boundsFeatures));
   const [selected, setSelected] = useState(null);
   const activeZone = mapZones.find((zone) => zone.id === selected);
 
@@ -46,7 +47,7 @@ export default function CoverageMap({ zones = ZONES, loadFromApi = true }) {
   }, []);
 
   return (
-    <section className="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm" aria-label="Mapa de cobertura de entregas">
+    <section className={`mx-auto mt-5 max-w-3xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm ${className}`} aria-label="Mapa de cobertura de entregas">
       <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-4 py-3">
         <div>
           <h3 className="text-sm font-semibold text-slate-900">Ver zonas de entrega Same Day</h3>
