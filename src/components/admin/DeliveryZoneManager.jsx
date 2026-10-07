@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import GoogleCoverageMap as CoverageMap from './GoogleCoverageMap';
+import CoverageMap from './GoogleCoverageMap';
 
 const empty = { name: '', slug: '', detail: '', cutoffTime: '11:00', isActive: true, geometry: { type: 'Polygon', coordinates: [[]] } };
 export default function DeliveryZoneManager() {
