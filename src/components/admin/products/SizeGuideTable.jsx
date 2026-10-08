@@ -6,6 +6,14 @@ import { Info, Plus, Trash2 } from 'lucide-react';
 
 // Definir plantillas de medidas según categoría de producto
 const MEASUREMENT_TEMPLATES = {
+  generic: {
+    name: 'Medidas',
+    defaultSizes: ['S', 'M', 'L', 'XL'],
+    columns: [
+      { key: 'length', label: 'Largo', unit: 'cm', tooltip: 'Largo total' },
+      { key: 'width', label: 'Ancho', unit: 'cm', tooltip: 'Ancho de la prenda o accesorio' },
+    ],
+  },
   // PANTALONES
   pantalones: {
     name: 'Pantalones',
@@ -95,7 +103,7 @@ const normalizeCategory = (category) => {
     musculosas: 'remeras',
   };
 
-  return categoryMap[normalized] || 'remeras';
+  return categoryMap[normalized] || 'generic';
 };
 
 const SizeGuideTable = ({
@@ -107,7 +115,9 @@ const SizeGuideTable = ({
 }) => {
   // ✅ NORMALIZAR CATEGORÍA ANTES DE USAR
   const normalizedCategory = normalizeCategory(category);
-  const template = MEASUREMENT_TEMPLATES[normalizedCategory];
+  const baseTemplate = MEASUREMENT_TEMPLATES[normalizedCategory];
+  const extraKeys = [...new Set((initialData?.sizes || []).flatMap((size) => Object.keys(size.garmentMeasurements || {})))].filter((key) => !baseTemplate.columns.some((column) => column.key === key));
+  const template = { ...baseTemplate, columns: [...baseTemplate.columns, ...extraKeys.map((key) => ({ key, label: ({ width: 'Ancho', stretchedWidth: 'Ancho estirado' })[key] || key, unit: 'cm', tooltip: 'Medida existente' }))] };
 
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log('🎨 [SIZE GUIDE TABLE] Inicializando');
@@ -136,6 +146,8 @@ const SizeGuideTable = ({
         id: size.id || Date.now() + Math.random(),
         labelSize: size.labelSize,
         measurements: size.garmentMeasurements || {},
+        bodyMeasurements: size.bodyMeasurements || {},
+        equivalencies: size.equivalencies || [size.labelSize],
       }));
     }
 
@@ -255,16 +267,16 @@ const SizeGuideTable = ({
 
       return {
         labelSize: row.labelSize,
-        equivalencies: [row.labelSize],
+        equivalencies: row.equivalencies || [row.labelSize],
         garmentMeasurements: cleanedMeasurements,
-        bodyMeasurements: {},
+        bodyMeasurements: row.bodyMeasurements || {},
       };
     });
 
     const sizeGuideData = {
       name: guideName.trim(),
-      method: 'prenda',
-      category: normalizedCategory, // ✅ Usar categoría normalizada
+      method: initialData?.method || 'prenda',
+      category,
       sizes: sizes,
     };
 

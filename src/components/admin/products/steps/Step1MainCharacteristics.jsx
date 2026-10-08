@@ -2,6 +2,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import useCategories from '@/hooks/useCategories';
+import AddCategory from '@/components/admin/AddCategory';
 
 const Step1MainCharacteristics = ({
   data,
@@ -62,14 +64,8 @@ const Step1MainCharacteristics = ({
   };
 
   // NUEVO: Opciones de categoría
-  const categoryOptions = [
-    { value: 'remeras', label: 'Remeras' },
-    { value: 'camisas', label: 'Camisas' },
-    { value: 'pantalones', label: 'Pantalones' },
-    { value: 'shorts', label: 'Shorts' },
-    { value: 'musculosas', label: 'Musculosas' },
-    { value: 'conjuntos', label: 'Conjuntos' },
-  ];
+  const { categories, error: categoriesError } = useCategories();
+  const categoryOptions = categories.map((category) => ({ value: category.slug, label: category.name }));
 
   return (
     <div className="bg-white rounded-lg shadow-md">
@@ -120,6 +116,8 @@ const Step1MainCharacteristics = ({
               </button>
             ))}
           </div>
+          <AddCategory onCreated={(slug) => handleChange('category', slug)} />
+          {categoriesError && <p role="alert" className="text-sm text-red-600">{categoriesError}</p>}
           {formErrors.category && (
             <p className="text-sm text-red-600 mt-1">{formErrors.category}</p>
           )}

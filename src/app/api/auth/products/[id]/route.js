@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import Product from '@/models/Product';
+import { categoryExists } from '@/lib/categories';
 import { authOptions } from '@/lib/auth';
 import { getServerSession } from 'next-auth/next';
 import { uploadImage, deleteImage } from '@/lib/cloudinary';
@@ -82,6 +83,7 @@ export async function PUT(request, { params }) {
     await connectDB();
 
     // Buscar el producto existente
+    if (updateData.category !== undefined && !(await categoryExists(updateData.category))) return NextResponse.json({ error: 'Categoría no válida' }, { status: 400 });
     const product = await Product.findById(id);
 
     if (!product) {

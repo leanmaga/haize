@@ -1,3 +1,4 @@
+import useCategories from '@/hooks/useCategories';
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronDown, ChevronUp, X } from 'lucide-react';
@@ -87,14 +88,8 @@ const FilterSidebar = ({
     }
   }, [searchParams.toString()]);
 
-  const categories = [
-    { key: 'all', label: 'Todos' },
-    { key: 'camisas', label: 'Camisas' },
-    { key: 'remeras', label: 'Remeras' },
-    { key: 'musculosas', label: 'Musculosas' },
-    { key: 'conjuntos', label: 'Conjuntos' },
-    { key: 'shorts', label: 'Shorts' },
-  ];
+  const { categories: catalog } = useCategories();
+  const categories = [{ key: 'all', label: 'Todos' }, ...catalog.map((item) => ({ key: item.slug, label: item.name }))];
 
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 

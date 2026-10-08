@@ -9,7 +9,7 @@ import ProductImageSlider from '@/components/product/ProductImageSlider';
 import VariantSelector from '@/components/product/VariantSelector';
 import SameDayShipping from './components/SameDayShipping';
 import CoverageMap from './components/CoverageMap';
-import ProductSizeGuideTable from '@/components/product/ProductSizeGuideTable';
+import ProductSizeGuideTable from '@/components/product/CategorySizeGuide';
 
 export default async function ProductDetails({ params }) {
   // Extract id from params

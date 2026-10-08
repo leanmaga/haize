@@ -26,14 +26,7 @@ const ProductSchema = new mongoose.Schema(
     category: {
       type: String,
       required: false, // No requerido para borradores del wizard
-      enum: [
-        'remeras',
-        'camisas',
-        'pantalones',
-        'shorts',
-        'musculosas',
-        'conjuntos',
-      ],
+      trim: true,
       default: 'remeras',
     },
 

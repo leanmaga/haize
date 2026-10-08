@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import Product from '@/models/Product';
+import { categoryExists } from '@/lib/categories';
 import { authOptions } from '@/lib/auth';
 import { getServerSession } from 'next-auth/next';
 
@@ -95,6 +96,8 @@ export async function POST(request) {
       );
     }
 
+    if (data.category !== undefined && !(await categoryExists(data.category))) return NextResponse.json({ error: 'Categoría no válida' }, { status: 400 });
+
     // ============ NUEVO: DETECTAR SI ES WIZARD ============
     const isWizardDraft = data.creationStep && !data.isComplete;
 
@@ -168,27 +171,6 @@ export async function POST(request) {
         {
           error: 'Faltan campos requeridos',
           missingFields,
-        },
-        { status: 400 },
-      );
-    }
-
-    // Validar que category esté en el enum
-    const validCategories = [
-      'remeras',
-      'camisas',
-      'pantalones',
-      'shorts',
-      'musculosas',
-      'conjuntos',
-    ];
-
-    if (!validCategories.includes(data.category)) {
-      return NextResponse.json(
-        {
-          error: 'Categoría no válida',
-          category: data.category,
-          validCategories,
         },
         { status: 400 },
       );

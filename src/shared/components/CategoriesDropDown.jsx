@@ -4,8 +4,11 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import CustomLink from './CustomLink';
 import Image from 'next/image';
+import useCategories from '@/hooks/useCategories';
+
 
 const CategoriesDropdown = () => {
+  const { categories: catalog } = useCategories();
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('novedades');
   const dropdownRef = useRef(null);
@@ -23,14 +26,7 @@ const CategoriesDropdown = () => {
     },
     indumentaria: {
       title: 'INDUMENTARIA',
-      items: [
-        { name: 'Camisas', value: 'camisas' },
-        { name: 'Remeras', value: 'remeras' },
-        { name: 'Shorts', value: 'shorts' },
-        { name: 'Musculosas', value: 'musculosas' },
-        { name: 'Conjuntos', value: 'conjuntos' },
-        { name: 'Todos', value: 'all' },
-      ],
+      items: [...catalog.map((item) => ({ name: item.name, value: item.slug })), { name: 'Todos', value: 'all' }],
     },
     regalos: {
       title: 'REGALOS',
@@ -144,6 +140,7 @@ const CategoriesDropdown = () => {
                     <CustomLink
                       barColor="bg-black"
                       onMouseEnter={() => setActiveSection(key)}
+                      onClick={() => setActiveSection(key)}
                     >
                       {section.title}
                     </CustomLink>
@@ -152,7 +149,7 @@ const CategoriesDropdown = () => {
               </div>
 
               {/* Columna central - Contenido de la sección activa */}
-              <div className="flex-1">
+              <div className="flex-1 max-h-[65vh] overflow-y-auto">
                 {activeSection && (
                   //<div className="grid grid-cols-3 gap-x-8 gap-y-3">
                   <div className="text-lg pl-5 inline-grid grid-cols-1 justify-items-start gap-y-3">

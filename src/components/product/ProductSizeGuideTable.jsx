@@ -8,6 +8,8 @@
 
 // Mapeo de nombres técnicos a nombres legibles en español
 const FIELD_LABELS = {
+  width: 'Ancho',
+  stretchedWidth: 'Ancho estirado',
   // Medidas de prenda
   length: 'Largo',
   chest: 'Pecho',

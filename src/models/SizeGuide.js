@@ -15,14 +15,7 @@ const SizeGuideSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: [
-        'remeras',
-        'camisas',
-        'pantalones',
-        'shorts',
-        'musculosas',
-        'conjuntos',
-      ],
+      trim: true,
       required: false, // Opcional para guías genéricas
     },
     method: {
@@ -60,6 +53,8 @@ const SizeGuideSchema = new mongoose.Schema(
           // CAMPOS COMUNES
           // ═══════════════════════════════════════
           length: Number, // Largo total
+          width: Number,
+          stretchedWidth: Number,
 
           // ═══════════════════════════════════════
           // REMERAS / CAMISAS / MUSCULOSAS

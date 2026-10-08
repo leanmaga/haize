@@ -5,6 +5,7 @@ import { authOptions } from '@/lib/auth';
 import connectDB from '@/lib/db';
 import SizeGuide from '@/models/SizeGuide';
 import Product from '@/models/Product';
+import { categoryExists } from '@/lib/categories';
 
 // GET - Obtener todas las guías o por productId
 export async function GET(request) {
@@ -13,6 +14,11 @@ export async function GET(request) {
 
     const { searchParams } = new URL(request.url);
     const productId = searchParams.get('productId');
+    const category = searchParams.get('category');
+    if (category) {
+      const guide = await SizeGuide.findOne({ category, productId: null, isActive: true }).sort({ updatedAt: -1 }).lean();
+      return NextResponse.json({ success: true, guide }, { headers: { 'Cache-Control': 'no-store' } });
+    }
 
     if (productId) {
       // Buscar por productId
@@ -34,7 +40,7 @@ export async function GET(request) {
     // Listar todas
     const sizeGuides = await SizeGuide.find({ isActive: true })
       .sort({ createdAt: -1 })
-      .limit(50);
+      ;
 
     return NextResponse.json(sizeGuides);
   } catch (error) {
@@ -54,6 +60,7 @@ export async function POST(request) {
     await connectDB();
 
     const data = await request.json();
+    if (data.category && !(await categoryExists(data.category))) return NextResponse.json({ error: 'Categoría no válida' }, { status: 400 });
     const { productId, name, method, sizes } = data;
 
     // Validar campos requeridos
@@ -90,6 +97,7 @@ export async function POST(request) {
       name,
       method,
       sizes,
+      category: data.category,
     });
 
     await sizeGuide.save();

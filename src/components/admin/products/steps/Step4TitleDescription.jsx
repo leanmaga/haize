@@ -124,7 +124,7 @@ const Step4TitleDescription = ({
   };
 
   const getSuggestedDescription = () => {
-    return descriptionTemplates[data.category] || descriptionTemplates.remeras;
+    return descriptionTemplates[data.category] || 'Describí las características, materiales y cuidados del producto.';
   };
 
   const useSuggestedDescription = () => {

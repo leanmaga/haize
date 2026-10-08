@@ -12,9 +12,12 @@ import {
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 import Image from 'next/image';
+import useCategories from '@/hooks/useCategories';
+
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
 export default function ProductsAdminPage() {
+  const { categories } = useCategories();
   const { data: session, status } = useSession();
   const router = useRouter();
   const [products, setProducts] = useState([]);
@@ -273,12 +276,7 @@ export default function ProductsAdminPage() {
           }}
         >
           <option value="all">Todas las categorías</option>
-          <option value="camisas">Camisas</option>
-          <option value="remeras">Remeras</option>
-          <option value="pantalones">Pantalones</option>
-          <option value="musculosas">Musculosas</option>
-          <option value="conjuntos">Conjuntos</option>
-          <option value="shorts">Shorts</option>
+          {categories.map((item) => <option key={item.slug} value={item.slug}>{item.name}</option>)}
         </select>
       </div>
 

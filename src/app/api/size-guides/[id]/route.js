@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import connectDB from '@/lib/db';
 import SizeGuide from '@/models/SizeGuide';
+import { categoryExists } from '@/lib/categories';
 
 // GET - Obtener guía específica
 export async function GET(request, { params }) {
@@ -39,6 +40,7 @@ export async function PUT(request, { params }) {
 
     const { id } = await params;
     const data = await request.json();
+    if (data.category && !(await categoryExists(data.category))) return NextResponse.json({ error: 'Categoría no válida' }, { status: 400 });
 
     const sizeGuide = await SizeGuide.findById(id);
     if (!sizeGuide) {
@@ -50,6 +52,7 @@ export async function PUT(request, { params }) {
 
     // Actualizar campos
     if (data.name) sizeGuide.name = data.name;
+    if (data.category) sizeGuide.category = data.category;
     if (data.method) sizeGuide.method = data.method;
     if (data.sizes) sizeGuide.sizes = data.sizes;
 

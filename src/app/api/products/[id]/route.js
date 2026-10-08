@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import Product from '@/models/Product';
+import { categoryExists } from '@/lib/categories';
 import { authOptions } from '@/lib/auth';
 import { getServerSession } from 'next-auth/next';
 
@@ -78,6 +79,7 @@ export async function PUT(request, { params }) {
 
     // Verificar si el producto existe
     const existingProduct = await Product.findById(id);
+    if (data.category !== undefined && !(await categoryExists(data.category))) return NextResponse.json({ error: 'Categoría no válida' }, { status: 400 });
     if (!existingProduct) {
       return NextResponse.json(
         { message: 'Producto no encontrado' },
@@ -95,6 +97,7 @@ export async function PUT(request, { params }) {
 
       // Paso 1
       if (data.model !== undefined) updateData.model = data.model;
+      if (data.category !== undefined) updateData.category = data.category;
 
       // Paso 2
       if (data.variants !== undefined) updateData.variants = data.variants;

@@ -1,3 +1,4 @@
+import useCategories from '@/hooks/useCategories';
 import FormInputOptions from '../FormInputOptions';
 
 /**
@@ -8,6 +9,7 @@ import FormInputOptions from '../FormInputOptions';
  * @returns {JSX.Element}
  */
 const BasicInfoFields = ({ register, validationErrors }) => {
+  const { categories } = useCategories();
   return (
     <div className="space-y-6">
       {/* Nombre del producto */}
@@ -55,14 +57,7 @@ const BasicInfoFields = ({ register, validationErrors }) => {
         name="Categoría"
         inputError={validationErrors.category}
         register={register}
-        options={[
-          { value: 'camisas', name: 'Camisas' },
-          { value: 'remeras', name: 'Remeras' },
-          { value: 'pantalones', name: 'Pantalones' },
-          { value: 'musculosas', name: 'Musculosas' },
-          { value: 'conjuntos', name: 'Conjuntos' },
-          { value: 'shorts', name: 'Shorts' },
-        ]}
+        options={categories.map((item) => ({ value: item.slug, name: item.name }))}
       />
 
       {/* Precio de venta y Precio promocional - JUNTOS */}
