@@ -4,8 +4,13 @@ jest.mock('@/lib/auth', () => ({ authOptions: {} }));
 jest.mock('@/lib/db', () => ({ __esModule: true, default: jest.fn() }));
 jest.mock('@/lib/categories', () => ({ categoryExists: jest.fn() }));
 jest.mock('@/lib/mercadolibre', () => ({ mercadoLibreRequest: jest.fn() }));
-jest.mock('@/models/Product', () => ({ __esModule: true, default: { findOne: jest.fn(), findById: jest.fn(), create: jest.fn(), find: jest.fn() } }));
-import { GET, POST } from './route';
+jest.mock('@/lib/mercadolibre-images', () => ({
+  resolveMercadoLibrePictures: jest.fn(async (item) => ({ item, warning: '' })),
+  storeMercadoLibrePictures: jest.fn(async () => []),
+  replaceMercadoLibrePictures: jest.fn((product) => ({ imageUrl: product.imageUrl, additionalImages: product.additionalImages, variants: product.variants })),
+}));
+jest.mock('@/models/Product', () => ({ __esModule: true, default: { findOne: jest.fn(), findOneAndUpdate: jest.fn(), findById: jest.fn(), create: jest.fn(), find: jest.fn() } }));
+import { GET, POST, PATCH } from './route';
 import { getServerSession } from 'next-auth/next';
 import { categoryExists } from '@/lib/categories';
 import { mercadoLibreRequest } from '@/lib/mercadolibre';
@@ -15,7 +20,8 @@ const item = { id: 'MLA12345', seller_id: 42, title: 'Remera de algodón', curre
 const body = { itemId: item.id, title: item.title, salePrice: item.price, description: '', category: 'remeras' };
 const post = (data = body) => POST({ json: async () => data });
 beforeEach(() => {
-  jest.resetAllMocks();
+  jest.clearAllMocks();
+  Product.findOne.mockReset();
   getServerSession.mockResolvedValue({ user: { role: 'admin' } });
   categoryExists.mockResolvedValue(true);
   Product.create.mockImplementation(async (data) => data);
@@ -24,8 +30,23 @@ beforeEach(() => {
 test.each([null, { user: { role: 'user' } }])('blocks non admins before calling ML', async (session) => {
   getServerSession.mockResolvedValue(session);
   expect((await post()).status).toBe(403);
+  expect((await PATCH({ json: async () => body })).status).toBe(403);
   expect((await GET({ url: 'http://local/api/mercadolibre/import' })).status).toBe(403);
   expect(mercadoLibreRequest).not.toHaveBeenCalled();
+});
+test('refreshes only image fields and rejects concurrent product edits', async () => {
+  const product = { _id: 'saved', updatedAt: 'original-version', title: 'Manual title', stock: 99,
+    imageUrl: 'photo.jpg', additionalImages: [{ url: 'extra.jpg' }],
+    variants: [{ stock: 99, images: ['variant.jpg'] }] };
+  Product.findOne.mockReturnValue({ lean: async () => product });
+  Product.findOneAndUpdate.mockResolvedValueOnce(product).mockResolvedValueOnce(null);
+  expect((await PATCH({ json: async () => body })).status).toBe(200);
+  expect(Product.findOneAndUpdate).toHaveBeenCalledWith(
+    { _id: 'saved', updatedAt: 'original-version' },
+    { $set: { imageUrl: 'photo.jpg', 'additionalImages.0.url': 'extra.jpg', 'variants.0.images': ['variant.jpg'] } },
+    { new: true },
+  );
+  expect((await PATCH({ json: async () => body })).status).toBe(409);
 });
 test('blocks another seller and malformed IDs', async () => {
   mercadoLibreRequest.mockImplementation(async (path) => path === '/users/me' ? { id: 99 } : item);

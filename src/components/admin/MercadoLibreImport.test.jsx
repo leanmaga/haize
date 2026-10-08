@@ -44,3 +44,18 @@ test('disables import before connecting and shows API errors', async () => {
   expect(await screen.findByRole('alert')).toHaveTextContent('Cuenta sin permisos');
   await waitFor(() => expect(screen.getByRole('button', { name: 'Traer mis publicaciones' })).toBeEnabled());
 });
+
+test('refreshes photos of a linked product without importing it again', async () => {
+  const imported = { productId: 'existing', title: preview.title };
+  global.fetch.mockImplementation(async (_url, options) => ({ ok: true, json: async () => options?.method === 'PATCH'
+    ? { imported }
+    : { items: [{ id: 'MLA123', title: preview.title, price: 100, status: 'active', imported }] },
+  }));
+  render(<MercadoLibreImport connected />);
+  fireEvent.click(screen.getByRole('button', { name: 'Traer mis publicaciones' }));
+  fireEvent.click(await screen.findByRole('button', { name: 'Mejorar fotos' }));
+  expect(await screen.findByText('Fotos actualizadas con la mejor resolución disponible.')).toBeInTheDocument();
+  const [, options] = global.fetch.mock.calls.find(([, options]) => options?.method === 'PATCH');
+  expect(JSON.parse(options.body)).toEqual({ itemId: 'MLA123' });
+  expect(global.fetch.mock.calls.some(([, options]) => options?.method === 'POST')).toBe(false);
+});

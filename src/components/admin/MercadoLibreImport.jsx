@@ -41,12 +41,22 @@ export default function MercadoLibreImport({ connected, onImported }) {
     setItems((current) => current.map((item) => item.id === id ? { ...item, imported } : item));
     setSelected((current) => current.filter((itemId) => itemId !== id));
   };
+  const improvePhotos = async (item) => {
+    setBusy(true); setError(''); setMessage('');
+    try {
+      const data = await request('', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ itemId: item.id }) });
+      setResult(data.imported);
+      setMessage(data.warning || 'Fotos actualizadas con la mejor resolución disponible.');
+    } catch (err) { setError(err.message); }
+    finally { setBusy(false); }
+  };
   const preview = async (ids) => {
     if (!ids.length) { setQueue([]); return; }
     const [id, ...rest] = ids;
     setBusy(true); setError(''); setMessage(''); setReview(null); setResult(null); setQueue(rest);
     try {
       const data = await request(`?itemId=${encodeURIComponent(id)}`);
+      setMessage(data.warning || '');
       if (data.imported) {
         markImported(id, data.imported); setResult(data.imported); setMessage('Este producto ya está vinculado a Haize.');
       } else {
@@ -63,7 +73,7 @@ export default function MercadoLibreImport({ connected, onImported }) {
         category: review.category, salePrice: review.salePrice, featured: review.featured,
       }) });
       markImported(review.itemId, data.imported); setReview(null); setResult(data.imported);
-      setMessage(data.alreadyImported ? 'Este producto ya estaba importado.' : 'Producto importado y publicado en Haize.');
+      setMessage(data.warning || (data.alreadyImported ? 'Este producto ya estaba importado.' : 'Producto importado y publicado en Haize.'));
       onImported?.();
     } catch (err) { setError(err.message); }
     finally { setBusy(false); }
@@ -89,7 +99,7 @@ export default function MercadoLibreImport({ connected, onImported }) {
           <input type="checkbox" aria-label={`Seleccionar ${item.title}`} disabled={busy || !!item.imported || !['active', 'paused'].includes(item.status)} checked={selected.includes(item.id)} onChange={(event) => setSelected((current) => event.target.checked ? [...current, item.id] : current.filter((id) => id !== item.id))} className="h-4 w-4" />
           {item.thumbnail && <img src={item.thumbnail} alt="" className="w-14 h-14 object-contain" />}
           <div className="flex-1 min-w-0"><p className="font-medium">{item.title}</p><p className="text-xs text-gray-500">{item.id} · {money(item.price, item.currency)} · {({ active: 'Activa', paused: 'Pausada', closed: 'Finalizada', under_review: 'En revisión' })[item.status] || item.status}</p></div>
-          {item.imported && <Link className="text-sm underline" href={`/admin/products/edit/${item.imported.productId}`}>Ya vinculada</Link>}
+          {item.imported && <div className="flex flex-col gap-2 items-end"><Link className="text-sm underline" href={`/admin/products/edit/${item.imported.productId}`}>Ya vinculada</Link><button type="button" disabled={busy} onClick={() => improvePhotos(item)} className="text-sm border rounded px-3 py-2 disabled:opacity-50">Mejorar fotos</button></div>}
         </div>)}
         {!visible.length && <p className="text-sm py-4">No hay publicaciones para mostrar.</p>}
       </div>

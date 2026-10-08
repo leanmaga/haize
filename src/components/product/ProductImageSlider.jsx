@@ -151,7 +151,8 @@ export default function ProductImageSlider({ images, product }) {
                 : {}
             }
             fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            quality={90}
+            sizes={isZoomed ? '(max-width: 768px) 150vw, 100vw' : '(max-width: 768px) 100vw, 50vw'}
             priority={currentIndex === 0}
           />
         </div>
