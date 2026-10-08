@@ -163,13 +163,10 @@ export const createPaymentPreference = async (orderData) => {
       diferencia: Math.abs(calculatedTotal - orderData.totalAmount),
     });
 
-    // Verificar que los totales coincidan (con tolerancia de 1 peso por redondeo)
-    if (Math.abs(calculatedTotal - orderData.totalAmount) > 1) {
-      console.warn('⚠️ Discrepancia en totales:', {
-        esperado: orderData.totalAmount,
-        calculado: calculatedTotal,
-        diferencia: calculatedTotal - orderData.totalAmount,
-      });
+      // Defensa final: Mercado Pago nunca debe recibir una preferencia cuyo
+      // detalle no coincida con el total persistido y calculado por el servidor.
+      if (Math.abs(calculatedTotal - orderData.totalAmount) > 0.01) {
+        throw new Error('La orden tiene importes inconsistentes y no puede pagarse');
     }
 
     // Obtener URL base

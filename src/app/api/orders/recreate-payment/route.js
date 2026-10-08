@@ -6,6 +6,7 @@ import connectDB from "@/lib/db";
 import Order from "@/models/Order";
 import User from "@/models/User";
 import { createPaymentPreference } from "@/lib/mercadopago";
+import { calculateTrustedOrder, OrderPricingError } from '@/lib/order-pricing';
 
 export async function POST(request) {
   try {
@@ -79,6 +80,19 @@ export async function POST(request) {
     }
 
     try {
+      const trustedPricing = await calculateTrustedOrder({
+        items: order.items,
+        couponCode: order.appliedCoupon?.code,
+        userId: order.user,
+        currentOrderId: order._id,
+      });
+      order.items = trustedPricing.items;
+      order.subtotal = trustedPricing.subtotal;
+      order.discountAmount = trustedPricing.discountAmount;
+      order.totalAmount = trustedPricing.totalAmount;
+      order.appliedCoupon = trustedPricing.appliedCoupon;
+      await order.save();
+
       // Crear nueva preferencia de pago usando tu configuración existente
       const preferenceResponse = await createPaymentPreference(order);
 
@@ -126,6 +140,7 @@ export async function POST(request) {
         },
       });
     } catch (mpError) {
+      if (mpError instanceof OrderPricingError) throw mpError;
       console.error("❌ Error al crear preferencia de MercadoPago:", mpError);
 
       // Registrar el error en la orden para debugging
@@ -152,6 +167,12 @@ export async function POST(request) {
     }
   } catch (error) {
     console.error("❌ Error general al reactivar pago:", error);
+    if (error instanceof OrderPricingError) {
+      return NextResponse.json(
+        { success: false, message: error.message },
+        { status: error.status },
+      );
+    }
     return NextResponse.json(
       {
         success: false,

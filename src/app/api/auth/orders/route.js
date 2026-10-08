@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Order from "@/models/Order";
-import User from "@/models/User";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth/next";
-import { createPaymentPreference } from "@/lib/mercadopago";
 
 // GET - Obtener las órdenes del usuario o todas las órdenes (para admin)
 export async function GET(request) {
@@ -41,69 +39,11 @@ export async function GET(request) {
 }
 
 // POST - Crear una nueva orden
-export async function POST(request) {
-  try {
-    const session = await getServerSession(authOptions);
-
-    if (!session) {
-      return NextResponse.json({ message: "No autenticado" }, { status: 401 });
-    }
-
-    const { items, totalAmount, shippingInfo, paymentMethod } =
-      await request.json();
-
-    // Validaciones
-    if (
-      !items ||
-      !items.length ||
-      !totalAmount ||
-      !shippingInfo ||
-      !paymentMethod
-    ) {
-      return NextResponse.json(
-        { message: "Datos incompletos" },
-        { status: 400 }
-      );
-    }
-
-    await connectDB();
-
-    // Crear nueva orden
-    const newOrder = new Order({
-      user: session.user.id,
-      items,
-      totalAmount,
-      paymentMethod,
-      shippingInfo,
-      status: "pendiente",
-    });
-
-    await newOrder.save();
-
-    // Agregar la orden al usuario
-    await User.findByIdAndUpdate(session.user.id, {
-      $push: { orders: newOrder._id },
-    });
-
-    // Si el método de pago es MercadoPago, crear preferencia de pago
-    let paymentPreference = null;
-    if (paymentMethod === "mercadopago") {
-      paymentPreference = await createPaymentPreference(newOrder);
-    }
-
-    return NextResponse.json(
-      {
-        message: "Orden creada correctamente",
-        order: newOrder,
-        paymentInfo: paymentPreference,
-      },
-      { status: 201 }
-    );
-  } catch (error) {
-    console.error("Error al crear orden:", error);
-    return NextResponse.json(
-      { message: "Error al crear la orden" },
-      { status: 500 }
-    );
-  }
+export async function POST() {
+  // Endpoint legado sin consumidores. Se bloquea para que no exista una vía
+  // alternativa que acepte importes enviados por el navegador.
+  return NextResponse.json(
+    { message: 'Usá el endpoint seguro /api/orders' },
+    { status: 410 },
+  );
 }

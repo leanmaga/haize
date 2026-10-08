@@ -3,12 +3,12 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import connectDB from '@/lib/db';
-import mongoose from 'mongoose';
 import Order from '@/models/Order';
 import { normalizeShippingAddress } from '@/lib/shipping-address';
 import { rememberShipping } from '@/lib/saved-shipping';
 import User from '@/models/User';
 import { createPaymentPreference } from '@/lib/mercadopago';
+import { calculateTrustedOrder, OrderPricingError } from '@/lib/order-pricing';
 import {
   sendOrderConfirmationToCustomer,
   sendNewOrderNotificationToAdmin,
@@ -92,28 +92,29 @@ export async function POST(request) {
       );
     }
 
-    // Limpiar y validar cada item
-    orderData.items = orderData.items.map((item, index) => {
-      const cleanProductId = extractProductId(item.product);
+    // Resolver primero la idempotencia permite reutilizar de forma segura un
+    // cupón de un solo uso que ya quedó asociado a esta misma orden.
+    const idempotentOrder = orderData.idempotencyKey
+      ? await Order.findOne({
+          idempotencyKey: orderData.idempotencyKey,
+          user: user._id,
+        })
+      : null;
 
-      if (!isValidObjectId(cleanProductId)) {
-        console.error(`❌ ProductId inválido en item ${index}:`, {
-          original: item.product,
-          cleaned: cleanProductId,
-          title: item.title,
-        });
-        throw new Error(`ProductId inválido en item: ${item.title || index}`);
-      }
-
-      console.log(`✅ ProductId validado para ${item.title}:`, {
-        original: item.product,
-        cleaned: cleanProductId,
-      });
-
-      return {
-        ...item,
-        product: cleanProductId, // Usar el productId limpio
-      };
+    // El cliente solo identifica productos, cantidades, variantes y el código
+    // del cupón. Todos los importes y datos visibles se reconstruyen desde DB.
+    const trustedPricing = await calculateTrustedOrder({
+      items: orderData.items,
+      couponCode: orderData.appliedCoupon?.code || orderData.couponCode,
+      userId: user._id,
+      currentOrderId: idempotentOrder?._id,
+    });
+    Object.assign(orderData, {
+      items: trustedPricing.items,
+      subtotal: trustedPricing.subtotal,
+      discountAmount: trustedPricing.discountAmount,
+      totalAmount: trustedPricing.totalAmount,
+      appliedCoupon: trustedPricing.appliedCoupon,
     });
     // ============================================================
 
@@ -137,12 +138,21 @@ export async function POST(request) {
 
     // Verificar si existe una clave de idempotencia
     if (orderData.idempotencyKey) {
-      const existingOrder = await Order.findOne({
-        idempotencyKey: orderData.idempotencyKey,
-        user: user._id,
-      });
+      const existingOrder = idempotentOrder;
 
       if (existingOrder) {
+        const existingPricing = await calculateTrustedOrder({
+          items: existingOrder.items,
+          couponCode: existingOrder.appliedCoupon?.code,
+          userId: user._id,
+          currentOrderId: existingOrder._id,
+        });
+        existingOrder.items = existingPricing.items;
+        existingOrder.subtotal = existingPricing.subtotal;
+        existingOrder.discountAmount = existingPricing.discountAmount;
+        existingOrder.totalAmount = existingPricing.totalAmount;
+        existingOrder.appliedCoupon = existingPricing.appliedCoupon;
+        await existingOrder.save();
         // A retry uses the same delivery information as the existing order.
         await rememberShipping(user, { ...orderData, shippingInfo: existingOrder.shippingInfo });
         if (orderData.paymentMethod === 'mercadopago') {
@@ -206,6 +216,9 @@ export async function POST(request) {
 
     if (recentPendingOrder) {
       recentPendingOrder.items = orderData.items;
+      recentPendingOrder.subtotal = orderData.subtotal;
+      recentPendingOrder.discountAmount = orderData.discountAmount;
+      recentPendingOrder.appliedCoupon = orderData.appliedCoupon;
       recentPendingOrder.totalAmount = orderData.totalAmount;
       recentPendingOrder.shippingInfo = orderData.shippingInfo;
       recentPendingOrder.paymentMethod = orderData.paymentMethod;
@@ -328,8 +341,7 @@ export async function POST(request) {
     // Si hay cupón, registrar su uso DESPUÉS de crear la orden
     if (orderData.appliedCoupon && orderData.appliedCoupon.code) {
       try {
-        const Coupon = mongoose.model('Coupon');
-        const coupon = await Coupon.findByCode(orderData.appliedCoupon.code);
+        const coupon = trustedPricing.coupon;
 
         if (coupon) {
           await coupon.recordUsage(
@@ -418,6 +430,9 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error('Error al crear la orden:', error);
+    if (error instanceof OrderPricingError) {
+      return NextResponse.json({ message: error.message }, { status: error.status });
+    }
     return NextResponse.json(
       { message: `Error al crear la orden: ${error.message}` },
       { status: 500 },
