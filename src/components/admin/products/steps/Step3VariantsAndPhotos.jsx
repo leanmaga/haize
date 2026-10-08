@@ -2,6 +2,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import PhotoUploadLoader from '@/components/admin/PhotoUploadLoader';
+import { preloadUploadedImages } from '@/lib/preload-uploaded-images';
 import {
   Upload,
   X,
@@ -33,6 +35,7 @@ const Step3VariantsAndPhotos = ({
   const [expandedVariant, setExpandedVariant] = useState(null);
   const [formErrors, setFormErrors] = useState({});
   const [uploadingPhotos, setUploadingPhotos] = useState(false);
+  const [uploadingVariant, setUploadingVariant] = useState(null);
   const [generatingVariant, setGeneratingVariant] = useState(null);
   const [generatedImage, setGeneratedImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
@@ -264,6 +267,7 @@ const Step3VariantsAndPhotos = ({
   };
 
   const handlePhotoUpload = async (variantIndex, files) => {
+    if (uploadingPhotos) return;
     const fileArray = Array.from(files);
 
     const currentPhotoCount = variants[variantIndex].photos.length;
@@ -284,27 +288,29 @@ const Step3VariantsAndPhotos = ({
     if (validFiles.length === 0) return;
 
     setUploadingPhotos(true);
+    setUploadingVariant(variantIndex);
 
     try {
       const uploadedImages = await uploadImages(validFiles, (progress) => {
         console.log(`Progreso de upload: ${progress}%`);
       });
 
-      const updatedVariants = [...variants];
-      updatedVariants[variantIndex].photos = [
-        ...updatedVariants[variantIndex].photos,
-        ...uploadedImages.map((img) => ({
+      const previewsReady = await preloadUploadedImages(uploadedImages);
+      setVariants((current) => current.map((variant, index) => index === variantIndex ? {
+        ...variant,
+        photos: [...variant.photos, ...uploadedImages.map((img) => ({
           id: Date.now() + Math.random(),
           url: img.url,
           publicId: img.publicId,
           width: img.width,
           height: img.height,
           format: img.format,
-        })),
-      ];
-      setVariants(updatedVariants);
+        }))],
+      } : variant));
 
-      if (uploadedImages.length === 1) {
+      if (!previewsReady) {
+        showToast('Las fotos se guardaron, pero alguna vista previa no pudo cargar.');
+      } else if (uploadedImages.length === 1) {
         showToast('Foto subida exitosamente', 'success');
       } else {
         showToast(`${uploadedImages.length} fotos subidas exitosamente`, 'success');
@@ -314,6 +320,7 @@ const Step3VariantsAndPhotos = ({
       showToast('Error subiendo fotos: ' + error.message);
     } finally {
       setUploadingPhotos(false);
+      setUploadingVariant(null);
     }
   };
 
@@ -378,13 +385,15 @@ const Step3VariantsAndPhotos = ({
   };
 
   const handleApproveGeneratedImage = async () => {
-    if (!generatedImage) return;
+    if (!generatedImage || uploadingPhotos) return;
     setUploadingPhotos(true);
+    setUploadingVariant(generatedImage.variantIndex);
     try {
       const response = await fetch(generatedImage.url);
       const blob = await response.blob();
       const file = new File([blob], `haize-ai-${Date.now()}.png`, { type: 'image/png' });
       const uploaded = await uploadImages([file]);
+      const previewsReady = await preloadUploadedImages(uploaded);
       const updatedVariants = [...variants];
       updatedVariants[generatedImage.variantIndex].photos.push({
         id: Date.now() + Math.random(),
@@ -396,10 +405,12 @@ const Step3VariantsAndPhotos = ({
       });
       setVariants(updatedVariants);
       setGeneratedImage(null);
+      if (!previewsReady) showToast('La foto se guardó, pero la vista previa no pudo cargar.');
     } catch (error) {
       showToast(`No se pudo guardar la imagen generada: ${error.message}`);
     } finally {
       setUploadingPhotos(false);
+      setUploadingVariant(null);
     }
   };
 
@@ -709,19 +720,20 @@ const Step3VariantsAndPhotos = ({
                           Fotos (requerido)
                         </label>
 
-                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                        <div aria-busy={uploadingVariant === variantIndex} className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
                           <input
                             type="file"
                             multiple
                             accept="image/jpeg,image/jpg,image/png,image/webp"
-                            onChange={(e) =>
-                              handlePhotoUpload(variantIndex, e.target.files)
-                            }
+                            onChange={(e) => {
+                              handlePhotoUpload(variantIndex, e.target.files);
+                              e.target.value = '';
+                            }}
                             className="hidden"
                             id={`photo-upload-${variantIndex}`}
                             disabled={uploadingPhotos}
                           />
-                          <label
+                          {uploadingVariant === variantIndex ? <PhotoUploadLoader /> : <label
                             htmlFor={`photo-upload-${variantIndex}`}
                             className="cursor-pointer"
                           >
@@ -734,7 +746,7 @@ const Step3VariantsAndPhotos = ({
                               WEBP, asegurate de que tenga más de 500 píxeles en
                               alguno de sus lados y peso máximo de 10 MB.
                             </p>
-                          </label>
+                          </label>}
                         </div>
 
                         {formErrors[`variant_${variantIndex}_photos`] && (
