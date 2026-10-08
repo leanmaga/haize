@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
+import MercadoLibreImport from './MercadoLibreImport';
 
 export default function MercadoLibreIntegration() {
   const [status, setStatus] = useState(null);
@@ -116,6 +117,7 @@ export default function MercadoLibreIntegration() {
         En el administrador de aplicaciones de Mercado Libre configurá la URL de notificaciones como <code className="font-mono">/api/mercadolibre/webhook</code> sobre el dominio público de Haize y suscribí el tema <code className="font-mono">orders_v2</code>.
       </div>
     </section>
+    <MercadoLibreImport connected={status?.isConnected} onImported={() => fetch('/api/mercadolibre/products', { cache: 'no-store' }).then((response) => response.json()).then((data) => setProducts(data.products || [])).catch(() => toast.error('No se pudo actualizar la lista de productos'))} />
     <section className="bg-white rounded-lg shadow-md p-6">
       <h3 className="text-lg font-semibold text-gray-900">Vincular publicaciones</h3>
       <p className="text-sm text-gray-600 mt-1 mb-4">Pegá el ID de publicación (por ejemplo, MLA123456789). Un producto sin ID no se sincroniza.</p>

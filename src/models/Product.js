@@ -69,6 +69,7 @@ const ProductSchema = new mongoose.Schema(
     // ítem o la variante que hay que actualizar remotamente.
     mercadoLibre: {
       itemId: { type: String, trim: true },
+      userProductId: { type: String, trim: true },
       variationMappings: {
         type: [
           {
@@ -298,7 +299,7 @@ ProductSchema.pre('save', function (next) {
       if (!this.isComplete) {
         this.slug = `${baseSlug}-${Date.now()}`;
       } else {
-        this.slug = baseSlug;
+        this.slug = this.mercadoLibre?.itemId ? `${baseSlug}-${this.mercadoLibre.itemId.toLowerCase()}` : baseSlug;
       }
     }
   }

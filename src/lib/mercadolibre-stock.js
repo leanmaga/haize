@@ -41,10 +41,10 @@ export async function reduceStockForMercadoLibreOrder(order) {
       if (variationId && !mapping) {
         throw new Error(`Falta vincular la variante ${variationId} de ${product.title}`);
       }
-      const variant = mapping && product.variants?.find((entry) =>
+      const variant = mapping ? product.variants?.find((entry) =>
         (mapping.sku && entry.sku === mapping.sku) ||
         (mapping.size && mapping.color && entry.size === mapping.size && entry.color === mapping.color),
-      );
+      ) : (!variationId && product.variants?.length === 1 ? product.variants[0] : null);
 
       if (mapping && !variant) throw new Error(`No se encontró la variante vinculada de ${product.title}`);
       if (variant) {

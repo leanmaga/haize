@@ -52,6 +52,8 @@ export async function getMercadoLibreAccessToken() {
 export async function mercadoLibreRequest(path, options = {}) {
   const accessToken = await getMercadoLibreAccessToken();
   const response = await fetch(`${API_URL}${path}`, {
+    cache: 'no-store',
+    signal: AbortSignal.timeout(20000),
     ...options,
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -61,7 +63,11 @@ export async function mercadoLibreRequest(path, options = {}) {
     },
   });
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.message || `Mercado Libre respondió ${response.status}`);
+  if (!response.ok) {
+    const error = new Error(data.message || `Mercado Libre respondió ${response.status}`);
+    error.status = response.status;
+    throw error;
+  }
   return data;
 }
 

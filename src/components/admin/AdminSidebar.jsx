@@ -92,6 +92,11 @@ const AdminSidebar = () => {
         },
       ],
     },
+    {
+      title: 'Mercado Libre',
+      icon: BanknotesIcon,
+      href: '/admin/settings/integrations/mercado-libre',
+    },
     // ====================================
     {
       title: 'Reviews',
@@ -112,11 +117,6 @@ const AdminSidebar = () => {
           title: 'Mercado pago',
           icon: BanknotesIcon,
           href: '/admin/settings/payment/mercado-pago',
-        },
-        {
-          title: 'Mercado Libre',
-          icon: BanknotesIcon,
-          href: '/admin/settings/integrations/mercado-libre',
         },
         {
           title: 'Cuenta',
