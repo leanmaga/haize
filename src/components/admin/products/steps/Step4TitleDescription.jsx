@@ -15,6 +15,7 @@ const Step4TitleDescription = ({
   const [formData, setFormData] = useState({
     title: data.title || '',
     description: data.description || '',
+    featured: Boolean(data.featured),
   });
 
   const [formErrors, setFormErrors] = useState({});
@@ -33,6 +34,13 @@ const Step4TitleDescription = ({
     setFormErrors((prev) => ({
       ...prev,
       [field]: '',
+    }));
+  };
+
+  const toggleFeatured = () => {
+    setFormData((prev) => ({
+      ...prev,
+      featured: !prev.featured,
     }));
   };
 
@@ -124,6 +132,18 @@ const Step4TitleDescription = ({
           )}
 
         </div>
+
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={formData.featured}
+            onChange={toggleFeatured}
+            className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          />
+          <span className="text-sm font-medium text-gray-700">
+            Producto destacado
+          </span>
+        </label>
 
         {/* Descripción del producto */}
         <div>
