@@ -9,7 +9,7 @@ import { uploadImage, deleteImage } from '@/lib/cloudinary';
 // GET - Obtener un producto por ID
 export async function GET(request, { params }) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     await connectDB();
 
@@ -58,7 +58,7 @@ export async function PUT(request, { params }) {
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Obtener los datos - puede ser formData o JSON
     let updateData;
@@ -203,7 +203,7 @@ export async function DELETE(request, { params }) {
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     await connectDB();
 
