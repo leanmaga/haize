@@ -458,7 +458,7 @@ const Step6Review = ({ data, onBack, onCancel, loading, errors }) => {
                   Creando producto...
                 </span>
               ) : (
-                '✅ Crear Producto'
+                'Crear Producto'
               )}
             </button>
           </div>
