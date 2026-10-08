@@ -46,6 +46,9 @@ export default function CheckoutPage() {
   const [loadingShipping, setLoadingShipping] = useState(true);
   const [saveShippingInfo, setSaveShippingInfo] = useState(true);
   const [shippingNotice, setShippingNotice] = useState('');
+  const [shippingQuote, setShippingQuote] = useState(null);
+  const [quoteLoading, setQuoteLoading] = useState(false);
+  const [quoteError, setQuoteError] = useState('');
   const editedFields = useRef({});
   const idempotencyKey = useRef(
     `order_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`,
@@ -67,6 +70,30 @@ export default function CheckoutPage() {
     formState: { errors, dirtyFields },
   } = useForm();
   editedFields.current = dirtyFields;
+  const city = watch('city');
+
+  useEffect(() => {
+    if (!city?.trim()) {
+      setShippingQuote(null);
+      setQuoteError('');
+      return;
+    }
+    const controller = new AbortController();
+    setShippingQuote(null);
+    setQuoteLoading(true);
+    setQuoteError('');
+    const timer = setTimeout(() => {
+      fetch(`/api/delivery-zones/quote?city=${encodeURIComponent(city.trim())}`, { cache: 'no-store', signal: controller.signal })
+        .then(async (response) => {
+          const result = await response.json();
+          if (!response.ok) throw new Error(result.error || 'No se pudo calcular el envío');
+          if (!controller.signal.aborted) setShippingQuote(result);
+        })
+        .catch((error) => { if (error.name !== 'AbortError') setQuoteError(error.message); })
+        .finally(() => { if (!controller.signal.aborted) setQuoteLoading(false); });
+    }, 300);
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [city]);
 
   // Hydration fix
   useEffect(() => {
@@ -118,13 +145,13 @@ export default function CheckoutPage() {
 
   // ========== CALCULAR TOTALES CON CUPONES ==========
   const subtotal = getTotal();
-  const total = getTotalWithDiscount();
+  const total = getTotalWithDiscount() + (shippingQuote?.shippingCost || 0);
   const discountInfo = getDiscountInfo();
   // ==================================================
 
   // ========== SUBMIT PARA MERCADOPAGO ==========
   const onSubmit = async (data) => {
-    if (isSubmitting || loadingShipping) return;
+    if (isSubmitting || loadingShipping || quoteLoading || !shippingQuote || quoteError) return;
     setIsSubmitting(true);
 
     try {
@@ -404,7 +431,7 @@ export default function CheckoutPage() {
                   {/* Botón de MercadoPago */}
                   <button
                     type="submit"
-                    disabled={isSubmitting || loadingShipping}
+                    disabled={isSubmitting || loadingShipping || quoteLoading || !shippingQuote || !!quoteError}
                     className="w-full btn-drop py-3 flex items-center justify-center"
                   >
                     {isSubmitting ? (
@@ -504,7 +531,7 @@ export default function CheckoutPage() {
 
                 <div className="flex justify-between py-2">
                   <span className="text-gray-600">Envío</span>
-                  <span>Por coordinar</span>
+                  <span>{quoteLoading ? 'Calculando...' : quoteError ? quoteError : shippingQuote?.quoted ? shippingQuote.shippingCost === 0 ? 'Gratis' : `$${shippingQuote.shippingCost.toFixed(2)}` : 'Por coordinar'}</span>
                 </div>
 
                 <div className="border-t border-gray-200 pt-3 mt-2">

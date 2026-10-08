@@ -80,6 +80,9 @@ const orderSchema = new mongoose.Schema(
       min: [0, 'El descuento no puede ser negativo'],
     },
 
+    shippingCost: { type: Number, default: 0, min: 0 },
+    deliveryZone: { type: mongoose.Schema.Types.ObjectId, ref: 'DeliveryZone', default: null },
+
     // ========================================
 
     // Total final (subtotal - descuento)
@@ -173,7 +176,7 @@ orderSchema.methods.calculateSubtotal = function () {
 orderSchema.methods.calculateTotal = function () {
   const subtotal = this.subtotal || this.calculateSubtotal();
   const discount = this.discountAmount || 0;
-  return Math.max(0, subtotal - discount);
+  return Math.max(0, subtotal - discount + (this.shippingCost || 0));
 };
 
 // Verificar si tiene cupón aplicado

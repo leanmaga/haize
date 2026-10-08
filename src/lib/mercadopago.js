@@ -149,6 +149,16 @@ export const createPaymentPreference = async (orderData) => {
       });
     }
 
+    if (orderData.shippingCost > 0) {
+      items.push({
+        id: 'shipping',
+        title: 'Envío',
+        quantity: 1,
+        unit_price: orderData.shippingCost,
+        currency_id: 'ARS',
+      });
+    }
+
     // Calcular total para verificación
     const calculatedTotal = items.reduce(
       (sum, item) => sum + item.unit_price * item.quantity,
@@ -163,10 +173,10 @@ export const createPaymentPreference = async (orderData) => {
       diferencia: Math.abs(calculatedTotal - orderData.totalAmount),
     });
 
-      // Defensa final: Mercado Pago nunca debe recibir una preferencia cuyo
-      // detalle no coincida con el total persistido y calculado por el servidor.
-      if (Math.abs(calculatedTotal - orderData.totalAmount) > 0.01) {
-        throw new Error('La orden tiene importes inconsistentes y no puede pagarse');
+    // Defensa final: Mercado Pago nunca debe recibir una preferencia cuyo
+    // detalle no coincida con el total persistido y calculado por el servidor.
+    if (Math.abs(calculatedTotal - orderData.totalAmount) > 0.01) {
+      throw new Error('La orden tiene importes inconsistentes y no puede pagarse');
     }
 
     // Obtener URL base
@@ -198,6 +208,7 @@ export const createPaymentPreference = async (orderData) => {
           number: cleanPhone.substring(cleanPhone.length - 8),
         };
       }
+
     }
 
     // Solo agregar dirección si está completa

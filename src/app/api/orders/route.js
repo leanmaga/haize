@@ -9,6 +9,7 @@ import { rememberShipping } from '@/lib/saved-shipping';
 import User from '@/models/User';
 import { createPaymentPreference } from '@/lib/mercadopago';
 import { calculateTrustedOrder, OrderPricingError } from '@/lib/order-pricing';
+import { calculateShipping } from '@/lib/shipping-pricing';
 import {
   sendOrderConfirmationToCustomer,
   sendNewOrderNotificationToAdmin,
@@ -109,11 +110,14 @@ export async function POST(request) {
       userId: user._id,
       currentOrderId: idempotentOrder?._id,
     });
+    const shipping = await calculateShipping(orderData.shippingInfo.city);
     Object.assign(orderData, {
       items: trustedPricing.items,
       subtotal: trustedPricing.subtotal,
       discountAmount: trustedPricing.discountAmount,
-      totalAmount: trustedPricing.totalAmount,
+      totalAmount: trustedPricing.totalAmount + shipping.shippingCost,
+      shippingCost: shipping.shippingCost,
+      deliveryZone: shipping.deliveryZone,
       appliedCoupon: trustedPricing.appliedCoupon,
     });
     // ============================================================
@@ -147,10 +151,13 @@ export async function POST(request) {
           userId: user._id,
           currentOrderId: existingOrder._id,
         });
+        const existingShipping = await calculateShipping(existingOrder.shippingInfo.city);
         existingOrder.items = existingPricing.items;
         existingOrder.subtotal = existingPricing.subtotal;
         existingOrder.discountAmount = existingPricing.discountAmount;
-        existingOrder.totalAmount = existingPricing.totalAmount;
+        existingOrder.shippingCost = existingShipping.shippingCost;
+        existingOrder.deliveryZone = existingShipping.deliveryZone;
+        existingOrder.totalAmount = existingPricing.totalAmount + existingShipping.shippingCost;
         existingOrder.appliedCoupon = existingPricing.appliedCoupon;
         await existingOrder.save();
         // A retry uses the same delivery information as the existing order.
@@ -219,6 +226,8 @@ export async function POST(request) {
       recentPendingOrder.subtotal = orderData.subtotal;
       recentPendingOrder.discountAmount = orderData.discountAmount;
       recentPendingOrder.appliedCoupon = orderData.appliedCoupon;
+      recentPendingOrder.shippingCost = orderData.shippingCost;
+      recentPendingOrder.deliveryZone = orderData.deliveryZone;
       recentPendingOrder.totalAmount = orderData.totalAmount;
       recentPendingOrder.shippingInfo = orderData.shippingInfo;
       recentPendingOrder.paymentMethod = orderData.paymentMethod;
@@ -297,7 +306,7 @@ export async function POST(request) {
 
     // ========== VALIDAR TOTAL AMOUNT ==========
     if (!orderData.totalAmount || orderData.totalAmount === 0) {
-      orderData.totalAmount = orderData.subtotal - orderData.discountAmount;
+      orderData.totalAmount = orderData.subtotal - orderData.discountAmount + orderData.shippingCost;
     }
     // ==================================================
 
@@ -322,6 +331,8 @@ export async function POST(request) {
       items: orderData.items,
       subtotal: orderData.subtotal,
       discountAmount: orderData.discountAmount || 0,
+      shippingCost: orderData.shippingCost,
+      deliveryZone: orderData.deliveryZone,
       appliedCoupon: orderData.appliedCoupon || null,
       totalAmount: orderData.totalAmount,
       paymentMethod: orderData.paymentMethod,

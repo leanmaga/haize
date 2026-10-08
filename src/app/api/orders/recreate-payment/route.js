@@ -7,6 +7,7 @@ import Order from "@/models/Order";
 import User from "@/models/User";
 import { createPaymentPreference } from "@/lib/mercadopago";
 import { calculateTrustedOrder, OrderPricingError } from '@/lib/order-pricing';
+import { calculateShipping } from '@/lib/shipping-pricing';
 
 export async function POST(request) {
   try {
@@ -86,10 +87,13 @@ export async function POST(request) {
         userId: order.user,
         currentOrderId: order._id,
       });
+      const shipping = await calculateShipping(order.shippingInfo.city);
       order.items = trustedPricing.items;
       order.subtotal = trustedPricing.subtotal;
       order.discountAmount = trustedPricing.discountAmount;
-      order.totalAmount = trustedPricing.totalAmount;
+      order.shippingCost = shipping.shippingCost;
+      order.deliveryZone = shipping.deliveryZone;
+      order.totalAmount = trustedPricing.totalAmount + shipping.shippingCost;
       order.appliedCoupon = trustedPricing.appliedCoupon;
       await order.save();
 

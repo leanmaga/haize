@@ -134,6 +134,10 @@ export default function OrderDetailsAdmin({ order, statusStyle }) {
 
             {/* Total */}
             <div className="px-6 py-4 bg-white border-t border-gray-200">
+              <div className="flex justify-between items-center mb-2 text-sm text-gray-600">
+                <span>Envío:</span>
+                <span>{order.deliveryZone ? order.shippingCost ? `$${order.shippingCost.toFixed(2)}` : 'Gratis' : 'Por coordinar'}</span>
+              </div>
               <div className="flex justify-between items-center">
                 <span className="text-lg font-nexa-bold text-gray-900">
                   Total:
