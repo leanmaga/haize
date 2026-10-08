@@ -562,30 +562,6 @@ const Step3VariantsAndPhotos = ({
 
       {/* Contenido */}
       <div className="px-6 py-6">
-        {/* Recomendaciones de fotos */}
-        <div className="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
-          <div className="flex items-start">
-            <div className="flex-shrink-0">
-              <Info className="h-5 w-5 text-blue-500 mt-0.5" />
-            </div>
-            <div className="ml-3 flex-1">
-              <p className="text-sm text-blue-700 font-medium">
-                Lográ fotos de calidad siguiendo nuestras recomendaciones
-              </p>
-              <p className="text-xs text-blue-600 mt-1">
-                Al subir tus fotos asegurate de usar un fondo con texturas, para
-                que el producto se vea más real.
-              </p>
-              <a
-                href="#"
-                className="text-sm text-blue-600 underline mt-2 inline-block"
-              >
-                Conocer cómo deben ser mis fotos
-              </a>
-            </div>
-          </div>
-        </div>
-
         {/* Mensaje sobre guía de talles */}
         {loadingSizeGuide ? (
           <div className="mb-4 p-3 bg-gray-50 rounded text-sm text-gray-600">

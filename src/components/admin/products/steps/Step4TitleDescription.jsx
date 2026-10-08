@@ -209,12 +209,6 @@ const Step4TitleDescription = ({
             </label>
           </div>
 
-          {!useAutoTitle && (
-            <p className="text-xs text-gray-500 mt-2">
-              💡 Tip: Incluye el modelo y las características clave. Los buenos
-              títulos ayudan a los clientes a encontrar tu producto.
-            </p>
-          )}
         </div>
 
         {/* Descripción del producto */}
@@ -265,16 +259,6 @@ const Step4TitleDescription = ({
             </button>
           )}
 
-          <p className="text-xs text-gray-500 mt-2">
-            💡 Tips para una buena descripción:
-          </p>
-          <ul className="text-xs text-gray-500 mt-1 ml-4 space-y-1">
-            <li>• Menciona los materiales y su calidad</li>
-            <li>• Describe el ajuste y la comodidad</li>
-            <li>• Incluye instrucciones de cuidado</li>
-            <li>• Destaca características únicas</li>
-            <li>• Usa viñetas para mejor legibilidad</li>
-          </ul>
         </div>
 
         {/* Vista previa */}
@@ -302,31 +286,6 @@ const Step4TitleDescription = ({
           </div>
         )}
 
-        {/* Información adicional */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <div className="flex items-start">
-            <span className="text-blue-600 text-xl mr-3">ℹ️</span>
-            <div>
-              <h4 className="text-sm font-medium text-blue-900 mb-1">
-                ¿Por qué son importantes el título y descripción?
-              </h4>
-              <ul className="text-xs text-blue-800 space-y-1">
-                <li>
-                  • <strong>Título:</strong> Es lo primero que ven los clientes.
-                  Debe ser claro y descriptivo.
-                </li>
-                <li>
-                  • <strong>Descripción:</strong> Ayuda a los clientes a
-                  decidir. Incluye detalles que fotos no pueden mostrar.
-                </li>
-                <li>
-                  • <strong>SEO:</strong> Buenos textos mejoran tu
-                  posicionamiento en búsquedas.
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Footer */}

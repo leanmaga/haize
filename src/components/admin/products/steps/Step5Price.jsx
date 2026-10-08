@@ -127,9 +127,6 @@ const Step5Price = ({
         <h2 className="text-xl font-semibold text-gray-900">
           Precio del Producto
         </h2>
-        <p className="text-sm text-gray-600 mt-1">
-          Define el precio de venta y opcionalmente un precio promocional
-        </p>
       </div>
 
       {/* Contenido */}
@@ -138,9 +135,6 @@ const Step5Price = ({
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Precio de venta *
-            <span className="text-xs text-gray-500 font-normal ml-2">
-              (Precio regular del producto)
-            </span>
           </label>
 
           <div className="relative">
@@ -164,18 +158,12 @@ const Step5Price = ({
             <p className="text-sm text-red-600 mt-1">{formErrors.salePrice}</p>
           )}
 
-          <p className="text-xs text-gray-500 mt-2">
-            💡 Tip: Investiga precios de productos similares en el mercado
-          </p>
         </div>
 
         {/* Precio Promocional */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Precio promocional (opcional)
-            <span className="text-xs text-gray-500 font-normal ml-2">
-              (Precio de oferta si aplica)
-            </span>
           </label>
 
           <div className="relative">
@@ -210,18 +198,12 @@ const Step5Price = ({
             </div>
           )}
 
-          <p className="text-xs text-gray-500 mt-2">
-            💡 Tip: Los precios promocionales aumentan las conversiones
-          </p>
         </div>
 
         {/* Costo (Opcional - Para cálculo de margen) */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Costo del producto (opcional)
-            <span className="text-xs text-gray-500 font-normal ml-2">
-              (Para calcular margen de ganancia)
-            </span>
           </label>
 
           <div className="relative">
@@ -259,9 +241,6 @@ const Step5Price = ({
             </div>
           )}
 
-          <p className="text-xs text-gray-500 mt-2">
-            🔒 Este dato es privado, no se muestra a los clientes
-          </p>
         </div>
 
         {/* Vista Previa del Precio */}
@@ -347,64 +326,6 @@ const Step5Price = ({
           </div>
         )}
 
-        {/* Información importante */}
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <div className="flex items-start">
-            <span className="text-yellow-600 text-xl mr-3">💡</span>
-            <div>
-              <h4 className="text-sm font-medium text-yellow-900 mb-1">
-                Importante sobre precios
-              </h4>
-              <ul className="text-xs text-yellow-800 space-y-1">
-                <li>
-                  • Este es el <strong>precio base</strong> del producto
-                </li>
-                <li>
-                  • En el Paso 3 (Variantes), algunos talles/colores pueden
-                  tener <strong>ajustes de precio</strong>
-                </li>
-                <li>
-                  • Por ejemplo: XL puede costar $500 más, o color premium +$300
-                </li>
-                <li>• El precio final = Precio base + Ajustes de variante</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        {/* Tips de pricing */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <div className="flex items-start">
-            <span className="text-blue-600 text-xl mr-3">📊</span>
-            <div>
-              <h4 className="text-sm font-medium text-blue-900 mb-2">
-                Tips de precios
-              </h4>
-              <ul className="text-xs text-blue-800 space-y-1">
-                <li>
-                  • <strong>Precio psicológico:</strong> Usa precios terminados
-                  en .99 o .95
-                </li>
-                <li>
-                  • <strong>Competencia:</strong> Investiga precios similares en
-                  el mercado
-                </li>
-                <li>
-                  • <strong>Margen saludable:</strong> Apunta a 40-60% de margen
-                  para cubrir gastos
-                </li>
-                <li>
-                  • <strong>Descuentos:</strong> Los descuentos del 20-30%
-                  generan más ventas
-                </li>
-                <li>
-                  • <strong>Costo:</strong> Incluye material, producción y
-                  gastos operativos
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Footer */}
