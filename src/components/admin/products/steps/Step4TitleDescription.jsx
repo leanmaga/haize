@@ -18,29 +18,6 @@ const Step4TitleDescription = ({
   });
 
   const [formErrors, setFormErrors] = useState({});
-  const [useAutoTitle, setUseAutoTitle] = useState(!data.title);
-
-  // Generar título automático basado en datos previos
-  const generateAutoTitle = () => {
-    const parts = [];
-
-    if (data.model) parts.push(data.model);
-
-    return parts.join(' ');
-  };
-
-  const autoTitle = generateAutoTitle();
-
-  // Si está activo el título automático, actualizarlo cuando cambian los datos
-  useEffect(() => {
-    if (useAutoTitle) {
-      setFormData((prev) => ({
-        ...prev,
-        title: autoTitle,
-      }));
-    }
-  }, [useAutoTitle, autoTitle]);
-
   // Actualizar datos en el componente padre
   useEffect(() => {
     updateData(formData);
@@ -52,30 +29,11 @@ const Step4TitleDescription = ({
       [field]: value,
     }));
 
-    // Si editan el título manualmente, desactivar auto-título
-    if (field === 'title' && useAutoTitle) {
-      setUseAutoTitle(false);
-    }
-
     // Limpiar errores
     setFormErrors((prev) => ({
       ...prev,
       [field]: '',
     }));
-  };
-
-  const toggleAutoTitle = () => {
-    setUseAutoTitle((prev) => {
-      const newValue = !prev;
-      if (newValue) {
-        // Activar: usar título automático
-        setFormData((prev) => ({
-          ...prev,
-          title: autoTitle,
-        }));
-      }
-      return newValue;
-    });
   };
 
   const validateForm = () => {
@@ -111,27 +69,6 @@ const Step4TitleDescription = ({
     }
 
     await onNext(formData);
-  };
-
-  // Plantillas de descripción sugeridas
-  const descriptionTemplates = {
-    remeras: `Remera de alta calidad, perfecta para el día a día. Confeccionada con materiales premium que garantizan comodidad y durabilidad. Diseño versátil que combina con cualquier outfit.`,
-    camisas: `Camisa elegante y moderna, ideal para cualquier ocasión. Tela de primera calidad con excelente caída. Diseño atemporal que nunca pasa de moda.`,
-    pantalones: `Pantalón cómodo y resistente, pensado para acompañarte todo el día. Confección de calidad superior con atención al detalle. Ajuste perfecto y estilo inigualable.`,
-    shorts: `Short deportivo de alto rendimiento. Material transpirable que te mantiene fresco. Diseño funcional con bolsillos estratégicos. Perfecto para entrenamiento o uso casual.`,
-    musculosas: `Musculosa de máxima comodidad, ideal para entrenar o días de calor. Tela ligera y resistente. Diseño que favorece la libertad de movimiento.`,
-    conjuntos: `Conjunto completo que combina estilo y comodidad. Prendas coordinadas con materiales de primera. Look completo listo para usar.`,
-  };
-
-  const getSuggestedDescription = () => {
-    return descriptionTemplates[data.category] || 'Describí las características, materiales y cuidados del producto.';
-  };
-
-  const useSuggestedDescription = () => {
-    setFormData((prev) => ({
-      ...prev,
-      description: getSuggestedDescription(),
-    }));
   };
 
   const titleCharCount = formData.title.length;
@@ -180,34 +117,11 @@ const Step4TitleDescription = ({
                 ? 'border-red-500 focus:ring-red-500'
                 : 'border-gray-300 focus:ring-blue-500'
             }`}
-            disabled={useAutoTitle}
           />
 
           {formErrors.title && (
             <p className="text-sm text-red-600 mt-1">{formErrors.title}</p>
           )}
-
-          {/* Checkbox para usar título automático */}
-          <div className="mt-3 flex items-start">
-            <input
-              type="checkbox"
-              id="useAutoTitle"
-              checked={useAutoTitle}
-              onChange={toggleAutoTitle}
-              className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-            />
-            <label htmlFor="useAutoTitle" className="ml-2">
-              <span className="text-sm font-medium text-gray-700">
-                Usar título automático
-              </span>
-              {useAutoTitle && (
-                <p className="text-xs text-gray-500 mt-1">
-                  El título se genera automáticamente:{' '}
-                  <strong>{autoTitle}</strong>
-                </p>
-              )}
-            </label>
-          </div>
 
         </div>
 
@@ -246,17 +160,6 @@ const Step4TitleDescription = ({
             <p className="text-sm text-red-600 mt-1">
               {formErrors.description}
             </p>
-          )}
-
-          {/* Botón para usar descripción sugerida */}
-          {!formData.description && (
-            <button
-              type="button"
-              onClick={useSuggestedDescription}
-              className="mt-2 text-sm text-blue-600 hover:text-blue-800 font-medium"
-            >
-              💡 Usar descripción sugerida
-            </button>
           )}
 
         </div>
