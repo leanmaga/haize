@@ -1,4 +1,5 @@
 import useCategories from '@/hooks/useCategories';
+import { availableProductColors } from '@/lib/product-colors';
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronDown, ChevronUp, X } from 'lucide-react';
@@ -26,66 +27,21 @@ const FilterSidebar = ({
   const [selectedColors, setSelectedColors] = useState(
     currentFilters.colors || [],
   );
-  // Sincronizar con filtros externos cuando cambien
-  /*useEffect(() => {
-    if (currentFilters.category) setSelectedCategory(currentFilters.category);
-    if (currentFilters.sizes) setSelectedSizes(currentFilters.sizes);
-    if (currentFilters.colors) setSelectedColors(currentFilters.colors);
-    if (currentFilters.priceRange) setPriceRange(currentFilters.priceRange);
-  }, [currentFilters]);*/
-
   useEffect(() => {
-    let appliedFromUrl = false;
-    const initialFilters = {
-      category: searchParams.get('category') || selectedCategory,
-      sizes:
-        searchParams.getAll('sizes').length > 0
-          ? searchParams.getAll('sizes')
-          : selectedSizes,
-      colors:
-        searchParams.getAll('colors').length > 0
-          ? searchParams.getAll('colors')
-          : selectedColors,
+    const filters = {
+      category: searchParams.get('category') || 'all',
+      sizes: searchParams.getAll('sizes').flatMap((value) => value.split(',')).filter(Boolean),
+      colors: searchParams.getAll('colors').flatMap((value) => value.split(',')).filter(Boolean),
       priceRange: {
-        min: Number(searchParams.get('minPrice')) || priceRange.min,
-        max: Number(searchParams.get('maxPrice')) || priceRange.max,
+        min: Number(searchParams.get('minPrice')) || 0,
+        max: Number(searchParams.get('maxPrice')) || 100000,
       },
     };
-
-    // Si la categoría de la URL es diferente a la inicial O si hay otros filtros
-    if (
-      initialFilters.category !== selectedCategory ||
-      initialFilters.sizes.length > 0 ||
-      initialFilters.colors.length > 0 ||
-      initialFilters.priceRange.min > priceRange.min ||
-      initialFilters.priceRange.max < priceRange.max
-    ) {
-      // Actualiza los estados internos
-      setSelectedCategory(initialFilters.category);
-      setSelectedSizes(initialFilters.sizes);
-      setSelectedColors(initialFilters.colors);
-      setPriceRange(initialFilters.priceRange);
-
-      // Aplica los filtros leídos de la URL
-      onFiltersApply(initialFilters);
-      appliedFromUrl = true;
-    }
-
-    if (
-      !appliedFromUrl &&
-      (selectedCategory ||
-        selectedSizes.length > 0 ||
-        selectedColors.length > 0 ||
-        priceRange.min > 0 ||
-        priceRange.max < 100000)
-    ) {
-      onFiltersApply({
-        category: selectedCategory,
-        priceRange,
-        sizes: selectedSizes,
-        colors: selectedColors,
-      });
-    }
+    setSelectedCategory(filters.category);
+    setSelectedSizes(filters.sizes);
+    setSelectedColors(filters.colors);
+    setPriceRange(filters.priceRange);
+    onFiltersApply(filters);
   }, [searchParams.toString()]);
 
   const { categories: catalog } = useCategories();
@@ -94,22 +50,7 @@ const FilterSidebar = ({
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 
   // Extraer colores únicos de los productos disponibles
-  const availableColors = React.useMemo(() => {
-    const colorsMap = new Map();
-    products.forEach((product) => {
-      if (product.colors && Array.isArray(product.colors)) {
-        product.colors.forEach((color) => {
-          if (color.name && !colorsMap.has(color.name)) {
-            colorsMap.set(color.name, {
-              name: color.name,
-              hex: color.hexCode || '#000000',
-            });
-          }
-        });
-      }
-    });
-    return Array.from(colorsMap.values());
-  }, [products]);
+  const availableColors = React.useMemo(() => availableProductColors(products), [products]);
 
   const toggleSection = (section) => {
     setExpandedSection(expandedSection === section ? null : section);
@@ -186,7 +127,7 @@ const FilterSidebar = ({
 
     // Opcional: Notificar al componente padre que los filtros han sido aplicados.
     if (onFiltersApply) {
-      onFiltersApply(currentFilters);
+      onFiltersApply(filters);
     }
 
     //onFiltersApply(filters);

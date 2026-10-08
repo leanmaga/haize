@@ -10,6 +10,7 @@ jest.mock('@/lib/services/uploadService', () => ({
 const OriginalImage = global.Image;
 let previews;
 beforeEach(() => {
+  global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ colors: [] }) });
   previews = [];
   global.Image = jest.fn(function () { previews.push(this); });
   uploadImages.mockReset();

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { colorKey, productColors } from '@/lib/product-colors';
 
 export const useProductFilters = (products) => {
   const [filters, setFilters] = useState({
@@ -43,7 +44,7 @@ export const useProductFilters = (products) => {
 
       // Filtro por talle
       if (filters.sizes.length > 0) {
-        const productSizes = product.sizes?.map((s) => s.size) || [];
+        const productSizes = product.variants?.length ? product.variants.map((variant) => variant.size) : (product.sizes || []).map((size) => typeof size === 'string' ? size : size.size);
         const hasMatchingSize = filters.sizes.some((size) =>
           productSizes.includes(size)
         );
@@ -54,9 +55,9 @@ export const useProductFilters = (products) => {
 
       // Filtro por color
       if (filters.colors.length > 0) {
-        const productColors = product.colors?.map((c) => c.name) || [];
+        const colors = productColors(product).map((color) => colorKey(color.name));
         const hasMatchingColor = filters.colors.some((color) =>
-          productColors.includes(color)
+          colors.includes(colorKey(color))
         );
         if (!hasMatchingColor) {
           return false;

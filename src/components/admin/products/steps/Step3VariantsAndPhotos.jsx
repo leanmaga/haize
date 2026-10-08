@@ -2,6 +2,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import ProductColorPicker from '@/components/admin/ProductColorPicker';
+import { colorHex } from '@/lib/product-colors';
 import PhotoUploadLoader from '@/components/admin/PhotoUploadLoader';
 import { preloadUploadedImages } from '@/lib/preload-uploaded-images';
 import {
@@ -32,6 +34,15 @@ const Step3VariantsAndPhotos = ({
   isLastStep,
 }) => {
   const [variants, setVariants] = useState([]);
+  const [savedColors, setSavedColors] = useState([]);
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch('/api/product-colors', { cache: 'no-store', signal: controller.signal })
+      .then((response) => response.ok ? response.json() : { colors: [] })
+      .then((data) => { if (!controller.signal.aborted) setSavedColors(data.colors || []); })
+      .catch(() => {});
+    return () => controller.abort();
+  }, []);
   const [expandedVariant, setExpandedVariant] = useState(null);
   const [formErrors, setFormErrors] = useState({});
   const [uploadingPhotos, setUploadingPhotos] = useState(false);
@@ -89,6 +100,7 @@ const Step3VariantsAndPhotos = ({
           variantsMap.set(key, {
             id: Date.now() + Math.random(),
             color: v.color,
+            colorHex: colorHex(v.color, v.colorHex),
             fabricDesign: v.fabricDesign || '',
             photos: (v.images?.length
               ? v.images
@@ -125,6 +137,7 @@ const Step3VariantsAndPhotos = ({
         {
           id: Date.now(),
           color: data.colors?.[0] || 'Sin color',
+          colorHex: colorHex(data.colors?.[0]),
           fabricDesign: '',
           photos: fallbackPhotos.map((url, index) => ({
             id: Date.now() + index,
@@ -473,6 +486,7 @@ const Step3VariantsAndPhotos = ({
       variant.sizes.forEach((size) => {
         formattedVariants.push({
           color: variant.color,
+          colorHex: colorHex(variant.color, variant.colorHex),
           fabricDesign: variant.fabricDesign,
           size: size.size,
           sku:
@@ -629,25 +643,11 @@ const Step3VariantsAndPhotos = ({
                       {/* Color y Diseño de tela */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Color (requerido)
-                          </label>
-                          <input
-                            type="text"
+                          <ProductColorPicker
                             value={variant.color}
-                            onChange={(e) =>
-                              handleVariantChange(
-                                variantIndex,
-                                'color',
-                                e.target.value,
-                              )
-                            }
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                              formErrors[`variant_${variantIndex}_color`]
-                                ? 'border-red-300 bg-red-50'
-                                : 'border-gray-300'
-                            }`}
-                            placeholder="Ej: Amarillo"
+                            hex={variant.colorHex}
+                            colors={[...savedColors, ...variants.filter((entry) => entry.color).map((entry) => ({ name: entry.color, hex: colorHex(entry.color, entry.colorHex) }))]}
+                            onChange={(color, hex) => setVariants((current) => current.map((entry, index) => index === variantIndex ? { ...entry, color, colorHex: hex } : entry))}
                           />
                         </div>
 

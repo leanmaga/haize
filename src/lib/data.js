@@ -38,12 +38,13 @@ export async function getProducts(options = {}) {
       order = -1,
       limit = 100,
       page = 1,
+      publishedOnly = false,
     } = options;
 
     const skip = (page - 1) * parseInt(limit);
     const sortOptions = { [sort]: order };
 
-    let query = {};
+    let query = publishedOnly ? { isActive: { $ne: false }, isComplete: { $ne: false } } : {};
 
     if (category && category !== 'all') {
       query.category = category;
@@ -61,7 +62,7 @@ export async function getProducts(options = {}) {
       pagination: {
         total,
         page: parseInt(page),
-        pages: Math.ceil(total / parseInt(limit)),
+        pages: parseInt(limit) > 0 ? Math.ceil(total / parseInt(limit)) : 1,
       },
     };
   } catch (error) {
