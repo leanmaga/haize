@@ -5,7 +5,7 @@ const info = { name: 'Cliente', email: 'cliente@example.com', phone: '123', stre
 test('stores delivery data in the account when requested', async () => {
   const user = { save: jest.fn().mockResolvedValue(undefined) };
   await rememberShipping(user, { saveShippingInfo: true, shippingInfo: info });
-  expect(user.savedShippingInfo).toEqual({ ...info, address: 'Calle 9 123A' });
+  expect(user.savedShippingInfo).toEqual({ ...info, address: 'Calle 9 123A', municipalityId: '' });
   expect(user.save).toHaveBeenCalledTimes(1);
 });
 test.each([false, undefined, 'true'])('temporary delivery preserves saved account information (%s)', async (saveShippingInfo) => {
