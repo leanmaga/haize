@@ -23,9 +23,8 @@ export function mergeCoverage(catalog, zones) {
 
 export function zonePayload(data) {
   if (!data.name || !data.slug || !['Polygon', 'MultiPolygon'].includes(data.geometry?.type) || !data.geometry.coordinates?.length) throw new Error('Nombre, slug y polígono son requeridos.');
-  const inactiveWithoutPrice = data.isActive === false && data.shippingPrice == null;
-  if (!inactiveWithoutPrice && (typeof data.shippingPrice !== 'number' || !Number.isFinite(data.shippingPrice) || data.shippingPrice < 0 || Math.abs(Math.round(data.shippingPrice * 100) - data.shippingPrice * 100) > 0.000001)) throw new Error('El precio debe ser un número positivo o cero, con hasta dos decimales.');
+  if (data.shippingPrice != null && (typeof data.shippingPrice !== 'number' || !Number.isFinite(data.shippingPrice) || data.shippingPrice < 0 || Math.abs(Math.round(data.shippingPrice * 100) - data.shippingPrice * 100) > 0.000001)) throw new Error('El precio debe ser un número positivo o cero, con hasta dos decimales.');
   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(data.cutoffTime || '')) throw new Error('Hora límite inválida.');
   if (typeof data.isActive !== 'boolean') throw new Error('Estado de cobertura inválido.');
-  return { name: data.name, slug: data.slug, geometry: data.geometry, detail: data.detail || '', municipalityId: data.municipalityId || undefined, shippingPrice: data.shippingPrice, cutoffTime: data.cutoffTime, isActive: data.isActive };
+  return { name: data.name, slug: data.slug, geometry: data.geometry, detail: data.detail || '', municipalityId: data.municipalityId || undefined, shippingPrice: data.shippingPrice ?? null, cutoffTime: data.cutoffTime, isActive: data.isActive };
 }

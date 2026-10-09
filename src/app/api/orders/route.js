@@ -110,13 +110,16 @@ export async function POST(request) {
       userId: user._id,
       currentOrderId: idempotentOrder?._id,
     });
-    const shipping = await calculateShipping(orderData.shippingInfo.city);
+    const shipping = await calculateShipping(orderData.shippingInfo.city, undefined, orderData.shippingInfo.municipalityId);
+    orderData.shippingInfo.city = shipping.city;
+    orderData.shippingInfo.municipalityId = shipping.municipalityId;
     Object.assign(orderData, {
       items: trustedPricing.items,
       subtotal: trustedPricing.subtotal,
       discountAmount: trustedPricing.discountAmount,
       totalAmount: trustedPricing.totalAmount + shipping.shippingCost,
       shippingCost: shipping.shippingCost,
+      shippingQuoted: shipping.quoted,
       deliveryZone: shipping.deliveryZone,
       appliedCoupon: trustedPricing.appliedCoupon,
     });
@@ -151,11 +154,14 @@ export async function POST(request) {
           userId: user._id,
           currentOrderId: existingOrder._id,
         });
-        const existingShipping = await calculateShipping(existingOrder.shippingInfo.city);
+        const existingShipping = await calculateShipping(existingOrder.shippingInfo.city, undefined, existingOrder.shippingInfo.municipalityId);
+        existingOrder.shippingInfo.city = existingShipping.city;
+        existingOrder.shippingInfo.municipalityId = existingShipping.municipalityId;
         existingOrder.items = existingPricing.items;
         existingOrder.subtotal = existingPricing.subtotal;
         existingOrder.discountAmount = existingPricing.discountAmount;
         existingOrder.shippingCost = existingShipping.shippingCost;
+        existingOrder.shippingQuoted = existingShipping.quoted;
         existingOrder.deliveryZone = existingShipping.deliveryZone;
         existingOrder.totalAmount = existingPricing.totalAmount + existingShipping.shippingCost;
         existingOrder.appliedCoupon = existingPricing.appliedCoupon;
@@ -227,6 +233,7 @@ export async function POST(request) {
       recentPendingOrder.discountAmount = orderData.discountAmount;
       recentPendingOrder.appliedCoupon = orderData.appliedCoupon;
       recentPendingOrder.shippingCost = orderData.shippingCost;
+      recentPendingOrder.shippingQuoted = orderData.shippingQuoted;
       recentPendingOrder.deliveryZone = orderData.deliveryZone;
       recentPendingOrder.totalAmount = orderData.totalAmount;
       recentPendingOrder.shippingInfo = orderData.shippingInfo;
@@ -332,6 +339,7 @@ export async function POST(request) {
       subtotal: orderData.subtotal,
       discountAmount: orderData.discountAmount || 0,
       shippingCost: orderData.shippingCost,
+      shippingQuoted: orderData.shippingQuoted,
       deliveryZone: orderData.deliveryZone,
       appliedCoupon: orderData.appliedCoupon || null,
       totalAmount: orderData.totalAmount,

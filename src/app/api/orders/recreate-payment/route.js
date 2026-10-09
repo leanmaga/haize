@@ -87,11 +87,14 @@ export async function POST(request) {
         userId: order.user,
         currentOrderId: order._id,
       });
-      const shipping = await calculateShipping(order.shippingInfo.city);
+      const shipping = await calculateShipping(order.shippingInfo.city, undefined, order.shippingInfo.municipalityId);
+      order.shippingInfo.city = shipping.city;
+      order.shippingInfo.municipalityId = shipping.municipalityId;
       order.items = trustedPricing.items;
       order.subtotal = trustedPricing.subtotal;
       order.discountAmount = trustedPricing.discountAmount;
       order.shippingCost = shipping.shippingCost;
+      order.shippingQuoted = shipping.quoted;
       order.deliveryZone = shipping.deliveryZone;
       order.totalAmount = trustedPricing.totalAmount + shipping.shippingCost;
       order.appliedCoupon = trustedPricing.appliedCoupon;

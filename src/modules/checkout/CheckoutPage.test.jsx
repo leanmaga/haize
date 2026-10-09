@@ -35,3 +35,22 @@ test('late profile response does not overwrite fields already typed', async () =
   await waitFor(() => expect(screen.getByLabelText('Número de la casa *')).toHaveValue('42'));
   expect(screen.getByLabelText('Calle *')).toHaveValue('Calle escrita');
 });
+
+test('suggests an official municipality and blocks an incorrectly spelled destination', async () => {
+  global.fetch = jest.fn((url) => {
+    if (url === '/api/municipalities') return Promise.resolve({ ok: true, json: async () => ({ municipalities: [{ id: '060427', name: 'La Matanza', province: 'Buenos Aires' }] }) });
+    if (url.startsWith('/api/delivery-zones/quote')) return Promise.resolve({ ok: false, json: async () => ({ error: 'Seleccioná un municipio válido de la lista' }) });
+    return Promise.resolve({ ok: true, json: async () => ({ shippingInfo: saved, hasSavedShippingInfo: true }) });
+  });
+  render(<CheckoutPage />);
+  const city = await screen.findByLabelText('Municipio *');
+  await waitFor(() => expect(screen.getByLabelText('Calle *')).toHaveValue('Calle original'));
+  fireEvent.change(city, { target: { value: 'La mat' } });
+  const suggestion = await screen.findByRole('option', { name: /La Matanza/ });
+  fireEvent.click(suggestion);
+  expect(city).toHaveValue('La Matanza');
+  fireEvent.change(city, { target: { value: 'La mattanza' } });
+  fireEvent.click(screen.getByRole('button', { name: /Pagar con MercadoPago/ }));
+  await waitFor(() => expect(city).toHaveClass('border-red-500'));
+  expect(global.fetch).not.toHaveBeenCalledWith('/api/orders', expect.anything());
+});

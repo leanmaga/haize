@@ -23,7 +23,7 @@ test('accepts explicit free shipping and strips unapproved fields', () => {
   expect(zonePayload({ ...payload, _id: 'injected' })).toMatchObject({ shippingPrice: 0 });
   expect(zonePayload({ ...payload, _id: 'injected' })).not.toHaveProperty('_id');
 });
-test.each([-1, NaN, Infinity, null, '', '0', 1.234])('rejects invalid price %s', (shippingPrice) => {
+test.each([-1, NaN, Infinity, '', '0', 1.234])('rejects invalid price %s', (shippingPrice) => {
   expect(() => zonePayload({ ...payload, shippingPrice })).toThrow();
 });
 test('rejects invalid cutoff and state', () => {
@@ -32,5 +32,6 @@ test('rejects invalid cutoff and state', () => {
 });
 test('allows deactivating a legacy zone without inventing a free tariff', () => {
   expect(zonePayload({ ...payload, isActive: false, shippingPrice: null }).shippingPrice).toBeNull();
+  expect(zonePayload({ ...payload, isActive: true, shippingPrice: null }).shippingPrice).toBeNull();
   expect(zonePayload({ ...payload, shippingPrice: 10.12 }).shippingPrice).toBe(10.12);
 });

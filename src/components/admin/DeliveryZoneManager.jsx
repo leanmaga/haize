@@ -42,9 +42,6 @@ export default function DeliveryZoneManager() {
   };
   const save = async () => {
     const pending = features.filter((feature) => dirty.includes(String(feature.id)));
-    if (pending.some((feature) => feature.properties.isActive && (feature.properties.shippingPrice == null || feature.properties.shippingPrice === ''))) {
-      setMessage('Ingresá el precio de cada municipio modificado. Usá 0 para envío sin costo.'); return;
-    }
     setBusy(true); setMessage('');
     const errors = [];
     for (const feature of pending) {
@@ -74,7 +71,7 @@ export default function DeliveryZoneManager() {
           {visible.map((feature) => { const id = String(feature.id); const p = feature.properties; return <div key={id} className="rounded-lg border border-slate-200 p-3">
             <label className="flex items-center gap-2 text-sm font-medium"><input type="checkbox" disabled={busy} checked={p.isActive} onChange={() => toggle(id)} />{p.name}</label>
             {(p.isActive || dirty.includes(id)) && <div className="mt-2 flex gap-2">
-              <label className="min-w-0 flex-1 text-xs">Envío (ARS)<input aria-label={'Precio de envío ' + p.name} type="number" min="0" step="0.01" disabled={busy} value={p.shippingPrice ?? ''} placeholder="0 = sin costo" onChange={(event) => change(id, { shippingPrice: event.target.value })} className="mt-1 w-full rounded border p-1.5" /></label>
+              <label className="min-w-0 flex-1 text-xs">Envío (ARS)<input aria-label={'Precio de envío ' + p.name} type="number" min="0" step="0.01" disabled={busy} value={p.shippingPrice ?? ''} placeholder="Vacío = coordinar · 0 = gratis" onChange={(event) => change(id, { shippingPrice: event.target.value })} className="mt-1 w-full rounded border p-1.5" /></label>
               <label className="text-xs">Hora límite<input type="time" disabled={busy} value={p.cutoffTime} onChange={(event) => change(id, { cutoffTime: event.target.value })} className="mt-1 block rounded border p-1.5" /></label>
             </div>}
           </div>; })}

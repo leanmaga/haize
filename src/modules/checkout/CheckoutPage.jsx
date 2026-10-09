@@ -12,6 +12,7 @@ import { LockClosedIcon, TagIcon } from '@heroicons/react/24/solid';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { normalizeShippingAddress } from '@/lib/shipping-address';
+import { normalizeMunicipality } from '@/lib/municipalities';
 
 // ========== FUNCIÓN HELPER PARA EXTRAER PRODUCT ID ==========
 const extractProductId = (item) => {
@@ -49,6 +50,9 @@ export default function CheckoutPage() {
   const [shippingQuote, setShippingQuote] = useState(null);
   const [quoteLoading, setQuoteLoading] = useState(false);
   const [quoteError, setQuoteError] = useState('');
+  const [municipalities, setMunicipalities] = useState([]);
+  const [municipalityError, setMunicipalityError] = useState('');
+  const [showMunicipalities, setShowMunicipalities] = useState(false);
   const editedFields = useRef({});
   const idempotencyKey = useRef(
     `order_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`,
@@ -67,10 +71,33 @@ export default function CheckoutPage() {
     handleSubmit,
     setValue,
     watch,
+    clearErrors,
     formState: { errors, dirtyFields },
   } = useForm();
   editedFields.current = dirtyFields;
   const city = watch('city');
+  const municipalityId = watch('municipalityId');
+  const cityRegistration = register('city', {
+    required: 'El municipio es obligatorio',
+    validate: (value) => (
+      !!shippingQuote && !quoteLoading && !quoteError &&
+      normalizeMunicipality(shippingQuote.city) === normalizeMunicipality(value) &&
+      (!municipalityId || municipalityId === shippingQuote.municipalityId)
+    ) || 'Seleccioná un municipio válido de la lista',
+  });
+  const suggestions = municipalities.filter((item) => normalizeMunicipality(item.name).includes(normalizeMunicipality(city))).slice(0, 8);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch('/api/municipalities', { signal: controller.signal })
+      .then(async (response) => {
+        const result = await response.json();
+        if (!response.ok || !Array.isArray(result.municipalities)) throw new Error('No se pudieron cargar los municipios');
+        if (!controller.signal.aborted) setMunicipalities(result.municipalities);
+      })
+      .catch((error) => { if (error.name !== 'AbortError') setMunicipalityError(error.message); });
+    return () => controller.abort();
+  }, []);
 
   useEffect(() => {
     if (!city?.trim()) {
@@ -83,17 +110,19 @@ export default function CheckoutPage() {
     setQuoteLoading(true);
     setQuoteError('');
     const timer = setTimeout(() => {
-      fetch(`/api/delivery-zones/quote?city=${encodeURIComponent(city.trim())}`, { cache: 'no-store', signal: controller.signal })
+      const params = new URLSearchParams({ city: city.trim() });
+      if (municipalityId) params.set('municipalityId', municipalityId);
+      fetch(`/api/delivery-zones/quote?${params}`, { cache: 'no-store', signal: controller.signal })
         .then(async (response) => {
           const result = await response.json();
           if (!response.ok) throw new Error(result.error || 'No se pudo calcular el envío');
-          if (!controller.signal.aborted) setShippingQuote(result);
+          if (!controller.signal.aborted) { setShippingQuote(result); clearErrors('city'); }
         })
         .catch((error) => { if (error.name !== 'AbortError') setQuoteError(error.message); })
         .finally(() => { if (!controller.signal.aborted) setQuoteLoading(false); });
     }, 300);
     return () => { clearTimeout(timer); controller.abort(); };
-  }, [city]);
+  }, [city, municipalityId, clearErrors]);
 
   // Hydration fix
   useEffect(() => {
@@ -111,7 +140,7 @@ export default function CheckoutPage() {
         if (!response.ok) throw new Error('No se pudieron recuperar tus datos. Podés completarlos para este pedido.');
         const data = await response.json();
         if (controller.signal.aborted) return;
-        for (const field of ['name', 'email', 'phone', 'street', 'streetNumber', 'city', 'postalCode']) {
+        for (const field of ['name', 'email', 'phone', 'street', 'streetNumber', 'city', 'municipalityId', 'postalCode']) {
           if (!editedFields.current[field]) setValue(field, data.shippingInfo?.[field] || '');
         }
       })
@@ -184,7 +213,8 @@ export default function CheckoutPage() {
           phone: data.phone,
           street: data.street,
           streetNumber: data.streetNumber,
-          city: data.city,
+          city: shippingQuote.city,
+          municipalityId: shippingQuote.municipalityId,
           postalCode: data.postalCode,
         }),
         appliedCoupon: discountInfo
@@ -377,20 +407,51 @@ export default function CheckoutPage() {
                     {errors.streetNumber && <p id="streetNumber-error" role="alert" className="mt-1 text-sm text-red-500">{errors.streetNumber.message}</p>}
                   </div>
 
-                  <div>
+                  <div className="relative">
                     <label htmlFor="city" className="block text-sm mb-2">
-                      Ciudad
+                      Municipio *
                     </label>
                     <input
                       id="city"
                       type="text"
+                      autoComplete="off"
+                      aria-autocomplete="list"
+                      aria-expanded={showMunicipalities && suggestions.length > 0}
+                      aria-controls="municipality-suggestions"
+                      aria-invalid={!!errors.city}
                       className={`w-full px-3 py-3 border focus:outline-none focus:border-black ${
                         errors.city ? 'border-red-500' : 'border-gray-300'
                       }`}
-                      {...register('city', {
-                        required: 'La ciudad es requerida',
-                      })}
+                      {...cityRegistration}
+                      onFocus={() => setShowMunicipalities(true)}
+                      onChange={(event) => {
+                        cityRegistration.onChange(event);
+                        setValue('municipalityId', '');
+                        setShowMunicipalities(true);
+                      }}
+                      onBlur={(event) => {
+                        cityRegistration.onBlur(event);
+                        setTimeout(() => setShowMunicipalities(false), 150);
+                      }}
                     />
+                    <input type="hidden" {...register('municipalityId')} />
+                    {showMunicipalities && city?.trim() && suggestions.length > 0 && (
+                      <div id="municipality-suggestions" role="listbox" className="absolute z-20 mt-1 max-h-56 w-full overflow-y-auto border border-gray-300 bg-white shadow-sm">
+                        {suggestions.map((item) => (
+                          <button key={item.id} type="button" role="option" aria-selected={municipalityId === item.id}
+                            className="block w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                            onMouseDown={(event) => event.preventDefault()}
+                            onClick={() => {
+                              setValue('city', item.name, { shouldValidate: false });
+                              setValue('municipalityId', item.id);
+                              setShowMunicipalities(false);
+                            }}>
+                            {item.name} <span className="text-gray-500">· {item.province}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    {municipalityError && <p role="status" className="mt-1 text-sm text-red-600">{municipalityError}</p>}
                     {errors.city && (
                       <p className="mt-1 text-sm text-red-500">
                         {errors.city.message}
@@ -431,7 +492,7 @@ export default function CheckoutPage() {
                   {/* Botón de MercadoPago */}
                   <button
                     type="submit"
-                    disabled={isSubmitting || loadingShipping || quoteLoading || !shippingQuote || !!quoteError}
+                    disabled={isSubmitting || loadingShipping}
                     className="w-full btn-drop py-3 flex items-center justify-center"
                   >
                     {isSubmitting ? (

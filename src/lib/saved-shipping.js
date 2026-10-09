@@ -3,7 +3,7 @@ import { normalizeShippingAddress } from './shipping-address';
 export function shippingForAccount(info) {
   const normalized = normalizeShippingAddress(typeof info?.toObject === 'function' ? info.toObject() : info);
   return Object.fromEntries(
-    ['name', 'email', 'phone', 'street', 'streetNumber', 'address', 'city', 'postalCode']
+    ['name', 'email', 'phone', 'street', 'streetNumber', 'address', 'city', 'municipalityId', 'postalCode']
       .map((field) => [field, typeof normalized[field] === 'string' ? normalized[field].trim() : '']),
   );
 }

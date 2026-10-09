@@ -418,7 +418,7 @@ Fecha: ${formatDate(order.createdAt)}
                     </div>
                     <div className="flex justify-between items-center mt-2">
                       <span className="text-gray-600">Envío</span>
-                      <span>{order.deliveryZone ? order.shippingCost ? `$${order.shippingCost.toFixed(2)}` : 'Gratis' : 'Por coordinar'}</span>
+                      <span>{order.shippingQuoted || order.shippingCost > 0 ? order.shippingCost ? `$${order.shippingCost.toFixed(2)}` : 'Gratis' : 'Por coordinar'}</span>
                     </div>
                     <div className="border-t border-gray-200 mt-4 pt-4">
                       <div className="flex justify-between items-center">

@@ -81,6 +81,7 @@ const orderSchema = new mongoose.Schema(
     },
 
     shippingCost: { type: Number, default: 0, min: 0 },
+    shippingQuoted: { type: Boolean, default: false },
     deliveryZone: { type: mongoose.Schema.Types.ObjectId, ref: 'DeliveryZone', default: null },
 
     // ========================================
@@ -138,6 +139,7 @@ const orderSchema = new mongoose.Schema(
         type: String,
         required: true,
       },
+      municipalityId: { type: String, trim: true },
       postalCode: {
         type: String,
         required: true,
