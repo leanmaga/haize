@@ -4,6 +4,12 @@ export const normalizeMunicipality = (value) => typeof value === 'string'
   ? value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().replace(/\s+/g, ' ').toLowerCase()
   : '';
 
+// IGN uses five digits for Buenos Aires partidos; GeoRef inserts a zero after the province code.
+export const canonicalMunicipalityId = (value) => {
+  const id = String(value || '');
+  return /^06\d{3}$/.test(id) ? `06${id.slice(2).padStart(4, '0')}` : id;
+};
+
 export async function getMunicipalities() {
   const response = await fetch(GEOREF_URL, { next: { revalidate: 86400 } });
   if (!response.ok) throw new Error('No se pudo consultar el catálogo oficial de municipios');

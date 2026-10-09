@@ -1,5 +1,5 @@
 import DeliveryZone from '@/models/DeliveryZone';
-import { getMunicipalities, normalizeMunicipality, resolveMunicipality } from './municipalities';
+import { canonicalMunicipalityId, getMunicipalities, normalizeMunicipality, resolveMunicipality } from './municipalities';
 
 export { normalizeMunicipality } from './municipalities';
 
@@ -7,7 +7,7 @@ export async function calculateShipping(city, ZoneModel = DeliveryZone, municipa
   const municipality = resolveMunicipality(city, municipalityId, await catalogLoader());
   const zones = await ZoneModel.find({ isActive: true });
   const matches = zones.filter((zone) =>
-    zone.municipalityId === municipality.id ||
+    canonicalMunicipalityId(zone.municipalityId) === municipality.id ||
     ((!zone.municipalityId || municipality.id === 'caba') && normalizeMunicipality(zone.name) === normalizeMunicipality(municipality.name)),
   );
   if (matches.length > 1) throw new Error('Hay varias zonas para esa ciudad; contactanos para coordinar el envío');

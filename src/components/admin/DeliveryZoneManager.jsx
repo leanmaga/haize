@@ -2,6 +2,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import GoogleCoverageMap from './GoogleCoverageMap';
 import { mergeCoverage } from '@/lib/delivery-coverage';
+import { canonicalMunicipalityId } from '@/lib/municipalities';
+import PhotoUploadLoader from './PhotoUploadLoader';
 
 export default function DeliveryZoneManager() {
   const [features, setFeatures] = useState([]);
@@ -49,7 +51,7 @@ export default function DeliveryZoneManager() {
       try {
         const response = await fetch(records[id] ? '/api/delivery-zones/' + records[id] : '/api/delivery-zones', {
           method: records[id] ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...feature.properties, municipalityId: id, geometry: feature.geometry, shippingPrice: feature.properties.shippingPrice == null || feature.properties.shippingPrice === '' ? null : Number(feature.properties.shippingPrice) }),
+          body: JSON.stringify({ ...feature.properties, municipalityId: canonicalMunicipalityId(id), geometry: feature.geometry, shippingPrice: feature.properties.shippingPrice == null || feature.properties.shippingPrice === '' ? null : Number(feature.properties.shippingPrice) }),
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'No se pudo guardar.');
@@ -80,6 +82,7 @@ export default function DeliveryZoneManager() {
       <GoogleCoverageMap features={features} onToggle={toggle} />
     </div>
     <div className="flex flex-wrap items-center justify-between gap-3"><span className="text-sm text-slate-600">{features.filter((feature) => feature.properties.isActive).length} municipios activos · {dirty.length} cambios sin guardar</span><button disabled={busy || !dirty.length} onClick={save} className="rounded-lg bg-blue-700 px-5 py-2 text-white disabled:opacity-50">{busy ? 'Guardando…' : 'Guardar cobertura y precios'}</button></div>
+    {busy && <PhotoUploadLoader label="Guardando…" ariaLabel="Guardando precios de envío" />}
     {message && <p role="status" className="text-sm">{message}</p>}
   </section>;
 }

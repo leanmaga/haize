@@ -20,6 +20,15 @@ test('uses only active configured municipality tariffs, including free delivery'
   expect(ZoneModel.find).toHaveBeenCalledWith({ isActive: true });
 });
 
+test('reads tariffs already stored with five-digit IGN municipality IDs', async () => {
+  const legacyZones = { find: async () => [
+    { _id: 'matanza', municipalityId: '06427', name: 'La Matanza', shippingPrice: 3800 },
+    { _id: 'moron', municipalityId: '06568', name: 'Morón', shippingPrice: 0 },
+  ] };
+  expect(await calculateShipping('La Matanza', legacyZones, '060427', loadCatalog)).toMatchObject({ shippingCost: 3800, quoted: true, deliveryZone: 'matanza' });
+  expect(await calculateShipping('Morón', legacyZones, '060568', loadCatalog)).toMatchObject({ shippingCost: 0, quoted: true, deliveryZone: 'moron' });
+});
+
 test('unpriced official municipalities are coordinated; typos and mismatched IDs cannot pay', async () => {
   expect(await calculateShipping('La Plata', ZoneModel, undefined, loadCatalog)).toEqual({ shippingCost: 0, deliveryZone: null, quoted: false, municipalityId: '060441', city: 'La Plata' });
   expect(await calculateShipping('La Matanza', { find: async () => [{ _id: 'matanza', municipalityId: '060427', name: 'La Matanza', shippingPrice: null }] }, undefined, loadCatalog)).toMatchObject({ shippingCost: 0, quoted: false });
