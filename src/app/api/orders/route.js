@@ -148,6 +148,12 @@ export async function POST(request) {
       const existingOrder = idempotentOrder;
 
       if (existingOrder) {
+        if (['pagado', 'enviado', 'entregado'].includes(existingOrder.status)) {
+          return NextResponse.json(
+            { message: 'Esta orden ya fue pagada. Iniciá una compra nueva.' },
+            { status: 409 },
+          );
+        }
         const existingPricing = await calculateTrustedOrder({
           items: existingOrder.items,
           couponCode: existingOrder.appliedCoupon?.code,
@@ -173,6 +179,11 @@ export async function POST(request) {
             const preferenceResponse =
               await createPaymentPreference(existingOrder);
 
+            if (existingOrder.status === 'cancelado') {
+              existingOrder.status = 'pendiente';
+              await existingOrder.save();
+            }
+
             return NextResponse.json({
               message: 'Orden existente recuperada',
               orderId: existingOrder._id,
@@ -184,6 +195,10 @@ export async function POST(request) {
             });
           } catch (mpError) {
             console.error('Error al recrear preferencia:', mpError);
+            return NextResponse.json(
+              { message: `Error al crear preferencia de pago: ${mpError.message}` },
+              { status: 502 },
+            );
           }
         } else if (orderData.paymentMethod === 'whatsapp') {
           return NextResponse.json({
