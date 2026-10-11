@@ -8,51 +8,32 @@ import { getPaymentById } from '@/lib/mercadopago';
 import { sendPaymentConfirmedEmails } from '@/lib/order-emails';
 import { verifyEmailConfig } from '@/lib/email-config';
 import { reduceStockForOrder } from '@/lib/stock-utils'; // ← NUEVA IMPORTACIÓN
-
-// Función para verificar firma del webhook (opcional pero recomendada)
-function verifyWebhookSignature(rawBody, signature) {
-  if (!process.env.MERCADOPAGO_WEBHOOK_SECRET || !signature) {
-    return true; // Permitir si no hay secret configurado
-  }
-
-  try {
-    const [ts, v1] = signature.split(',').map((part) => part.split('=')[1]);
-    const signedPayload = `ts=${ts},v1=${v1}`;
-
-    const expectedSignature = crypto
-      .createHmac('sha256', process.env.MERCADOPAGO_WEBHOOK_SECRET)
-      .update(`${ts}.${rawBody}`)
-      .digest('hex');
-
-    return crypto.timingSafeEqual(
-      Buffer.from(v1, 'hex'),
-      Buffer.from(expectedSignature, 'hex'),
-    );
-  } catch (error) {
-    console.error('❌ Error verificando firma:', error);
-    return false;
-  }
-}
+import { verifyWebhookSignature } from '@/lib/mercadopago-webhook-signature';
 
 export async function POST(request) {
   const startTime = Date.now();
   const requestId = crypto.randomUUID().substring(0, 8);
 
   try {
-    // 1. Leer el body
-    const bodyText = await request.text();
-
-    // 2. Verificar firma (comentado temporalmente para debugging)
-    /*
-    if (process.env.MERCADOPAGO_WEBHOOK_SECRET) {
-      const signature = request.headers.get("x-signature") || "";
-      const isValid = verifyWebhookSignature(bodyText, signature);
-      if (!isValid && process.env.NODE_ENV === "production") {
-        console.log(`❌ [${requestId}] Firma inválida - RECHAZANDO`);
-        return NextResponse.json({ message: "Invalid signature" }, { status: 401 });
-      }
+    const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
+    if (!secret?.trim()) {
+      console.error(`❌ [${requestId}] Webhook signing secret is not configured`);
+      return NextResponse.json({ message: 'Webhook unavailable' }, { status: 503 });
     }
-    */
+
+    const resourceIds = new URL(request.url).searchParams.getAll('data.id');
+    const paymentId = resourceIds.length === 1 ? resourceIds[0] : null;
+    const isValid = verifyWebhookSignature({
+      signature: request.headers.get('x-signature'),
+      requestId: request.headers.get('x-request-id'),
+      dataId: paymentId,
+      secret,
+    });
+    if (!isValid) {
+      return NextResponse.json({ message: 'Invalid signature' }, { status: 401 });
+    }
+
+    const bodyText = await request.text();
 
     // 3. Parsear JSON
     let data;
@@ -65,8 +46,13 @@ export async function POST(request) {
           message: 'Invalid JSON',
           requestId,
         },
-        { status: 200 },
+        { status: 400 },
       );
+    }
+
+    // Bind the body to the authenticated resource before any payment side effects.
+    if (data?.data?.id == null || String(data.data.id).toLowerCase() !== paymentId.toLowerCase()) {
+      return NextResponse.json({ message: 'Payment ID mismatch' }, { status: 400 });
     }
 
     // 4. Verificar que es una notificación de pago
@@ -77,19 +63,6 @@ export async function POST(request) {
         action: data.action,
         requestId,
       });
-    }
-
-    // 5. Obtener ID del pago
-    const paymentId = data.data?.id;
-    if (!paymentId) {
-      console.log(`❌ [${requestId}] No payment ID encontrado`);
-      return NextResponse.json(
-        {
-          message: 'No payment ID',
-          requestId,
-        },
-        { status: 200 },
-      );
     }
 
     console.log(`💳 [${requestId}] Procesando pago ID: ${paymentId}`);
