@@ -187,6 +187,14 @@ export const createPaymentPreference = async (orderData) => {
       'http://localhost:3000';
 
     const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+    const notificationUrl = new URL('/api/mercadopago/webhook', cleanBaseUrl);
+    // Only protected previews need this server-side secret. Never add it to return URLs.
+    if (process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
+      notificationUrl.searchParams.set(
+        'x-vercel-protection-bypass',
+        process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
+      );
+    }
     const backUrls = {
       success: `${cleanBaseUrl}/checkout/success?payment_status=approved&external_reference=${orderData._id}`,
       failure: `${cleanBaseUrl}/checkout/failure?payment_status=rejected&external_reference=${orderData._id}`,
@@ -224,7 +232,7 @@ export const createPaymentPreference = async (orderData) => {
       items: items,
       back_urls: backUrls,
       external_reference: orderData._id.toString(),
-      notification_url: `${baseUrl}/api/mercadopago/webhook`,
+      notification_url: notificationUrl.toString(),
 
       payer: payerData,
 
