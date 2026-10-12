@@ -135,15 +135,27 @@ export default function OrderDetailsAdmin({ order, statusStyle }) {
             {/* Total */}
             <div className="px-6 py-4 bg-white border-t border-gray-200">
               <div className="flex justify-between items-center mb-2 text-sm text-gray-600">
+                <span>Subtotal:</span>
+                <span>${(order.subtotal ?? order.totalAmount).toLocaleString('es-AR', { minimumFractionDigits: 2 })}</span>
+              </div>
+              {order.discountAmount > 0 && (
+                <div className="flex justify-between items-center mb-2 text-sm text-gray-700">
+                  <span>
+                    Descuento{order.appliedCoupon?.code ? ` (${order.appliedCoupon.code})` : ''}:
+                  </span>
+                  <span>−${order.discountAmount.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</span>
+                </div>
+              )}
+              <div className="flex justify-between items-center mb-2 text-sm text-gray-600">
                 <span>Envío:</span>
-                <span>{order.shippingQuoted || order.shippingCost > 0 ? order.shippingCost ? `$${order.shippingCost.toFixed(2)}` : 'Gratis' : 'Por coordinar'}</span>
+                <span>{order.shippingQuoted || order.shippingCost > 0 ? order.shippingCost ? `$${order.shippingCost.toLocaleString('es-AR', { minimumFractionDigits: 2 })}` : 'Gratis' : 'Por coordinar'}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-lg font-nexa-bold text-gray-900">
                   Total:
                 </span>
                 <span className="text-lg font-bold text-gray-900">
-                  ${order.totalAmount}
+                  ${order.totalAmount.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
                 </span>
               </div>
             </div>
