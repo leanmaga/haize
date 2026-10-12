@@ -60,33 +60,43 @@ export default function OrderCleanupButton() {
 
   if (isLoading) {
     return (
-      <div className="bg-white p-4 rounded-lg shadow-md">
+      <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-6">
         <div className="animate-pulse">
-          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-          <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+          <div className="h-5 bg-gray-100 rounded w-56 mb-3"></div>
+          <div className="h-3 bg-gray-100 rounded w-72"></div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+            {[0, 1, 2, 3].map((item) => (
+              <div key={item} className="h-20 bg-gray-50 border border-gray-100 rounded-lg"></div>
+            ))}
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md mb-6">
-      <div className="flex items-center justify-between mb-4">
+    <section className="bg-white p-5 sm:p-6 rounded-xl border border-gray-200 shadow-sm mb-6">
+      <div className="flex items-start justify-between gap-4 mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">
-            Limpieza de Órdenes Pendientes
+          <p className="text-xs font-nexa-bold tracking-[0.16em] uppercase text-gray-500 mb-1">
+            Mantenimiento
+          </p>
+          <h3 className="text-lg sm:text-xl font-nexa-bold text-gray-950">
+            Órdenes pendientes
           </h3>
-          <p className="text-sm text-gray-600 mt-1">
-            Cancela órdenes pendientes abandonadas automáticamente
+          <p className="text-sm text-gray-500 mt-1">
+            Revisá y cancelá pedidos abandonados con más de 30 minutos.
           </p>
         </div>
         <button
           onClick={fetchStats}
-          className="text-gray-400 hover:text-gray-600 transition-colors"
+          disabled={isLoading || isCleaning}
+          className="shrink-0 inline-flex items-center justify-center h-10 w-10 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-black transition-colors disabled:opacity-50"
           title="Actualizar estadísticas"
+          aria-label="Actualizar estadísticas"
         >
           <svg
-            className="h-5 w-5"
+            className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -102,26 +112,14 @@ export default function OrderCleanupButton() {
       </div>
 
       {stats && (
-        <div className="space-y-4">
-          {/* Estadísticas rápidas */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {stats.currentStats?.map((stat) => (
-              <div key={stat._id} className="border rounded-md p-3 text-center">
-                <div
-                  className={`text-lg font-bold ${
-                    stat._id === 'pagado'
-                      ? 'text-green-600'
-                      : stat._id === 'pendiente' ||
-                        stat._id === 'whatsapp_pendiente'
-                      ? 'text-dark-600'
-                      : stat._id === 'cancelado'
-                      ? 'text-red-600'
-                      : 'text-gray-600'
-                  }`}
-                >
+              <div key={stat._id} className="min-w-0 rounded-lg bg-gray-50 border border-gray-100 px-4 py-3">
+                <div className="text-2xl leading-none font-nexa-bold tabular-nums text-gray-950">
                   {stat.count}
                 </div>
-                <div className="text-xs text-gray-600 capitalize">
+                <div className="text-xs text-gray-500 mt-2 truncate">
                   {stat._id === 'whatsapp_pendiente'
                     ? 'WhatsApp Pend.'
                     : stat._id === 'pendiente'
@@ -138,10 +136,10 @@ export default function OrderCleanupButton() {
 
           {/* Alerta si hay órdenes para limpiar */}
           {stats.needsCleanup?.pendingToCancel > 0 && (
-            <div className="bg-dark-50 border border-dark-200 rounded-md p-4">
-              <div className="flex items-center space-x-2 mb-2">
+            <div className="bg-gray-50 border border-gray-200 border-l-2 border-l-black rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-1">
                 <svg
-                  className="h-5 w-5 text-dark-600"
+                  className="h-4 w-4 text-gray-800"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -151,39 +149,30 @@ export default function OrderCleanupButton() {
                     clipRule="evenodd"
                   />
                 </svg>
-                <span className="text-dark-800 font-medium">
-                  ⚠️ {stats.needsCleanup.pendingToCancel} órdenes pendientes de
-                  más de 30 minutos
+                <span className="text-sm text-gray-950 font-nexa-bold">
+                  {stats.needsCleanup.pendingToCancel} órdenes necesitan revisión
                 </span>
               </div>
-              <p className="text-dark-700 text-sm">
-                Estas órdenes probablemente fueron abandonadas y pueden estar
-                duplicadas.
+              <p className="text-sm text-gray-600">
+                Al continuar, se cancelarán los pedidos pendientes de más de 30 minutos.
               </p>
             </div>
           )}
 
           {/* Botón de limpieza */}
-          <div className="flex justify-between items-center pt-4 border-t">
-            <div className="text-sm text-gray-600">
-              <p>
-                <strong>La limpieza:</strong>
-              </p>
-              <ul className="mt-1 space-y-1 text-xs">
-                <li>• Cancela órdenes pendientes de +30 min</li>
-                <li>• Previene duplicados futuros</li>
-                <li>• Es segura y reversible</li>
-              </ul>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 pt-5 border-t border-gray-100">
+            <div className="text-xs text-gray-500">
+              El estado de pago se conserva separado de la limpieza de pedidos.
             </div>
 
             <button
               onClick={executeCleanup}
               disabled={isCleaning || stats.needsCleanup?.pendingToCancel === 0}
-              className="bg-dark-50 text-dark-700 py-2 px-4 rounded-md hover:bg-dark-100 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 border border-dark-200"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-black px-4 py-2.5 text-sm font-nexa-bold text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
             >
               {isCleaning ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-dark-600"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/40 border-t-white"></div>
                   <span>Limpiando...</span>
                 </>
               ) : (
@@ -204,7 +193,7 @@ export default function OrderCleanupButton() {
                   <span>
                     {stats.needsCleanup?.pendingToCancel > 0
                       ? `Limpiar (${stats.needsCleanup.pendingToCancel})`
-                      : 'Todo limpio ✅'}
+                      : 'No hay pedidos para limpiar'}
                   </span>
                 </>
               )}
@@ -212,6 +201,6 @@ export default function OrderCleanupButton() {
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 }
