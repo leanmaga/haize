@@ -76,7 +76,7 @@ export async function GET(request) {
 
     // Verificar que tenemos los datos necesarios
     if (!data.access_token || !data.refresh_token) {
-      console.error('Respuesta incompleta de MercadoPago:', data);
+      console.error('Respuesta incompleta de MercadoPago');
       return NextResponse.redirect(
         `${baseUrl}/admin/settings?error=incomplete_response`,
       );
@@ -98,9 +98,6 @@ export async function GET(request) {
 
     const userId = state || session?.user?.id || 'default';
 
-    // Desactivar cualquier configuración anterior
-    await MercadoPagoConfig.updateMany({ isActive: true }, { isActive: false });
-
     // Guardar la nueva configuración
     const expiresAt = new Date(Date.now() + data.expires_in * 1000);
 
@@ -120,12 +117,18 @@ export async function GET(request) {
       { upsert: true, new: true },
     );
 
+    // Preserve the current connection if encryption or saving the new tokens fails.
+    await MercadoPagoConfig.updateMany(
+      { isActive: true, _id: { $ne: config._id } },
+      { $set: { isActive: false } },
+    );
+
     // Redirigir a una página de éxito
     return NextResponse.redirect(
       `${baseUrl}/admin/settings?success=mp_connected`,
     );
   } catch (error) {
-    console.error('Error en callback de MercadoPago:', error);
+    console.error('Error en callback de MercadoPago:', error.name);
 
     const baseUrl = (
       process.env.NEXT_PUBLIC_BASE_URL ||
@@ -135,9 +138,7 @@ export async function GET(request) {
     ).replace(/\/$/, '');
 
     return NextResponse.redirect(
-      `${baseUrl}/admin/settings?error=server_error&message=${encodeURIComponent(
-        error.message,
-      )}`,
+      `${baseUrl}/admin/settings?error=server_error`,
     );
   }
 }

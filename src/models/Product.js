@@ -60,7 +60,6 @@ const ProductSchema = new mongoose.Schema(
     },
     sku: {
       type: String,
-      sparse: true,
       trim: true,
     },
 
