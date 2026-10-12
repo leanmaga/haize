@@ -403,7 +403,7 @@ export async function POST(request) {
 
     try {
       // Email de confirmación al cliente
-      const customerEmailResult = await sendOrderConfirmationToCustomer(
+      const customerEmailResult = order.paymentMethod !== 'mercadopago' && await sendOrderConfirmationToCustomer(
         order,
         user,
       );
