@@ -1,6 +1,9 @@
 // src/lib/config.js - HELPER DE CONFIGURACIÓN AUTOMÁTICA
 export function getMercadoPagoConfig() {
-  const isDevelopment = process.env.NODE_ENV === 'development';
+  const isDevelopment =
+    process.env.VERCEL_ENV === 'preview' ||
+    process.env.VERCEL_ENV === 'development' ||
+    process.env.NODE_ENV === 'development';
 
   // En desarrollo, preferir credenciales de test si están disponibles
   if (isDevelopment) {
@@ -46,7 +49,10 @@ export function getMercadoPagoConfig() {
 // Función para verificar configuración
 export function checkMercadoPagoConfig() {
   const config = getMercadoPagoConfig();
-  const isDevelopment = process.env.NODE_ENV === 'development';
+  const isDevelopment =
+    process.env.VERCEL_ENV === 'preview' ||
+    process.env.VERCEL_ENV === 'development' ||
+    process.env.NODE_ENV === 'development';
 
   const issues = [];
   const warnings = [];
@@ -115,7 +121,7 @@ export function debugConfig() {
   const urls = getBaseUrls();
 
   return {
-    environment: process.env.NODE_ENV,
+    environment: process.env.VERCEL_ENV || process.env.NODE_ENV,
     mercadoPago: mpConfig,
     urls,
     timestamp: new Date().toISOString(),

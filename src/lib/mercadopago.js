@@ -12,6 +12,10 @@ let cacheExpiry = null;
 
 const getClient = async () => {
   console.log('🚀 Iniciando getClient()...');
+  const isDevelopment =
+    process.env.VERCEL_ENV === 'preview' ||
+    process.env.VERCEL_ENV === 'development' ||
+    process.env.NODE_ENV === 'development';
 
   // Verificar si tenemos un cliente en caché válido
   if (cachedClient && cacheExpiry && new Date() < cacheExpiry) {
@@ -27,7 +31,7 @@ const getClient = async () => {
     console.log('🔍 Buscando configuración activa...');
     const config = await MercadoPagoConfigModel.getActiveConfig();
 
-    if (config && config.accessToken) {
+    if (!isDevelopment && config && config.accessToken) {
       console.log('✅ Configuración encontrada en la base de datos');
 
       // Verificar si el token no ha expirado
@@ -65,7 +69,7 @@ const getClient = async () => {
     }
 
     // EN PRODUCCIÓN: NO hacer fallback, lanzar error
-    if (process.env.NODE_ENV === 'production') {
+    if (!isDevelopment) {
       console.log('🚫 Producción: No hay configuración válida');
       throw new Error(
         'No hay cuenta de MercadoPago vinculada. La tienda debe conectar su cuenta primero.',
