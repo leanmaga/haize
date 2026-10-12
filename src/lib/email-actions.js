@@ -45,8 +45,6 @@ export async function sendVerificationEmail(email) {
     await user.save();
 
     const verificationUrl = `${getBaseUrl()}/auth/verify-email?token=${verificationToken}`;
-    const logoUrl =
-      'https://www.haize.com.ar/_next/image?url=%2Fimages%2F2Instagram.jpg&w=96&q=75';
 
     const emailData = {
       to: user.email,
@@ -59,19 +57,19 @@ export async function sendVerificationEmail(email) {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Verificación de Cuenta</title>
           <style>
-            body { margin: 0; padding: 0; font-family: Arial, sans-serif; color: #1a1a1a; background-color: #f7f7f7; }
+            body { margin: 0; padding: 0; font-family: 'Nexa', 'Sora', Arial, sans-serif; color: #1a1a1a; background-color: #f7f7f7; }
             .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-collapse: collapse; }
             .header { padding: 40px 30px; text-align: center; border-bottom: 1px solid #e5e5e5; }
             .content { padding: 40px 30px; }
             .button { display: inline-block; background-color: #000000; color: #ffffff; text-decoration: none; padding: 15px 45px; border-radius: 2px; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
             .footer { padding: 30px; text-align: center; background-color: #f7f7f7; border-top: 1px solid #e5e5e5; }
           </style>
-        </head>
+        <style>@font-face{font-family:Nexa;src:url('https://www.haize.com.ar/fonts/Nexa/NexaRegular.otf') format('opentype');font-weight:400}@font-face{font-family:Nexa;src:url('https://www.haize.com.ar/fonts/Nexa/NexaBold.otf') format('opentype');font-weight:700}</style></head>
         <body>
           <table class="container" align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
-              <td class="header">
-                <img src="${logoUrl}" alt="HAIZE Logo" width="120" style="display: block; margin: 0 auto;">
+              <td class="header" style="background:#000000;color:#ffffff">
+                <span style="font-family:Nexa,Sora,Arial,sans-serif;font-size:36px;letter-spacing:4px;font-weight:700;color:#ffffff">HAIZE</span>
               </td>
             </tr>
             <tr>
@@ -80,7 +78,7 @@ export async function sendVerificationEmail(email) {
                 <p style="text-align: center; color: #666666; font-size: 16px; line-height: 24px;">¡Gracias por registrarte en HAIZE! Para completar tu registro, por favor verifica tu dirección de correo electrónico.</p>
                 <p style="text-align: center; color: #666666; font-size: 16px; line-height: 24px;">Haz clic en el botón para verificar tu cuenta:</p>
                 <div style="text-align: center;">
-                  <a href="${verificationUrl}" class="button">VERIFICAR CUENTA</a>
+                  <a href="${verificationUrl}" class="button" style="display:inline-block;background:#000000;color:#ffffff;padding:16px 28px;text-decoration:none;font-family:Nexa,Sora,Arial,sans-serif;font-weight:700;letter-spacing:1px;border-radius:2px">VERIFICAR CUENTA</a>
                 </div>
                 <p style="text-align: center; color: #666666; font-size: 14px; line-height: 20px;">Si el botón no funciona, copia y pega este enlace en tu navegador:</p>
                 <p style="word-break: break-all; color: #999999; text-align: center;">${verificationUrl}</p>
@@ -153,8 +151,6 @@ export async function sendPasswordResetEmail(email) {
     await user.save();
 
     const resetUrl = `${getBaseUrl()}/auth/reset-password/${resetToken}`;
-    const logoUrl =
-      'https://www.haize.com.ar/_next/image?url=%2Fimages%2F2Instagram.jpg&w=96&q=75';
 
     const emailData = {
       to: user.email,
@@ -167,19 +163,19 @@ export async function sendPasswordResetEmail(email) {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Restablecer Contraseña</title>
           <style>
-            body { margin: 0; padding: 0; font-family: Arial, sans-serif; color: #1a1a1a; background-color: #f7f7f7; }
+            body { margin: 0; padding: 0; font-family: 'Nexa', 'Sora', Arial, sans-serif; color: #1a1a1a; background-color: #f7f7f7; }
             .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-collapse: collapse; }
             .header { padding: 40px 30px; text-align: center; border-bottom: 1px solid #e5e5e5; }
             .content { padding: 40px 30px; }
             .button { display: inline-block; background-color: #000000; color: #ffffff; text-decoration: none; padding: 15px 45px; border-radius: 2px; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
             .footer { padding: 30px; text-align: center; background-color: #f7f7f7; border-top: 1px solid #e5e5e5; }
           </style>
-        </head>
+        <style>@font-face{font-family:Nexa;src:url('https://www.haize.com.ar/fonts/Nexa/NexaRegular.otf') format('opentype');font-weight:400}@font-face{font-family:Nexa;src:url('https://www.haize.com.ar/fonts/Nexa/NexaBold.otf') format('opentype');font-weight:700}</style></head>
         <body>
           <table class="container" align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
-              <td class="header">
-                <img src="${logoUrl}" alt="HAIZE Logo" width="120" style="display: block; margin: 0 auto;">
+              <td class="header" style="background:#000000;color:#ffffff">
+                <span style="font-family:Nexa,Sora,Arial,sans-serif;font-size:36px;letter-spacing:4px;font-weight:700;color:#ffffff">HAIZE</span>
               </td>
             </tr>
             <tr>
@@ -188,7 +184,7 @@ export async function sendPasswordResetEmail(email) {
                 <p style="text-align: center; color: #666666; font-size: 16px; line-height: 24px;">Hemos recibido una solicitud para restablecer la contraseña de tu cuenta. Si no has realizado esta solicitud, puedes ignorar este mensaje.</p>
                 <p style="text-align: center; color: #666666; font-size: 16px; line-height: 24px;">Haz clic en el botón para crear una nueva contraseña:</p>
                 <div style="text-align: center;">
-                  <a href="${resetUrl}" class="button">RESTABLECER</a>
+                  <a href="${resetUrl}" class="button" style="display:inline-block;background:#000000;color:#ffffff;padding:16px 28px;text-decoration:none;font-family:Nexa,Sora,Arial,sans-serif;font-weight:700;letter-spacing:1px;border-radius:2px">RESTABLECER</a>
                 </div>
                 <p style="text-align: center; color: #666666; font-size: 14px; line-height: 20px;">Si el botón no funciona, copia y pega este enlace en tu navegador:</p>
                 <p style="word-break: break-all; color: #999999; text-align: center;">${resetUrl}</p>
