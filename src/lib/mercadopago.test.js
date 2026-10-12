@@ -8,7 +8,12 @@ jest.mock('@/models/MercadoPagoConfig', () => ({
   __esModule: true,
   default: { getActiveConfig: jest.fn() },
 }));
-jest.mock('./config', () => ({ getMercadoPagoConfig: () => ({ environment: 'sandbox' }) }));
+jest.mock('./config', () => ({
+  getMercadoPagoConfig: () => ({
+    environment: 'sandbox',
+    accessToken: 'TEST-mock-access-token',
+  }),
+}));
 
 import { Preference } from 'mercadopago';
 import MercadoPagoConfigModel from '@/models/MercadoPagoConfig';
