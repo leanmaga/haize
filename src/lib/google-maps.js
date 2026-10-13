@@ -4,7 +4,7 @@ export function loadMaps() {
   if (window.google?.maps?.importLibrary) return Promise.resolve(window.google.maps);
   if (mapsPromise) return mapsPromise;
   mapsPromise = new Promise((resolve, reject) => {
-    const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+    const key = process.env.GOOGLE_MAPS_API_KEY;
     if (!key || key === 'tu_clave') return reject(new Error('Completá la dirección manualmente.'));
     const script = document.createElement('script');
     const fail = () => { clearTimeout(timeout); script.remove(); reject(new Error('No se pudieron cargar las sugerencias. Completá la dirección manualmente.')); };

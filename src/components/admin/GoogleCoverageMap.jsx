@@ -6,7 +6,7 @@ import { loadMaps } from '@/lib/google-maps';
 const money = (value) => Number(value) === 0 ? 'Envío sin costo' : new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(value);
 
 export default function GoogleCoverageMap(props) {
-  const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const key = process.env.GOOGLE_MAPS_API_KEY;
   return key && key !== 'tu_clave' ? <GoogleMap {...props} /> : <CoverageMap {...props} />;
 }
 

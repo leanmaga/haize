@@ -19,8 +19,8 @@ test('selects the same municipality by mouse or keyboard and reflects updated co
 });
 
 test('works without Google credentials and zooms without changing selection', () => {
-  const previous = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-  delete process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const previous = process.env.GOOGLE_MAPS_API_KEY;
+  delete process.env.GOOGLE_MAPS_API_KEY;
   try {
     const toggle = jest.fn();
     render(<GoogleCoverageMap features={features} onToggle={toggle} />);
@@ -31,7 +31,7 @@ test('works without Google credentials and zooms without changing selection', ()
     expect(toggle).not.toHaveBeenCalled();
     expect(screen.queryByText('Falta configurar la clave de Google Maps.')).not.toBeInTheDocument();
   } finally {
-    if (previous === undefined) delete process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-    else process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY = previous;
+    if (previous === undefined) delete process.env.GOOGLE_MAPS_API_KEY;
+    else process.env.GOOGLE_MAPS_API_KEY = previous;
   }
 });
