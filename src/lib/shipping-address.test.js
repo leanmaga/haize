@@ -11,7 +11,7 @@ test.each(['abc', 'S/N', '-1', '1.5'])('rejects invalid house number %s', (stree
 });
 test.each(['123', '123A', '0012'])('preserves the complete address and the number %s', (streetNumber) => {
   expect(normalizeShippingAddress({ street: ' Calle 9 ', streetNumber: ' ' + streetNumber + ' ', city: 'Morón' })).toEqual({
-    street: 'Calle 9', streetNumber, address: 'Calle 9 ' + streetNumber, city: 'Morón',
+    street: 'Calle 9', streetNumber, address: 'Calle 9 ' + streetNumber, city: 'Morón', apartment: '', province: '',
   });
 });
 test('rejects whitespace-only street', () => {

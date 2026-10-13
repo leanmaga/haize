@@ -1,5 +1,16 @@
 export const zoneSlug = (name = '') => name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
+// These two IGN boundaries currently have blank CODINDEC values.
+// Official codes verified against GeoRef's municipality catalog.
+export function coverageMunicipalityId(value, name) {
+  const id = String(value ?? '').trim();
+  if (/^06\d{3}$/.test(id) || /^06\d{4}$/.test(id) || id === 'caba') return id;
+  const knownIds = { chascomus: '06218', lezama: '06466' };
+  const fallback = knownIds[zoneSlug(name)];
+  if (!fallback) throw new Error(`No se pudo identificar el municipio ${name}`);
+  return fallback;
+}
+
 export function mergeCoverage(catalog, zones) {
   const matched = new Set();
   const features = catalog.map((feature) => {

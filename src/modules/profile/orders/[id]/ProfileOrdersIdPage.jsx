@@ -1,4 +1,5 @@
 'use client';
+import { shippingAddressLines } from '@/lib/shipping-address';
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
@@ -467,11 +468,7 @@ Fecha: ${formatDate(order.createdAt)}
                         Dirección
                       </h3>
                       <p className="mt-1 text-gray-700">
-                        {order.shippingInfo.address}
-                      </p>
-                      <p className="text-gray-700">
-                        {order.shippingInfo.city},{' '}
-                        {order.shippingInfo.postalCode}
+                        {shippingAddressLines(order.shippingInfo).map((line, index) => <span key={index} className="block">{line}</span>)}
                       </p>
                     </div>
                     <div>

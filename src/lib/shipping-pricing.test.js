@@ -36,3 +36,30 @@ test('unpriced official municipalities are coordinated; typos and mismatched IDs
   await expect(calculateShipping('Morón', ZoneModel, '060539', loadCatalog)).rejects.toThrow('municipio válido');
   await expect(calculateShipping('Morón', { find: async () => [...zones, zones[0]] }, undefined, loadCatalog)).rejects.toThrow('varias zonas');
 });
+
+const loadLocalities = async () => [{ id: 'haedo', name: 'Haedo' }, { id: 'palomar', name: 'El Palomar' }, { id: 'unknown', name: 'Zona no listada' }];
+const localQuote = (price, localityId = 'haedo') => calculateShipping('Morón', { find: async () => [{ ...zones[0], shippingPrice: price }] }, '060568', loadCatalog, localityId, loadLocalities);
+
+test('seller-paid zero is distinct from an empty rate', async () => {
+  expect(await localQuote(0)).toMatchObject({ shippingCost: 0, quoted: true, locality: 'Haedo', localityId: 'haedo' });
+  expect(await localQuote(0, 'unknown')).toMatchObject({ shippingCost: 0, quoted: true });
+  expect(await localQuote(null)).toMatchObject({ shippingCost: 0, quoted: false });
+  expect(await localQuote(undefined)).toMatchObject({ shippingCost: 0, quoted: false });
+});
+
+test('uses locality prices and coordinates unlisted destinations', async () => {
+  expect(await localQuote(7000)).toMatchObject({ shippingCost: 7000, quoted: true });
+  expect(await localQuote(7000, 'palomar')).toMatchObject({ shippingCost: 7500, quoted: true });
+  expect(await localQuote(7000, 'unknown')).toMatchObject({ shippingCost: 0, quoted: false });
+  expect(await calculateShipping('Morón', { find: async () => [] }, '060568', loadCatalog, 'haedo', loadLocalities)).toMatchObject({ shippingCost: 0, quoted: false });
+});
+
+test('rejects a locality from another municipality instead of accepting a client price', async () => {
+  await expect(localQuote(7000, 'another-municipality-id')).rejects.toThrow('localidad válida');
+});
+
+test('partial coverage requires coordination even with a municipality tariff', async () => {
+  const quote = await calculateShipping('La Matanza', { find: async () => [{ name: 'La Matanza', municipalityId: '060427', shippingPrice: 7500 }] }, '060427', loadCatalog, 'virrey', async () => [{ id: 'virrey', name: 'Virrey del Pino' }]);
+  expect(quote).toMatchObject({ quoted: false, shippingCost: 0 });
+  expect(quote.note).toContain('km 40');
+});

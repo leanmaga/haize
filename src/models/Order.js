@@ -131,6 +131,8 @@ const orderSchema = new mongoose.Schema(
       },
       street: { type: String, trim: true },
       streetNumber: { type: String, trim: true },
+      apartment: { type: String, trim: true, maxlength: 100 },
+      province: { type: String, trim: true },
       address: {
         type: String,
         required: true,
@@ -140,6 +142,8 @@ const orderSchema = new mongoose.Schema(
         required: true,
       },
       municipalityId: { type: String, trim: true },
+      localityId: { type: String, trim: true },
+      locality: { type: String, trim: true },
       postalCode: {
         type: String,
         required: true,

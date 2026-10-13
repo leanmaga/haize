@@ -1,8 +1,15 @@
-import { mergeCoverage, zonePayload } from './delivery-coverage';
+import { coverageMunicipalityId, mergeCoverage, zonePayload } from './delivery-coverage';
 
 const geometry = { type: 'Polygon', coordinates: [[[-58.7, -34.6], [-58.6, -34.6], [-58.6, -34.7], [-58.7, -34.6]]] };
 const catalog = ['Morón', 'Merlo'].map((nombre, i) => ({ type: 'Feature', id: String(i), properties: { nombre }, geometry }));
 const payload = { name: 'Morón', slug: 'moron', geometry, isActive: true, shippingPrice: 0, cutoffTime: '11:00' };
+
+test('resolves blank IGN IDs without coupling Chascomús and Lezama selections', () => {
+  expect(coverageMunicipalityId(' ', 'Chascomús')).toBe('06218');
+  expect(coverageMunicipalityId(' ', 'Lezama')).toBe('06466');
+  expect(coverageMunicipalityId(' 06568 ', 'Morón')).toBe('06568');
+  expect(() => coverageMunicipalityId(' ', 'Desconocido')).toThrow('identificar');
+});
 
 test('preserves both selected municipalities, zero price and paid delivery', () => {
   const result = mergeCoverage(catalog, [

@@ -58,6 +58,7 @@ export async function POST(request) {
     const orderData = await request.json();
     try {
       orderData.shippingInfo = normalizeShippingAddress(orderData.shippingInfo);
+      if (!/^(\d{8,12}|caba)$/.test(orderData.shippingInfo.localityId || '')) throw new Error('Seleccioná una localidad válida del municipio');
     } catch (error) {
       return NextResponse.json({ message: error.message }, { status: 400 });
     }
@@ -110,9 +111,16 @@ export async function POST(request) {
       userId: user._id,
       currentOrderId: idempotentOrder?._id,
     });
-    const shipping = await calculateShipping(orderData.shippingInfo.city, undefined, orderData.shippingInfo.municipalityId);
+    let shipping;
+    try {
+      shipping = await calculateShipping(orderData.shippingInfo.city, undefined, orderData.shippingInfo.municipalityId, undefined, orderData.shippingInfo.localityId);
+    } catch (error) {
+      return NextResponse.json({ message: error.message }, { status: 400 });
+    }
     orderData.shippingInfo.city = shipping.city;
     orderData.shippingInfo.municipalityId = shipping.municipalityId;
+    orderData.shippingInfo.localityId = shipping.localityId;
+    orderData.shippingInfo.locality = shipping.locality;
     Object.assign(orderData, {
       items: trustedPricing.items,
       subtotal: trustedPricing.subtotal,
@@ -160,7 +168,7 @@ export async function POST(request) {
           userId: user._id,
           currentOrderId: existingOrder._id,
         });
-        const existingShipping = await calculateShipping(existingOrder.shippingInfo.city, undefined, existingOrder.shippingInfo.municipalityId);
+        const existingShipping = await calculateShipping(existingOrder.shippingInfo.city, undefined, existingOrder.shippingInfo.municipalityId, undefined, existingOrder.shippingInfo.localityId);
         existingOrder.shippingInfo.city = existingShipping.city;
         existingOrder.shippingInfo.municipalityId = existingShipping.municipalityId;
         existingOrder.items = existingPricing.items;

@@ -13,6 +13,7 @@ import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { normalizeShippingAddress } from '@/lib/shipping-address';
 import { normalizeMunicipality } from '@/lib/municipalities';
+import AddressAutocomplete from './AddressAutocomplete';
 
 // ========== FUNCIÓN HELPER PARA EXTRAER PRODUCT ID ==========
 const extractProductId = (item) => {
@@ -53,6 +54,10 @@ export default function CheckoutPage() {
   const [municipalities, setMunicipalities] = useState([]);
   const [municipalityError, setMunicipalityError] = useState('');
   const [showMunicipalities, setShowMunicipalities] = useState(false);
+  const [localityCatalog, setLocalityCatalog] = useState({ municipalityId: '', items: [] });
+  const [localitiesLoading, setLocalitiesLoading] = useState(false);
+  const [localitiesError, setLocalitiesError] = useState('');
+  const [shippingRetry, setShippingRetry] = useState(0);
   const editedFields = useRef({});
   const idempotencyKey = useRef(
     `order_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`,
@@ -77,15 +82,20 @@ export default function CheckoutPage() {
   editedFields.current = dirtyFields;
   const city = watch('city');
   const municipalityId = watch('municipalityId');
+  const localityId = watch('localityId');
+  const province = watch('province');
+  const municipalityMatches = municipalities.filter((item) => normalizeMunicipality(item.name) === normalizeMunicipality(city));
+  const selectedMunicipality = municipalityId
+    ? municipalityMatches.find((item) => item.id === municipalityId)
+    : municipalityMatches.length === 1 ? municipalityMatches[0] : null;
+  const selectedMunicipalityId = selectedMunicipality?.id;
+  const localities = localityCatalog.municipalityId === selectedMunicipalityId ? localityCatalog.items : [];
+  const currentQuote = shippingQuote?.municipalityId === selectedMunicipalityId && shippingQuote?.localityId === localityId ? shippingQuote : null;
   const cityRegistration = register('city', {
     required: 'El municipio es obligatorio',
-    validate: (value) => (
-      !!shippingQuote && !quoteLoading && !quoteError &&
-      normalizeMunicipality(shippingQuote.city) === normalizeMunicipality(value) &&
-      (!municipalityId || municipalityId === shippingQuote.municipalityId)
-    ) || 'Seleccioná un municipio válido de la lista',
+    validate: () => !!selectedMunicipality || 'Seleccioná un municipio válido de la lista',
   });
-  const suggestions = municipalities.filter((item) => normalizeMunicipality(item.name).includes(normalizeMunicipality(city))).slice(0, 8);
+  const suggestions = municipalities.filter((item) => (!province || item.province === province) && normalizeMunicipality(item.name).includes(normalizeMunicipality(city))).slice(0, 8);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -100,9 +110,30 @@ export default function CheckoutPage() {
   }, []);
 
   useEffect(() => {
-    if (!city?.trim()) {
+    if (!selectedMunicipalityId) {
+      setLocalitiesLoading(false);
+      setLocalitiesError('');
+      return;
+    }
+    const controller = new AbortController();
+    setLocalitiesLoading(true);
+    setLocalitiesError('');
+    fetch(`/api/localities?municipalityId=${encodeURIComponent(selectedMunicipalityId)}`, { signal: controller.signal })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok || !Array.isArray(data.localities)) throw new Error(data.error || 'No se pudieron cargar las localidades');
+        if (!controller.signal.aborted) setLocalityCatalog({ municipalityId: selectedMunicipalityId, items: data.localities });
+      })
+      .catch((error) => { if (!controller.signal.aborted) setLocalitiesError(error.message); })
+      .finally(() => { if (!controller.signal.aborted) setLocalitiesLoading(false); });
+    return () => controller.abort();
+  }, [selectedMunicipalityId, shippingRetry]);
+
+  useEffect(() => {
+    if (!city?.trim() || !selectedMunicipalityId || !localityId) {
       setShippingQuote(null);
       setQuoteError('');
+      setQuoteLoading(false);
       return;
     }
     const controller = new AbortController();
@@ -111,18 +142,19 @@ export default function CheckoutPage() {
     setQuoteError('');
     const timer = setTimeout(() => {
       const params = new URLSearchParams({ city: city.trim() });
-      if (municipalityId) params.set('municipalityId', municipalityId);
+      params.set('municipalityId', selectedMunicipalityId);
+      params.set('localityId', localityId);
       fetch(`/api/delivery-zones/quote?${params}`, { cache: 'no-store', signal: controller.signal })
         .then(async (response) => {
           const result = await response.json();
           if (!response.ok) throw new Error(result.error || 'No se pudo calcular el envío');
-          if (!controller.signal.aborted) { setShippingQuote(result); clearErrors('city'); }
+          if (!controller.signal.aborted) { setShippingQuote(result); clearErrors(['city', 'localityId']); }
         })
         .catch((error) => { if (error.name !== 'AbortError') setQuoteError(error.message); })
         .finally(() => { if (!controller.signal.aborted) setQuoteLoading(false); });
     }, 300);
     return () => { clearTimeout(timer); controller.abort(); };
-  }, [city, municipalityId, clearErrors]);
+  }, [city, selectedMunicipalityId, localityId, clearErrors, shippingRetry]);
 
   // Hydration fix
   useEffect(() => {
@@ -140,7 +172,8 @@ export default function CheckoutPage() {
         if (!response.ok) throw new Error('No se pudieron recuperar tus datos. Podés completarlos para este pedido.');
         const data = await response.json();
         if (controller.signal.aborted) return;
-        for (const field of ['name', 'email', 'phone', 'street', 'streetNumber', 'city', 'municipalityId', 'postalCode']) {
+        for (const field of ['name', 'email', 'phone', 'street', 'streetNumber', 'apartment', 'province', 'city', 'municipalityId', 'localityId', 'postalCode']) {
+          if (['municipalityId', 'localityId'].includes(field) && editedFields.current.city) continue;
           if (!editedFields.current[field]) setValue(field, data.shippingInfo?.[field] || '');
         }
       })
@@ -174,13 +207,13 @@ export default function CheckoutPage() {
 
   // ========== CALCULAR TOTALES CON CUPONES ==========
   const subtotal = getTotal();
-  const total = getTotalWithDiscount() + (shippingQuote?.shippingCost || 0);
+  const total = getTotalWithDiscount() + (currentQuote?.shippingCost || 0);
   const discountInfo = getDiscountInfo();
   // ==================================================
 
   // ========== SUBMIT PARA MERCADOPAGO ==========
   const onSubmit = async (data) => {
-    if (isSubmitting || loadingShipping || quoteLoading || !shippingQuote || quoteError) return;
+    if (isSubmitting || loadingShipping || localitiesLoading || localitiesError || quoteLoading || !currentQuote || quoteError) return;
     setIsSubmitting(true);
 
     try {
@@ -213,8 +246,12 @@ export default function CheckoutPage() {
           phone: data.phone,
           street: data.street,
           streetNumber: data.streetNumber,
-          city: shippingQuote.city,
-          municipalityId: shippingQuote.municipalityId,
+          apartment: data.apartment,
+          province: selectedMunicipality?.province || data.province,
+          city: currentQuote.city,
+          municipalityId: currentQuote.municipalityId,
+          localityId: currentQuote.localityId,
+          locality: currentQuote.locality,
           postalCode: data.postalCode,
         }),
         appliedCoupon: discountInfo
@@ -367,19 +404,24 @@ export default function CheckoutPage() {
                     <label htmlFor="street" className="block text-sm mb-2">
                       Calle *
                     </label>
-                    <input
-                      id="street"
-                      type="text"
-                      required
-                      autoComplete="address-line1"
-                      placeholder="Ej.: Av. Rivadavia"
-                      className={`w-full px-3 py-3 border focus:outline-none focus:border-black ${
-                        errors.street ? 'border-red-500' : 'border-gray-300'
-                      }`}
-                      {...register('street', {
+                    <AddressAutocomplete
+                      error={errors.street}
+                      registration={register('street', {
                         required: 'La calle es obligatoria',
                         validate: (value) => !!value.trim() || 'La calle es obligatoria',
                       })}
+                      onEdit={() => {
+                        setValue('localityId', '', { shouldDirty: true });
+                        setShippingQuote(null);
+                      }}
+                      onSelect={(address) => {
+                        for (const field of ['street', 'streetNumber', 'postalCode', 'city', 'municipalityId', 'localityId', 'province']) {
+                          setValue(field, address[field] || '', { shouldDirty: true });
+                        }
+                        setShippingQuote(null);
+                        setShowMunicipalities(false);
+                        clearErrors(['street', 'streetNumber', 'city', 'localityId']);
+                      }}
                     />
                     {errors.street && (
                       <p className="mt-1 text-sm text-red-500">
@@ -407,6 +449,21 @@ export default function CheckoutPage() {
                     {errors.streetNumber && <p id="streetNumber-error" role="alert" className="mt-1 text-sm text-red-500">{errors.streetNumber.message}</p>}
                   </div>
 
+                  <div>
+                    <label htmlFor="province" className="block text-sm mb-2">Provincia</label>
+                    <select id="province" className="w-full bg-white px-3 py-3 border border-gray-300 focus:outline-none focus:border-black" {...register('province')}
+                      onChange={(event) => {
+                        setValue('province', event.target.value, { shouldDirty: true });
+                        setValue('city', '', { shouldDirty: true });
+                        setValue('municipalityId', '');
+                        setValue('localityId', '', { shouldDirty: true });
+                        setShippingQuote(null);
+                      }}>
+                      <option value="">Seleccioná la provincia</option>
+                      {[...new Set(municipalities.map((item) => item.province).filter(Boolean))].sort().map((name) => <option key={name} value={name}>{name}</option>)}
+                    </select>
+                  </div>
+
                   <div className="relative">
                     <label htmlFor="city" className="block text-sm mb-2">
                       Municipio *
@@ -415,6 +472,7 @@ export default function CheckoutPage() {
                       id="city"
                       type="text"
                       autoComplete="off"
+                      role="combobox"
                       aria-autocomplete="list"
                       aria-expanded={showMunicipalities && suggestions.length > 0}
                       aria-controls="municipality-suggestions"
@@ -427,6 +485,8 @@ export default function CheckoutPage() {
                       onChange={(event) => {
                         cityRegistration.onChange(event);
                         setValue('municipalityId', '');
+                        setValue('localityId', '', { shouldDirty: true });
+                        setShippingQuote(null);
                         setShowMunicipalities(true);
                       }}
                       onBlur={(event) => {
@@ -444,6 +504,9 @@ export default function CheckoutPage() {
                             onClick={() => {
                               setValue('city', item.name, { shouldValidate: false });
                               setValue('municipalityId', item.id);
+                              setValue('province', item.province || '');
+                              setValue('localityId', '', { shouldDirty: true });
+                              setShippingQuote(null);
                               setShowMunicipalities(false);
                             }}>
                             {item.name} <span className="text-gray-500">· {item.province}</span>
@@ -457,6 +520,52 @@ export default function CheckoutPage() {
                         {errors.city.message}
                       </p>
                     )}
+                  </div>
+
+                  <div>
+                    <label htmlFor="localityId" className="block text-sm mb-2">Localidad *</label>
+                    <select
+                      id="localityId"
+                      disabled={!selectedMunicipalityId || localitiesLoading || !!localitiesError}
+                      aria-required="true"
+                      aria-invalid={!!errors.localityId}
+                      aria-describedby="locality-help"
+                      className={`w-full min-w-0 bg-white px-3 py-3 border focus:outline-none focus:border-black disabled:bg-gray-50 disabled:text-gray-500 ${errors.localityId ? 'border-red-500' : 'border-gray-300'}`}
+                      {...register('localityId', {
+                        required: 'Seleccioná una localidad',
+                        validate: (value) => (localities.some((item) => item.id === value) && !!currentQuote && !quoteLoading && !quoteError) || 'Seleccioná una localidad y aguardá el cálculo del envío',
+                      })}
+                      value={localityId || ''}
+                      onChange={(event) => {
+                        setValue('localityId', event.target.value, { shouldDirty: true });
+                        setShippingQuote(null);
+                        clearErrors('localityId');
+                      }}
+                    >
+                      <option value="">{localitiesLoading ? 'Cargando localidades…' : selectedMunicipalityId ? 'Seleccioná tu localidad' : 'Elegí primero el municipio'}</option>
+                      {localities.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+                    </select>
+                    <div id="locality-help" className="mt-2 text-sm" aria-live="polite">
+                      {errors.localityId && <p className="text-red-600">{errors.localityId.message}</p>}
+                      {localitiesError || quoteError ? (
+                        <p className="text-red-600">{localitiesError || quoteError} <button type="button" onClick={() => setShippingRetry((value) => value + 1)} className="underline">Reintentar</button></p>
+                      ) : quoteLoading ? <p className="text-gray-500">Calculando envío…</p> : currentQuote ? (
+                        <div className="border-l-2 border-black pl-3 py-1">
+                          <p className="font-nexa-bold text-black">{currentQuote.quoted ? currentQuote.shippingCost === 0 ? 'Envío sin cargo · $0' : `Envío: $${currentQuote.shippingCost.toLocaleString('es-AR')}` : 'Envío por coordinar'}</p>
+                          <p className="mt-1 text-xs text-gray-500">{currentQuote.quoted ? currentQuote.shippingCost === 0 ? 'El vendedor cubre el costo del envío.' : 'Este importe se suma al total de tu compra.' : 'Coordinaremos el costo y la entrega con vos. El total no incluye envío.'}</p>
+                          {currentQuote.note && <p className="mt-1 text-xs text-gray-500">{currentQuote.note}</p>}
+                        </div>
+                      ) : <p className="text-xs text-gray-500">Seleccioná tu localidad para ver el costo de envío.</p>}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="apartment" className="block text-sm mb-2">Departamento (opcional)</label>
+                    <input id="apartment" type="text" autoComplete="address-line2" maxLength={100}
+                      placeholder="Ej.: Piso 2, departamento B"
+                      className="w-full px-3 py-3 border border-gray-300 focus:outline-none focus:border-black"
+                      {...register('apartment', { maxLength: { value: 100, message: 'Ingresá hasta 100 caracteres' } })} />
+                    {errors.apartment && <p role="alert" className="mt-1 text-sm text-red-500">{errors.apartment.message}</p>}
                   </div>
 
                   {/* Código Postal */}
@@ -592,7 +701,7 @@ export default function CheckoutPage() {
 
                 <div className="flex justify-between py-2">
                   <span className="text-gray-600">Envío</span>
-                  <span>{quoteLoading ? 'Calculando...' : quoteError ? quoteError : shippingQuote?.quoted ? shippingQuote.shippingCost === 0 ? 'Gratis' : `$${shippingQuote.shippingCost.toFixed(2)}` : 'Por coordinar'}</span>
+                  <span>{quoteLoading ? 'Calculando...' : quoteError ? 'No disponible' : currentQuote?.quoted ? currentQuote.shippingCost === 0 ? 'Sin cargo' : `$${currentQuote.shippingCost.toLocaleString('es-AR')}` : currentQuote ? 'Por coordinar' : 'Seleccioná localidad'}</span>
                 </div>
 
                 <div className="border-t border-gray-200 pt-3 mt-2">

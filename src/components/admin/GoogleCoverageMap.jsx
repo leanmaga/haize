@@ -1,26 +1,16 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
+import CoverageMap from './CoverageMap';
+import { loadMaps } from '@/lib/google-maps';
 
-let mapsPromise;
-function loadMaps() {
-  if (window.google?.maps?.Map) return Promise.resolve(window.google.maps);
-  if (mapsPromise) return mapsPromise;
-  mapsPromise = new Promise((resolve, reject) => {
-    const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-    if (!key || key === 'tu_clave') return reject(new Error('Falta configurar la clave de Google Maps.'));
-    const script = document.createElement('script');
-    const timeout = setTimeout(() => reject(new Error('Google Maps tardó demasiado en cargar.')), 20000);
-    window.haizeMapsReady = () => { clearTimeout(timeout); resolve(window.google.maps); };
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&loading=async&callback=haizeMapsReady&language=es&region=AR`;
-    script.async = true;
-    script.onerror = () => { clearTimeout(timeout); reject(new Error('No se pudo cargar Google Maps.')); };
-    document.head.appendChild(script);
-  });
-  return mapsPromise;
-}
 const money = (value) => Number(value) === 0 ? 'Envío sin costo' : new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(value);
 
-export default function GoogleCoverageMap({ features = [], onToggle }) {
+export default function GoogleCoverageMap(props) {
+  const key = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  return key && key !== 'tu_clave' ? <GoogleMap {...props} /> : <CoverageMap {...props} />;
+}
+
+function GoogleMap({ features = [], onToggle }) {
   const container = useRef(null);
   const instance = useRef(null);
   const toggle = useRef(onToggle);
@@ -84,6 +74,7 @@ export default function GoogleCoverageMap({ features = [], onToggle }) {
     data.forEach((feature) => data.remove(feature));
     data.addGeoJson({ type: 'FeatureCollection', features });
   }, [features, ready]);
+  if (error) return <CoverageMap features={features} onToggle={onToggle} />;
   return <div className="relative overflow-hidden rounded-xl border border-slate-200">
     <div ref={container} style={{ height: 420, width: '100%' }} aria-label="Mapa de municipios y tarifas de envío" />
     {error && <p role="alert" className="absolute inset-0 flex items-center justify-center bg-slate-50 p-6 text-center text-sm text-red-700">{error}</p>}

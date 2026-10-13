@@ -5,7 +5,7 @@ const info = { name: 'Cliente', email: 'cliente@example.com', phone: '123', stre
 test('stores delivery data in the account when requested', async () => {
   const user = { save: jest.fn().mockResolvedValue(undefined) };
   await rememberShipping(user, { saveShippingInfo: true, shippingInfo: info });
-  expect(user.savedShippingInfo).toEqual({ ...info, address: 'Calle 9 123A', municipalityId: '' });
+  expect(user.savedShippingInfo).toEqual({ ...info, address: 'Calle 9 123A', municipalityId: '', localityId: '', locality: '', apartment: '', province: '' });
   expect(user.save).toHaveBeenCalledTimes(1);
 });
 test.each([false, undefined, 'true'])('temporary delivery preserves saved account information (%s)', async (saveShippingInfo) => {
@@ -29,4 +29,15 @@ test('normalizes mongoose snapshots and excludes unrelated fields', () => {
   expect(result.name).toBe('Cliente');
   expect(result).not.toHaveProperty('role');
   expect(result).not.toHaveProperty('password');
+});
+
+test('remembers the locality independently of the municipality', () => {
+  expect(shippingForAccount({ ...info, municipalityId: '060568', localityId: '0656801003', locality: 'Haedo' }))
+    .toMatchObject({ city: 'Morón', localityId: '0656801003', locality: 'Haedo' });
+});
+
+test('remembers apartment and province, and permits clearing an old apartment', () => {
+  expect(shippingForAccount({ ...info, apartment: ' 2 B ', province: ' Buenos Aires ' }))
+    .toMatchObject({ apartment: '2 B', province: 'Buenos Aires' });
+  expect(shippingForAccount({ ...info, apartment: '' }).apartment).toBe('');
 });

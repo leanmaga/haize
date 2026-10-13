@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { coverageMunicipalityId } from '@/lib/delivery-coverage';
 
 // Public, read-only administrative boundaries; no account or delivery configuration.
 export async function GET() {
@@ -13,11 +14,12 @@ export async function GET() {
     const data = await response.json();
     if (data.error || data.exceededTransferLimit || !data.features?.length) throw new Error('El IGN devolvió un catálogo incompleto.');
     const features = data.features.map((feature) => ({
-      type: 'Feature', id: String(feature.properties.CODINDEC),
-      properties: { id: String(feature.properties.CODINDEC), nombre: feature.properties.NAM },
+      type: 'Feature', id: coverageMunicipalityId(feature.properties.CODINDEC, feature.properties.NAM),
+      properties: { id: coverageMunicipalityId(feature.properties.CODINDEC, feature.properties.NAM), nombre: feature.properties.NAM },
       geometry: feature.geometry,
     })).filter((feature) => feature.properties.nombre && ['Polygon', 'MultiPolygon'].includes(feature.geometry?.type));
     if (features.length !== 135) throw new Error('No se pudieron verificar los 135 partidos bonaerenses.');
+    if (new Set(features.map((feature) => feature.id)).size !== features.length) throw new Error('El catálogo de municipios contiene identificadores duplicados.');
     const cityQuery = new URLSearchParams({ where: '1=1', outFields: 'FNA', returnGeometry: 'true', outSR: '4326', geometryPrecision: '5', maxAllowableOffset: '0.0001', f: 'geojson' });
     const cityResponse = await fetch(`https://ide.ign.gob.ar/geoservicios/rest/services/ANIDA/org_politica/MapServer/234/query?${cityQuery}`, { next: { revalidate: 86400 } });
     if (!cityResponse.ok) throw new Error('No se pudo consultar el límite de CABA.');

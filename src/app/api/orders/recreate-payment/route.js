@@ -87,7 +87,7 @@ export async function POST(request) {
         userId: order.user,
         currentOrderId: order._id,
       });
-      const shipping = await calculateShipping(order.shippingInfo.city, undefined, order.shippingInfo.municipalityId);
+      const shipping = await calculateShipping(order.shippingInfo.city, undefined, order.shippingInfo.municipalityId, undefined, order.shippingInfo.localityId);
       order.shippingInfo.city = shipping.city;
       order.shippingInfo.municipalityId = shipping.municipalityId;
       order.items = trustedPricing.items;
