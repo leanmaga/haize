@@ -3,6 +3,7 @@
 // LOGO PATH CORREGIDO - REEMPLAZA COMPLETAMENTE
 // =============================================================================
 
+import { basicTestEmailTemplate } from './message-email-templates';
 import nodemailer from 'nodemailer';
 
 // Función para obtener la URL base normalizada
@@ -12,10 +13,7 @@ function getBaseUrl() {
 }
 
 // ✅ FUNCIÓN PARA OBTENER URL DEL LOGO CORREGIDA
-function getLogoUrl() {
-  const baseUrl = getBaseUrl();
-  return `${baseUrl}/images/instagram.jpg`; // ← CORREGIDO: minúscula
-}
+function getLogoUrl() { return 'https://www.haize.com.ar/haizelogo.png'; }
 
 // ✅ FUNCIÓN PRINCIPAL PARA CREAR TRANSPORTADOR
 export async function createEmailTransporter() {
@@ -256,130 +254,7 @@ export async function sendTestEmail(testEmail) {
     const emailData = {
       to: testEmail,
       subject: '🧪 Test de Email - HAIZE',
-      html: `
-        <!DOCTYPE html>
-        <html lang="es">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Test de Email</title>
-          <style>
-            body { 
-              margin: 0; 
-              padding: 0; 
-              font-family: Arial, sans-serif; 
-              color: #1a1a1a; 
-              background-color: #f7f7f7; 
-            }
-            .container { 
-              max-width: 600px; 
-              margin: 0 auto; 
-              background-color: #ffffff; 
-            }
-            .header { 
-              padding: 40px 30px; 
-              text-align: center; 
-              border-bottom: 1px solid #e5e5e5; 
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            }
-            .logo {
-              width: 120px;
-              height: 120px;
-              border-radius: 50%;
-              object-fit: cover;
-              border: 4px solid white;
-              box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-              display: block;
-              margin: 0 auto;
-            }
-            .content { 
-              padding: 40px 30px; 
-            }
-            .success-badge {
-              background: #10b981;
-              color: white;
-              padding: 8px 16px;
-              border-radius: 20px;
-              font-size: 14px;
-              font-weight: 600;
-              display: inline-block;
-              margin: 20px 0;
-            }
-            .debug-info {
-              background: #e0f2fe;
-              border: 1px solid #81d4fa;
-              padding: 15px;
-              border-radius: 8px;
-              margin: 20px 0;
-              font-size: 12px;
-              color: #0277bd;
-            }
-            .footer { 
-              padding: 30px; 
-              text-align: center; 
-              background-color: #f7f7f7; 
-              border-top: 1px solid #e5e5e5; 
-            }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <img src="${logoUrl}" alt="HAIZE Logo" class="logo">
-              <h1 style="color: white; margin: 20px 0 0 0;">HAIZE</h1>
-            </div>
-            <div class="content">
-              <h1 style="margin: 0; font-size: 24px; font-weight: 600; color: #000000; text-align: center;">
-                🧪 TEST DE EMAIL EXITOSO
-              </h1>
-              
-              <div style="text-align: center;">
-                <span class="success-badge">✅ Sistema de Email Funcionando</span>
-              </div>
-              
-              <p style="text-align: center; color: #666666; font-size: 16px; line-height: 24px;">
-                ¡Excelente! El sistema de emails de HAIZE está funcionando correctamente.
-              </p>
-              
-              <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <h3 style="margin: 0 0 10px 0; color: #374151;">Detalles del Test:</h3>
-                <ul style="margin: 0; padding-left: 20px; color: #6b7280;">
-                  <li>📧 Email enviado a: <strong>${testEmail}</strong></li>
-                  <li>⏰ Fecha: <strong>${new Date().toLocaleString(
-                    'es-AR'
-                  )}</strong></li>
-                  <li>🌐 Entorno: <strong>${
-                    process.env.NODE_ENV || 'desarrollo'
-                  }</strong></li>
-                  <li>🚀 Estado: <strong>Email system operational</strong></li>
-                </ul>
-              </div>
-
-              <div class="debug-info">
-                <h4 style="margin: 0 0 10px 0;">🔧 Debug del Logo:</h4>
-                <p style="margin: 5px 0;"><strong>URL del logo:</strong> ${logoUrl}</p>
-                <p style="margin: 5px 0;"><strong>Archivo esperado:</strong> public/images/instagram.jpg</p>
-                <p style="margin: 5px 0;"><strong>Base URL:</strong> ${baseUrl}</p>
-                <p style="margin: 5px 0;"><strong>¿Logo visible?</strong> Si ves el logo arriba, funciona ✅</p>
-              </div>
-              
-              <p style="text-align: center; color: #666666; font-size: 14px; line-height: 20px;">
-                Este es un email de prueba. Si lo recibiste correctamente, 
-                significa que la configuración está funcionando perfectamente.
-              </p>
-            </div>
-            <div class="footer">
-              <p style="margin: 0; font-size: 14px; color: #999999;">
-                © ${new Date().getFullYear()} HAIZE. Todos los derechos reservados.
-              </p>
-              <p style="margin: 0; font-size: 12px; color: #999999; margin-top: 5px;">
-                📧 Sistema de emails | 🧪 Test automatizado
-              </p>
-            </div>
-          </div>
-        </body>
-        </html>
-      `,
+      html: basicTestEmailTemplate(),
     };
 
     const result = await sendEmailWithRetry(emailData);

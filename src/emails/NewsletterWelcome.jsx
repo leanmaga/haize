@@ -6,12 +6,13 @@ export default function NewsletterWelcome({ discountCode, email }) {
     <div
       style={{
         fontFamily:
-          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          "'Nexa', 'Sora', Arial, sans-serif",
         maxWidth: '600px',
         margin: '0 auto',
         backgroundColor: '#ffffff',
       }}
     >
+      <style>{`@font-face{font-family:Nexa;src:url('https://www.haize.com.ar/fonts/Nexa/NexaRegular.otf') format('opentype');font-weight:400}@font-face{font-family:Nexa;src:url('https://www.haize.com.ar/fonts/Nexa/NexaBold.otf') format('opentype');font-weight:700}`}</style>
       {/* Header */}
       <div
         style={{
@@ -235,7 +236,7 @@ export default function NewsletterWelcome({ discountCode, email }) {
             margin: '10px 0',
           }}
         >
-          © 2025 HAIZE. Todos los derechos reservados.
+          © 2026 HAIZE. Todos los derechos reservados.
         </p>
         <a
           href={`${

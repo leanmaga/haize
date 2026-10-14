@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useCartStore } from '@/lib/store';
 import { toast } from 'react-hot-toast';
+import { ShoppingCart } from 'lucide-react';
 
 /**
  * AddToCartButton actualizado para variantes combinadas
@@ -354,19 +355,7 @@ export default function AddToCartButton({
           </>
         ) : (
           <>
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h8m-8 0V9"
-              />
-            </svg>
+            <ShoppingCart className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
             Agregar al carrito
           </>
         )}

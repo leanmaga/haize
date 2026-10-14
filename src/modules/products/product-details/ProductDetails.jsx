@@ -8,7 +8,8 @@ import RelatedProducts from '@/components/product/RelatedProducts';
 import ProductImageSlider from '@/components/product/ProductImageSlider';
 import VariantSelector from '@/components/product/VariantSelector';
 import SameDayShipping from './components/SameDayShipping';
-import SizeGuideTable from '@/components/product/SizeGuideTable';
+import CoverageMap from './components/CoverageMap';
+import ProductSizeGuideTable from '@/components/product/CategorySizeGuide';
 
 export default async function ProductDetails({ params }) {
   // Extract id from params
@@ -192,23 +193,6 @@ export default async function ProductDetails({ params }) {
             </p>
           </div>
 
-          {/* Stock info */}
-          <div className="mb-6">
-            {product.stock > 5 ? (
-              <div className="inline-flex items-center px-3 py-1.5 rounded text-sm font-medium bg-green-100 text-green-700">
-                ✓ En stock - {product.stock} unidades disponibles
-              </div>
-            ) : product.stock > 0 ? (
-              <div className="inline-flex items-center px-3 py-1.5 rounded text-sm font-medium bg-gray-100 text-gray-700">
-                ⚠ Quedan pocas unidades - {product.stock} disponibles
-              </div>
-            ) : (
-              <div className="inline-flex items-center px-3 py-1.5 rounded text-sm font-medium bg-red-100 text-red-700">
-                ✕ Agotado
-              </div>
-            )}
-          </div>
-
           {/* SELECTOR DE VARIANTES - NUEVO COMPONENTE */}
           <VariantSelector product={product} />
 
@@ -248,7 +232,10 @@ export default async function ProductDetails({ params }) {
                 </svg>
               </summary>
               <div className="pb-5">
-                <SizeGuideTable category={product.category} />
+                <ProductSizeGuideTable
+                  sizeGuide={product.sizeGuide}
+                  category={product.category}
+                />
               </div>
             </details>
 
@@ -295,7 +282,6 @@ export default async function ProductDetails({ params }) {
                       product.category.slice(1)}
                   </li>
                   {product.material && <li>Material: {product.material}</li>}
-                  {product.brand && <li>Marca: {product.brand}</li>}
                   {product.origin && <li>Origen: {product.origin}</li>}
                   {product.composition && product.composition.length > 0 && (
                     <li>Composición: {product.composition.join(', ')}</li>
@@ -390,11 +376,12 @@ export default async function ProductDetails({ params }) {
               </summary>
               <div className="pb-5 text-sm text-gray-600 leading-relaxed space-y-2">
                 <p>
-                  <strong>Tiempo de entrega:</strong> Máximo 24 horas en CABA
+                  <strong>Tiempo de entrega:</strong> Same Day en zonas seleccionadas
                 </p>
                 <p>
                   <strong>Zonas de cobertura:</strong> Envios a todo el país.
                 </p>
+                <CoverageMap />
               </div>
             </details>
 

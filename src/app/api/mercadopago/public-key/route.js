@@ -2,25 +2,31 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import MercadoPagoConfig from '@/models/MercadoPagoConfig';
+import { getMercadoPagoConfig } from '@/lib/config';
 
 export async function GET() {
   try {
+    const isDevelopment =
+      process.env.VERCEL_ENV === 'preview' ||
+      process.env.VERCEL_ENV === 'development' ||
+      process.env.NODE_ENV === 'development';
+
+    if (isDevelopment) {
+      const { publicKey } = getMercadoPagoConfig();
+      if (publicKey) {
+        return NextResponse.json({
+          publicKey,
+          source: 'env_development',
+          isProduction: false,
+        });
+      }
+    }
+
     await connectDB();
 
     const config = await MercadoPagoConfig.getActiveConfig();
 
     if (!config || !config.publicKey) {
-      // Fallback SOLO para desarrollo local
-      if (
-        process.env.NODE_ENV === 'development' &&
-        process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY
-      ) {
-        return NextResponse.json({
-          publicKey: process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY,
-          source: 'env_fallback',
-        });
-      }
-
       return NextResponse.json(
         {
           error: 'No hay configuración de MercadoPago activa',

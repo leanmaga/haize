@@ -3,10 +3,13 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import connectDB from '@/lib/db';
-import mongoose from 'mongoose';
 import Order from '@/models/Order';
+import { normalizeShippingAddress } from '@/lib/shipping-address';
+import { rememberShipping } from '@/lib/saved-shipping';
 import User from '@/models/User';
 import { createPaymentPreference } from '@/lib/mercadopago';
+import { calculateTrustedOrder, OrderPricingError } from '@/lib/order-pricing';
+import { calculateShipping } from '@/lib/shipping-pricing';
 import {
   sendOrderConfirmationToCustomer,
   sendNewOrderNotificationToAdmin,
@@ -52,6 +55,14 @@ export async function POST(request) {
       return NextResponse.json({ message: 'No autorizado' }, { status: 401 });
     }
 
+    const orderData = await request.json();
+    try {
+      orderData.shippingInfo = normalizeShippingAddress(orderData.shippingInfo);
+      if (!/^(\d{8,12}|caba)$/.test(orderData.shippingInfo.localityId || '')) throw new Error('Seleccioná una localidad válida del municipio');
+    } catch (error) {
+      return NextResponse.json({ message: error.message }, { status: 400 });
+    }
+
     // Conectar a la base de datos
     await connectDB();
 
@@ -65,7 +76,6 @@ export async function POST(request) {
     }
 
     // Obtener datos del body
-    const orderData = await request.json();
 
     console.log('📦 OrderData recibido:', {
       itemsCount: orderData.items?.length,
@@ -84,28 +94,42 @@ export async function POST(request) {
       );
     }
 
-    // Limpiar y validar cada item
-    orderData.items = orderData.items.map((item, index) => {
-      const cleanProductId = extractProductId(item.product);
+    // Resolver primero la idempotencia permite reutilizar de forma segura un
+    // cupón de un solo uso que ya quedó asociado a esta misma orden.
+    const idempotentOrder = orderData.idempotencyKey
+      ? await Order.findOne({
+          idempotencyKey: orderData.idempotencyKey,
+          user: user._id,
+        })
+      : null;
 
-      if (!isValidObjectId(cleanProductId)) {
-        console.error(`❌ ProductId inválido en item ${index}:`, {
-          original: item.product,
-          cleaned: cleanProductId,
-          title: item.title,
-        });
-        throw new Error(`ProductId inválido en item: ${item.title || index}`);
-      }
-
-      console.log(`✅ ProductId validado para ${item.title}:`, {
-        original: item.product,
-        cleaned: cleanProductId,
-      });
-
-      return {
-        ...item,
-        product: cleanProductId, // Usar el productId limpio
-      };
+    // El cliente solo identifica productos, cantidades, variantes y el código
+    // del cupón. Todos los importes y datos visibles se reconstruyen desde DB.
+    const trustedPricing = await calculateTrustedOrder({
+      items: orderData.items,
+      couponCode: orderData.appliedCoupon?.code || orderData.couponCode,
+      userId: user._id,
+      currentOrderId: idempotentOrder?._id,
+    });
+    let shipping;
+    try {
+      shipping = await calculateShipping(orderData.shippingInfo.city, undefined, orderData.shippingInfo.municipalityId, undefined, orderData.shippingInfo.localityId);
+    } catch (error) {
+      return NextResponse.json({ message: error.message }, { status: 400 });
+    }
+    orderData.shippingInfo.city = shipping.city;
+    orderData.shippingInfo.municipalityId = shipping.municipalityId;
+    orderData.shippingInfo.localityId = shipping.localityId;
+    orderData.shippingInfo.locality = shipping.locality;
+    Object.assign(orderData, {
+      items: trustedPricing.items,
+      subtotal: trustedPricing.subtotal,
+      discountAmount: trustedPricing.discountAmount,
+      totalAmount: trustedPricing.totalAmount + shipping.shippingCost,
+      shippingCost: shipping.shippingCost,
+      shippingQuoted: shipping.quoted,
+      deliveryZone: shipping.deliveryZone,
+      appliedCoupon: trustedPricing.appliedCoupon,
     });
     // ============================================================
 
@@ -129,15 +153,44 @@ export async function POST(request) {
 
     // Verificar si existe una clave de idempotencia
     if (orderData.idempotencyKey) {
-      const existingOrder = await Order.findOne({
-        idempotencyKey: orderData.idempotencyKey,
-      });
+      const existingOrder = idempotentOrder;
 
       if (existingOrder) {
+        if (['pagado', 'enviado', 'entregado'].includes(existingOrder.status)) {
+          return NextResponse.json(
+            { message: 'Esta orden ya fue pagada. Iniciá una compra nueva.' },
+            { status: 409 },
+          );
+        }
+        const existingPricing = await calculateTrustedOrder({
+          items: existingOrder.items,
+          couponCode: existingOrder.appliedCoupon?.code,
+          userId: user._id,
+          currentOrderId: existingOrder._id,
+        });
+        const existingShipping = await calculateShipping(existingOrder.shippingInfo.city, undefined, existingOrder.shippingInfo.municipalityId, undefined, existingOrder.shippingInfo.localityId);
+        existingOrder.shippingInfo.city = existingShipping.city;
+        existingOrder.shippingInfo.municipalityId = existingShipping.municipalityId;
+        existingOrder.items = existingPricing.items;
+        existingOrder.subtotal = existingPricing.subtotal;
+        existingOrder.discountAmount = existingPricing.discountAmount;
+        existingOrder.shippingCost = existingShipping.shippingCost;
+        existingOrder.shippingQuoted = existingShipping.quoted;
+        existingOrder.deliveryZone = existingShipping.deliveryZone;
+        existingOrder.totalAmount = existingPricing.totalAmount + existingShipping.shippingCost;
+        existingOrder.appliedCoupon = existingPricing.appliedCoupon;
+        await existingOrder.save();
+        // A retry uses the same delivery information as the existing order.
+        await rememberShipping(user, { ...orderData, shippingInfo: existingOrder.shippingInfo });
         if (orderData.paymentMethod === 'mercadopago') {
           try {
             const preferenceResponse =
               await createPaymentPreference(existingOrder);
+
+            if (existingOrder.status === 'cancelado') {
+              existingOrder.status = 'pendiente';
+              await existingOrder.save();
+            }
 
             return NextResponse.json({
               message: 'Orden existente recuperada',
@@ -150,6 +203,10 @@ export async function POST(request) {
             });
           } catch (mpError) {
             console.error('Error al recrear preferencia:', mpError);
+            return NextResponse.json(
+              { message: `Error al crear preferencia de pago: ${mpError.message}` },
+              { status: 502 },
+            );
           }
         } else if (orderData.paymentMethod === 'whatsapp') {
           return NextResponse.json({
@@ -195,6 +252,12 @@ export async function POST(request) {
 
     if (recentPendingOrder) {
       recentPendingOrder.items = orderData.items;
+      recentPendingOrder.subtotal = orderData.subtotal;
+      recentPendingOrder.discountAmount = orderData.discountAmount;
+      recentPendingOrder.appliedCoupon = orderData.appliedCoupon;
+      recentPendingOrder.shippingCost = orderData.shippingCost;
+      recentPendingOrder.shippingQuoted = orderData.shippingQuoted;
+      recentPendingOrder.deliveryZone = orderData.deliveryZone;
       recentPendingOrder.totalAmount = orderData.totalAmount;
       recentPendingOrder.shippingInfo = orderData.shippingInfo;
       recentPendingOrder.paymentMethod = orderData.paymentMethod;
@@ -209,6 +272,7 @@ export async function POST(request) {
       }
 
       await recentPendingOrder.save();
+      await rememberShipping(user, orderData);
 
       if (orderData.paymentMethod === 'mercadopago') {
         try {
@@ -272,7 +336,7 @@ export async function POST(request) {
 
     // ========== VALIDAR TOTAL AMOUNT ==========
     if (!orderData.totalAmount || orderData.totalAmount === 0) {
-      orderData.totalAmount = orderData.subtotal - orderData.discountAmount;
+      orderData.totalAmount = orderData.subtotal - orderData.discountAmount + orderData.shippingCost;
     }
     // ==================================================
 
@@ -297,6 +361,9 @@ export async function POST(request) {
       items: orderData.items,
       subtotal: orderData.subtotal,
       discountAmount: orderData.discountAmount || 0,
+      shippingCost: orderData.shippingCost,
+      shippingQuoted: orderData.shippingQuoted,
+      deliveryZone: orderData.deliveryZone,
       appliedCoupon: orderData.appliedCoupon || null,
       totalAmount: orderData.totalAmount,
       paymentMethod: orderData.paymentMethod,
@@ -310,13 +377,13 @@ export async function POST(request) {
     });
 
     await order.save();
+    await rememberShipping(user, orderData);
     console.log('✅ Orden guardada exitosamente:', order._id);
 
     // Si hay cupón, registrar su uso DESPUÉS de crear la orden
     if (orderData.appliedCoupon && orderData.appliedCoupon.code) {
       try {
-        const Coupon = mongoose.model('Coupon');
-        const coupon = await Coupon.findByCode(orderData.appliedCoupon.code);
+        const coupon = trustedPricing.coupon;
 
         if (coupon) {
           await coupon.recordUsage(
@@ -344,7 +411,7 @@ export async function POST(request) {
 
     try {
       // Email de confirmación al cliente
-      const customerEmailResult = await sendOrderConfirmationToCustomer(
+      const customerEmailResult = order.paymentMethod !== 'mercadopago' && await sendOrderConfirmationToCustomer(
         order,
         user,
       );
@@ -405,6 +472,9 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error('Error al crear la orden:', error);
+    if (error instanceof OrderPricingError) {
+      return NextResponse.json({ message: error.message }, { status: error.status });
+    }
     return NextResponse.json(
       { message: `Error al crear la orden: ${error.message}` },
       { status: 500 },

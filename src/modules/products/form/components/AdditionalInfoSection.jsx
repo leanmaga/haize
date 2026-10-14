@@ -66,22 +66,6 @@ const AdditionalInfoSection = ({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label
-                htmlFor="brand"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Marca
-              </label>
-              <input
-                type="text"
-                id="brand"
-                placeholder="Ej: Nike, Adidas..."
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-                {...register('brand')}
-              />
-            </div>
-
-            <div>
-              <label
                 htmlFor="material"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >

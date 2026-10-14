@@ -1,6 +1,7 @@
 // src/lib/stock-utils.js
 import connectDB from '@/lib/db';
 import Product from '@/models/Product';
+import { syncProductStockToMercadoLibre } from '@/lib/mercadolibre';
 
 /**
  * Reduce el stock de los productos en una orden
@@ -16,6 +17,7 @@ export async function reduceStockForOrder(order) {
     success: true,
     updated: [],
     errors: [],
+    syncErrors: [],
   };
 
   console.log(`[STOCK] Reduciendo stock para orden ${order._id}`);
@@ -235,6 +237,21 @@ export async function reduceStockForOrder(order) {
       // Guardar cambios en el producto
       if (stockReduced) {
         await product.save();
+
+        // La orden pertenece a Haize: después de persistir el inventario local,
+        // reflejar el total o la variante correspondiente en Mercado Libre.
+        // Un error remoto no invalida una venta ya cobrada; queda registrado para
+        // poder reintentar la sincronización sin duplicar el descuento local.
+        try {
+          await syncProductStockToMercadoLibre(product);
+        } catch (syncError) {
+          console.error('[MERCADOLIBRE] No se pudo sincronizar stock:', syncError.message);
+          results.syncErrors.push({
+            productId: product._id,
+            title: product.title,
+            error: syncError.message,
+          });
+        }
 
         results.updated.push({
           productId: product._id,

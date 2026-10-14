@@ -129,10 +129,6 @@ const ProductCard = ({ product }) => {
           </Link>
         </h3>
 
-        <p className="text-gray-600 mb-6 leading-relaxed">
-          {product.description}
-        </p>
-
         {/* Precio y descuento */}
         <div className="flex items-end justify-between mb-8">
           <div className="price-container">

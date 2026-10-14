@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { checkMercadoPagoStatus } from '@/lib/mercadopago';
+import { getMercadoPagoConfig } from '@/lib/config';
 
 export async function GET() {
   try {
@@ -13,10 +14,10 @@ export async function GET() {
     }
 
     // Verificar variables de entorno
+    const mpEnvConfig = getMercadoPagoConfig();
     const envCheck = {
-      NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY:
-        !!process.env.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY,
-      MERCADOPAGO_ACCESS_TOKEN: !!process.env.MERCADOPAGO_ACCESS_TOKEN,
+      NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY: !!mpEnvConfig.publicKey,
+      MERCADOPAGO_ACCESS_TOKEN: !!mpEnvConfig.accessToken,
       MERCADOPAGO_CLIENT_ID: !!process.env.MERCADOPAGO_CLIENT_ID,
       MERCADOPAGO_CLIENT_SECRET: !!process.env.MERCADOPAGO_CLIENT_SECRET,
       NEXT_PUBLIC_BASE_URL: !!process.env.NEXT_PUBLIC_BASE_URL,
@@ -86,7 +87,7 @@ export async function GET() {
     const result = {
       success: errors.length === 0,
       score: `${totalScore}/${maxScore}`,
-      environment: process.env.NODE_ENV,
+      environment: process.env.VERCEL_ENV || process.env.NODE_ENV,
 
       configuration: {
         environment: envCheck,

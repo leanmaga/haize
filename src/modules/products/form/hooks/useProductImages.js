@@ -6,16 +6,30 @@ import { useState } from 'react';
  * @returns {Object} - Estados y funciones para manejar imágenes
  */
 export const useProductImages = (product = null) => {
+  // Los productos existentes usan dos formatos históricos: `imageUrl`/`url`
+  // y, en algunos casos, un array `images`. Normalizamos al formato del form.
+  const getImageUrl = (image) => {
+    if (typeof image === 'string') return image;
+    return image?.imageUrl || image?.url || '';
+  };
+
+  const legacyImages = product?.images || [];
+  const legacyPrimary = legacyImages.find((image) => image?.isPrimary);
+
   // Estado para imagen principal
-  const [mainImageUrl, setMainImageUrl] = useState(product?.imageUrl || '');
+  const [mainImageUrl, setMainImageUrl] = useState(
+    product?.imageUrl || getImageUrl(legacyPrimary) || getImageUrl(legacyImages[0]),
+  );
   const [mainImageInfo, setMainImageInfo] = useState(null);
 
   // Estado para imágenes adicionales
   const [additionalImages, setAdditionalImages] = useState(
     product?.additionalImages?.map((img) => ({
-      imageUrl: img.imageUrl,
+      imageUrl: getImageUrl(img),
       description: img.description || '',
       color: img.color || '',
+      publicId: img.publicId || '',
+      isPrimary: img.isPrimary || false,
       info: null,
     })) || [],
   );
@@ -42,6 +56,8 @@ export const useProductImages = (product = null) => {
       imageUrl,
       description: description || '',
       color: color || '',
+      publicId: '',
+      isPrimary: false,
       info,
     };
     setAdditionalImages((prev) => [...prev, newImage]);
@@ -88,6 +104,8 @@ export const useProductImages = (product = null) => {
       imageUrl: img.imageUrl,
       description: img.description || '',
       color: img.color || '',
+      publicId: img.publicId || undefined,
+      isPrimary: img.isPrimary || false,
       ...(img.info && {
         imageCloudinaryInfo: {
           publicId: img.info.public_id,

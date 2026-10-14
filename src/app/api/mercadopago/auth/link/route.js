@@ -10,9 +10,8 @@ export async function GET() {
       return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
     }
 
-    // Configurar con tu APP_ID de producción
-    const APP_ID =
-      process.env.MERCADOPAGO_APP_ID || process.env.MERCADOPAGO_CLIENT_ID;
+    // El mismo Client ID debe usarse para autorizar e intercambiar el código.
+    const clientId = process.env.MERCADOPAGO_CLIENT_ID;
 
     // Obtener URL base con fallbacks y ELIMINAR slash final
     const baseUrl = (
@@ -25,8 +24,8 @@ export async function GET() {
     const REDIRECT_URI = `${baseUrl}/api/mercadopago/auth/callback`;
 
     // Validar que tenemos las credenciales necesarias
-    if (!APP_ID) {
-      console.error('Falta MERCADOPAGO_APP_ID en las variables de entorno');
+    if (!clientId) {
+      console.error('Falta MERCADOPAGO_CLIENT_ID en las variables de entorno');
       return NextResponse.json(
         {
           error:
@@ -38,7 +37,7 @@ export async function GET() {
 
     // Crear URL de autorización OAuth2
     const authUrl = new URL('https://auth.mercadopago.com.ar/authorization');
-    authUrl.searchParams.append('client_id', APP_ID);
+    authUrl.searchParams.append('client_id', clientId);
     authUrl.searchParams.append('response_type', 'code');
     authUrl.searchParams.append('platform_id', 'mp');
     authUrl.searchParams.append('redirect_uri', REDIRECT_URI);

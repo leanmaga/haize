@@ -3,8 +3,11 @@ import { v2 as cloudinary } from 'cloudinary';
 
 // Configurar Cloudinary
 cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+  cloud_name:
+    process.env.CLOUDINARY_CLOUD_NAME ||
+    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key:
+    process.env.CLOUDINARY_API_KEY || process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
@@ -37,6 +40,7 @@ export const uploadImage = async (file) => {
 
 // Función para eliminar imágenes
 export const deleteImage = async (publicId) => {
+  if (!publicId) return { success: false };
   try {
     const result = await cloudinary.uploader.destroy(publicId);
     return { success: result.result === 'ok' };

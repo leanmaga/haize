@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import CopyButton from '@/shared/components/CopyButton';
 import OrderStatusUpdate from '@/components/admin/OrderStatusUpdate';
+import { shippingAddressLines } from '@/lib/shipping-address';
 
 export default function OrderDetailsAdmin({ order, statusStyle }) {
   const formatDate = (dateString) => {
@@ -32,7 +33,7 @@ export default function OrderDetailsAdmin({ order, statusStyle }) {
   };
 
   const customerInfoText = order.shippingInfo
-    ? `Nombre: ${order.shippingInfo.name}\nEmail: ${order.shippingInfo.email}\nTeléfono: ${order.shippingInfo.phone}\nDirección: ${order.shippingInfo.address}, ${order.shippingInfo.city}, ${order.shippingInfo.state || ''} ${order.shippingInfo.zipCode || ''}`
+    ? `Nombre: ${order.shippingInfo.name}\nEmail: ${order.shippingInfo.email}\nTeléfono: ${order.shippingInfo.phone}\nDirección: ${shippingAddressLines(order.shippingInfo).join('\n')}`
     : 'No hay información de cliente disponible';
 
   return (
@@ -134,12 +135,28 @@ export default function OrderDetailsAdmin({ order, statusStyle }) {
 
             {/* Total */}
             <div className="px-6 py-4 bg-white border-t border-gray-200">
+              <div className="flex justify-between items-center mb-2 text-sm text-gray-600">
+                <span>Subtotal:</span>
+                <span>${(order.subtotal ?? order.totalAmount).toLocaleString('es-AR', { minimumFractionDigits: 2 })}</span>
+              </div>
+              {order.discountAmount > 0 && (
+                <div className="flex justify-between items-center mb-2 text-sm text-gray-700">
+                  <span>
+                    Descuento{order.appliedCoupon?.code ? ` (${order.appliedCoupon.code})` : ''}:
+                  </span>
+                  <span>−${order.discountAmount.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</span>
+                </div>
+              )}
+              <div className="flex justify-between items-center mb-2 text-sm text-gray-600">
+                <span>Envío:</span>
+                <span>{order.shippingQuoted || order.shippingCost > 0 ? order.shippingCost ? `$${order.shippingCost.toLocaleString('es-AR', { minimumFractionDigits: 2 })}` : 'Gratis' : 'Por coordinar'}</span>
+              </div>
               <div className="flex justify-between items-center">
                 <span className="text-lg font-nexa-bold text-gray-900">
                   Total:
                 </span>
                 <span className="text-lg font-bold text-gray-900">
-                  ${order.totalAmount}
+                  ${order.totalAmount.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
                 </span>
               </div>
             </div>
@@ -226,14 +243,11 @@ export default function OrderDetailsAdmin({ order, statusStyle }) {
                       Dirección:
                     </span>
                     <p className="text-sm text-gray-900">
-                      {order.shippingInfo.address}
-                      <br />
-                      {order.shippingInfo.city}, {order.shippingInfo.state}{' '}
-                      {order.shippingInfo.zipCode}
+                      {shippingAddressLines(order.shippingInfo).map((line, index) => <span key={index} className="block">{line}</span>)}
                     </p>
                   </div>
                   <CopyButton
-                    text={`${order.shippingInfo.address}, ${order.shippingInfo.city}, ${order.shippingInfo.state || ''} ${order.shippingInfo.zipCode || ''}`}
+                    text={shippingAddressLines(order.shippingInfo).join('\n')}
                     className="border-none rounded-none shadow-none p-0"
                   />
                 </div>

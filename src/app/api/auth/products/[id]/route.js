@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import Product from '@/models/Product';
+import { categoryExists } from '@/lib/categories';
 import { authOptions } from '@/lib/auth';
 import { getServerSession } from 'next-auth/next';
 import { uploadImage, deleteImage } from '@/lib/cloudinary';
@@ -8,7 +9,7 @@ import { uploadImage, deleteImage } from '@/lib/cloudinary';
 // GET - Obtener un producto por ID
 export async function GET(request, { params }) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     await connectDB();
 
@@ -57,7 +58,7 @@ export async function PUT(request, { params }) {
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Obtener los datos - puede ser formData o JSON
     let updateData;
@@ -82,6 +83,7 @@ export async function PUT(request, { params }) {
     await connectDB();
 
     // Buscar el producto existente
+    if (updateData.category !== undefined && !(await categoryExists(updateData.category))) return NextResponse.json({ error: 'Categoría no válida' }, { status: 400 });
     const product = await Product.findById(id);
 
     if (!product) {
@@ -126,7 +128,6 @@ export async function PUT(request, { params }) {
     }
 
     // Actualizar campos para indumentaria
-    if (updateData.gender !== undefined) product.gender = updateData.gender;
     if (updateData.material !== undefined)
       product.material = updateData.material;
     if (updateData.style !== undefined) product.style = updateData.style;
@@ -202,7 +203,7 @@ export async function DELETE(request, { params }) {
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     await connectDB();
 

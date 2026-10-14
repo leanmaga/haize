@@ -39,6 +39,11 @@ const AdminSidebar = () => {
       href: '/admin/products',
       submenu: [
         {
+          title: 'Zonas de entrega',
+          icon: RectangleStackIcon,
+          href: '/admin/delivery-zones',
+        },
+        {
           title: 'Agregar',
           icon: PlusCircleIcon,
           href: '/admin/products/add',
@@ -86,6 +91,11 @@ const AdminSidebar = () => {
           href: '/admin/coupons',
         },
       ],
+    },
+    {
+      title: 'Mercado Libre',
+      icon: BanknotesIcon,
+      href: '/admin/settings/integrations/mercado-libre',
     },
     // ====================================
     {

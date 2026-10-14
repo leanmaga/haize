@@ -1,3 +1,4 @@
+import { contactNotificationTemplate } from '@/lib/message-email-templates';
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import Contact from '@/models/Contact';
@@ -82,79 +83,7 @@ export async function POST(request) {
           from: 'HAIZE <noreply@haize.com.ar>',
           to: [NOTIFICATION_EMAIL],
           subject: `Nueva consulta de ${nombreApellido} - ${contactData.motivo}`,
-          html: `
-            <!DOCTYPE html>
-            <html>
-            <head>
-              <meta charset="utf-8">
-              <style>
-                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
-                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background: #000; color: #fff; padding: 30px; text-align: center; }
-                .header h1 { margin: 0; font-size: 24px; letter-spacing: 2px; }
-                .content { padding: 30px; background: #f9f9f9; }
-                .field { margin-bottom: 20px; }
-                .label { font-size: 12px; text-transform: uppercase; color: #666; margin-bottom: 5px; }
-                .value { font-size: 16px; color: #000; }
-                .comments { background: #fff; padding: 15px; border-left: 3px solid #000; margin-top: 20px; }
-                .footer { padding: 20px; text-align: center; font-size: 12px; color: #666; }
-                .badge { display: inline-block; background: #000; color: #fff; padding: 5px 15px; font-size: 12px; border-radius: 20px; }
-              </style>
-            </head>
-            <body>
-              <div class="container">
-                <div class="header">
-                  <h1>HAIZE</h1>
-                  <p style="margin: 10px 0 0; font-size: 14px;">Nueva consulta recibida</p>
-                </div>
-                
-                <div class="content">
-                  <div style="margin-bottom: 25px;">
-                    <span class="badge">${contactData.motivo}</span>
-                  </div>
-                  
-                  <div class="field">
-                    <div class="label">Nombre y Apellido</div>
-                    <div class="value">${nombreApellido}</div>
-                  </div>
-                  
-                  <div class="field">
-                    <div class="label">Email</div>
-                    <div class="value"><a href="mailto:${email}" style="color: #000;">${email}</a></div>
-                  </div>
-                  
-                  <div class="field">
-                    <div class="label">Teléfono</div>
-                    <div class="value"><a href="tel:${telefono}" style="color: #000;">${telefono}</a></div>
-                  </div>
-                  
-                  <div class="field">
-                    <div class="label">Ubicación</div>
-                    <div class="value">${localidad}, ${pais}</div>
-                  </div>
-                  
-                  ${
-                    comentarios
-                      ? `
-                  <div class="comments">
-                    <div class="label">Comentarios</div>
-                    <div class="value" style="white-space: pre-wrap;">${comentarios}</div>
-                  </div>
-                  `
-                      : ''
-                  }
-                </div>
-                
-                <div class="footer">
-                  <p>Este mensaje fue enviado desde el formulario de contacto de HAIZE</p>
-                  <p>${new Date().toLocaleString('es-AR', {
-                    timeZone: 'America/Argentina/Buenos_Aires',
-                  })}</p>
-                </div>
-              </div>
-            </body>
-            </html>
-          `,
+          html: contactNotificationTemplate(contactData),
         });
       } catch (emailError) {
         console.error(

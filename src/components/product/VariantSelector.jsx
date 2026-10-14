@@ -252,53 +252,12 @@ export default function VariantSelector({ product }) {
           )}
         </div>
 
-        {/* ========== INFORMACIÓN DE STOCK DE LA VARIANTE SELECCIONADA ========== */}
-        {selectedVariant && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <svg
-                  className="w-5 h-5 text-green-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <span className="text-sm font-medium text-green-800">
-                  Disponible
-                </span>
-              </div>
-              <span className="text-sm text-green-700">
-                <strong>{selectedVariant.stock}</strong>{' '}
-                {selectedVariant.stock === 1 ? 'unidad' : 'unidades'}
-              </span>
-            </div>
-
-            {/* Información adicional */}
-            <div className="mt-2 text-xs text-green-700">
-              Talle <strong>{selectedVariant.size}</strong> · Color{' '}
-              <strong>{selectedVariant.color}</strong>
-              {selectedVariant.sku && (
-                <span className="ml-2 text-green-600">
-                  SKU: {selectedVariant.sku}
-                </span>
-              )}
-            </div>
-          </div>
-        )}
-
         {/* ========== MENSAJE DE VALIDACIÓN ========== */}
         {(!selectedSize || !selectedColor) && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <div className="bg-white border border-gray-200 rounded-md p-4">
             <div className="flex items-start gap-2">
               <svg
-                className="w-5 h-5 text-yellow-600 shrink-0 mt-0.5"
+                className="w-5 h-5 text-black shrink-0 mt-0.5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -310,9 +269,9 @@ export default function VariantSelector({ product }) {
                   d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                 />
               </svg>
-              <div className="text-sm text-yellow-800">
+              <div className="text-sm text-gray-900">
                 <p className="font-medium mb-1">Selección requerida</p>
-                <p className="text-yellow-700">
+                <p className="text-gray-600">
                   Debés seleccionar un talle y un color para agregar el producto
                   al carrito
                 </p>

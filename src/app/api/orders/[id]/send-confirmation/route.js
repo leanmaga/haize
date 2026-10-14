@@ -15,7 +15,7 @@ export async function POST(request, { params }) {
       return NextResponse.json({ message: "No autorizado" }, { status: 401 });
     }
 
-    const orderId = params.id;
+    const { id: orderId } = await params;
 
     if (!orderId) {
       return NextResponse.json(

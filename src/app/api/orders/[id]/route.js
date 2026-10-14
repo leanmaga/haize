@@ -86,7 +86,7 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ message: "No autorizado" }, { status: 403 });
     }
 
-    const orderId = params.id;
+    const { id: orderId } = await params;
     const data = await request.json();
 
     // Conectar a la base de datos

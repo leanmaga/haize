@@ -1,43 +1,26 @@
-// src/app/admin/products/edit/[id]/page.js
-import { notFound } from "next/navigation";
-import { getProductById } from "@/lib/data";
-import ProductForm from "@/modules/products/form/ProductForm";
-import PropTypes from "prop-types";
+'use client';
 
-export async function generateMetadata({ params }) {
-  // Esperar a que params esté resuelto
-  const resolvedParams = await params;
-  const product = await getProductById(resolvedParams.id);
+import { useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import ProductWizard from '@/components/admin/products/ProductWizard';
 
-  if (!product) {
-    return {
-      title: "Producto no encontrado | TiendaOnline",
-    };
-  }
+export default function EditProductPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const params = useParams();
+  const id = Array.isArray(params?.id) ? params.id[0] : params?.id;
 
-  return {
-    title: `Editar ${product.title} | TiendaOnline`,
-  };
+  useEffect(() => {
+    if (status === 'unauthenticated' ||
+      (status === 'authenticated' && session?.user?.role !== 'admin')) {
+      router.replace('/auth/signin?callbackUrl=/admin/products');
+    }
+  }, [status, session, router]);
+
+  if (status === 'loading') return <div className="p-6 text-center">Cargando...</div>;
+
+  if (status !== 'authenticated' || session?.user?.role !== 'admin') return null;
+
+  return id ? <ProductWizard isEdit productId={id} /> : null;
 }
-
-// Validación de props para generateMetadata
-generateMetadata.propTypes = {
-  params: PropTypes.instanceOf(Promise).isRequired,
-};
-
-export default async function EditProductPage({ params }) {
-  // Esperar a que params esté resuelto
-  const resolvedParams = await params;
-  const product = await getProductById(resolvedParams.id);
-
-  if (!product) {
-    notFound();
-  }
-
-  return <ProductForm product={product} />;
-}
-
-// Validación de props para el componente principal
-EditProductPage.propTypes = {
-  params: PropTypes.instanceOf(Promise).isRequired,
-};

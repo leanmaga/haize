@@ -150,7 +150,7 @@ export default function CouponForm({ coupon = null, onSuccess }) {
           } focus:outline-none focus:border-black uppercase ${
             isEditing ? 'bg-gray-100 cursor-not-allowed' : ''
           }`}
-          placeholder="Ej: VERANO2024"
+          placeholder="Ej: VERANO2026"
         />
         {errors.code && (
           <p className="text-red-500 text-sm mt-1">{errors.code}</p>

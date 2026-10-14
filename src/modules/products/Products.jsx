@@ -10,7 +10,7 @@ export default async function ProductsPage({ searchParams }) {
   const category = resolvedSearchParams?.category || 'all';
 
   // Obtener productos con la categoría
-  const { products } = await getProducts({ category });
+  const { products } = await getProducts({ category, publishedOnly: true, limit: 0 });
 
   return <FilterableProducts products={products} />;
 }

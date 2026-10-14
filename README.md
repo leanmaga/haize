@@ -138,6 +138,11 @@ Para desplegar la aplicación en producción:
 2. Obtén tus credenciales (Cloud Name, API Key, API Secret)
 3. Configura las variables de entorno con tus credenciales
 
+## Entorno de staging
+
+Los cambios publicados en la rama `develop` se despliegan en el entorno de
+staging para validación antes de llegar a producción.
+
 ## Contribución
 
 Si deseas contribuir a este proyecto, por favor:

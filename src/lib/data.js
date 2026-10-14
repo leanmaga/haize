@@ -2,6 +2,7 @@ import connectDB from './db';
 import Product from '@/models/Product';
 import User from '@/models/User';
 import Order from '@/models/Order';
+import SizeGuide from '@/models/SizeGuide';
 
 // Función para obtener productos destacados
 export async function getFeaturedProducts() {
@@ -37,12 +38,13 @@ export async function getProducts(options = {}) {
       order = -1,
       limit = 100,
       page = 1,
+      publishedOnly = false,
     } = options;
 
     const skip = (page - 1) * parseInt(limit);
     const sortOptions = { [sort]: order };
 
-    let query = {};
+    let query = publishedOnly ? { isActive: { $ne: false }, isComplete: { $ne: false } } : {};
 
     if (category && category !== 'all') {
       query.category = category;
@@ -60,7 +62,7 @@ export async function getProducts(options = {}) {
       pagination: {
         total,
         page: parseInt(page),
-        pages: Math.ceil(total / parseInt(limit)),
+        pages: parseInt(limit) > 0 ? Math.ceil(total / parseInt(limit)) : 1,
       },
     };
   } catch (error) {
@@ -69,39 +71,39 @@ export async function getProducts(options = {}) {
   }
 }
 
-// Función para obtener un producto por ID
-export async function getProductById(id) {
-  try {
-    await connectDB();
+// // Función para obtener un producto por ID
+// export async function getProductById(id) {
+//   try {
+//     await connectDB();
 
-    // ✅ CAMBIO: Usar .lean() para mejor serialización
-    const product = await Product.findById(id).lean();
+//     // ✅ CAMBIO: Usar .lean() para mejor serialización
+//     const product = await Product.findById(id).lean();
 
-    if (!product) {
-      return null;
-    }
+//     if (!product) {
+//       return null;
+//     }
 
-    // ✅ CAMBIO: Asegurar que variants existe como array
-    if (!product.variants) {
-      product.variants = [];
-    }
+//     // ✅ CAMBIO: Asegurar que variants existe como array
+//     if (!product.variants) {
+//       product.variants = [];
+//     }
 
-    // Asegurar que sizes existe como array (backward compatibility)
-    if (!product.sizes) {
-      product.sizes = [];
-    }
+//     // Asegurar que sizes existe como array (backward compatibility)
+//     if (!product.sizes) {
+//       product.sizes = [];
+//     }
 
-    // Asegurar que colors existe como array (backward compatibility)
-    if (!product.colors) {
-      product.colors = [];
-    }
+//     // Asegurar que colors existe como array (backward compatibility)
+//     if (!product.colors) {
+//       product.colors = [];
+//     }
 
-    return JSON.parse(JSON.stringify(product));
-  } catch (error) {
-    console.error('Error al obtener producto por ID:', error);
-    return null;
-  }
-}
+//     return JSON.parse(JSON.stringify(product));
+//   } catch (error) {
+//     console.error('Error al obtener producto por ID:', error);
+//     return null;
+//   }
+// }
 
 export async function getOrderById(id) {
   try {
@@ -212,5 +214,40 @@ export async function getRelatedProducts(
   } catch (error) {
     console.error('Error al obtener productos relacionados:', error);
     return [];
+  }
+}
+// Función para obtener un producto por ID CON GUÍA DE TALLES
+export async function getProductById(id) {
+  try {
+    await connectDB();
+
+    // ✅ POPULATE sizeGuide para traer medidas completas
+    const product = await Product.findById(id)
+      .populate({ path: 'sizeGuide', model: SizeGuide })
+      .lean();
+
+    if (!product) {
+      return null;
+    }
+
+    // ✅ Asegurar que variants existe como array
+    if (!product.variants) {
+      product.variants = [];
+    }
+
+    // Asegurar que sizes existe como array (backward compatibility)
+    if (!product.sizes) {
+      product.sizes = [];
+    }
+
+    // Asegurar que colors existe como array (backward compatibility)
+    if (!product.colors) {
+      product.colors = [];
+    }
+
+    return JSON.parse(JSON.stringify(product));
+  } catch (error) {
+    console.error('Error al obtener producto por ID:', error);
+    return null;
   }
 }

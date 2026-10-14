@@ -271,12 +271,13 @@ const AdminQuestionsPage = () => {
   // ==================== RENDER FUNCTIONS ====================
 
   const renderSystemStatus = () => {
-    const statusColor = isActiveRef.current ? 'bg-green-500' : 'bg-gray-400';
+    const isRefreshing = isActiveRef.current && Boolean(pollingIntervalRef.current);
+    const statusColor = isRefreshing ? 'bg-black' : 'bg-gray-300';
 
     return (
-      <div className="flex items-center space-x-2 text-sm text-gray-600">
-        <div className={`w-2 h-2 rounded-full ${statusColor}`}></div>
-        <output>{getAutoRefreshStatus()}</output>
+      <div className="flex items-center gap-2 text-xs text-gray-500">
+        <div className={`h-1.5 w-1.5 rounded-full ${statusColor}`}></div>
+        <output>{isRefreshing ? 'Actualización automática activa' : 'Actualización automática pausada'}</output>
       </div>
     );
   };
@@ -395,23 +396,23 @@ const AdminQuestionsPage = () => {
   return (
     <div className="space-y-6">
       {/* Header y Estadísticas */}
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 sm:p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-nexa-bold text-gray-900">
+            <h1 className="text-2xl font-nexa-bold text-gray-950">
               Gestión de Preguntas
             </h1>
-            <p className="text-gray-600 mt-1 text-sm">
+            <p className="text-gray-500 mt-1 text-sm">
               Responde las preguntas de los clientes sobre productos
             </p>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-4">
             {/* Notificación de preguntas pendientes */}
             {stats.pending > 0 && (
-              <div className="bg-orange-50 border border-orange-200 rounded-lg px-4 py-2 flex items-center space-x-2">
-                <BellIcon className="h-5 w-5 text-orange-600" />
-                <span className="text-orange-800 font-medium text-sm">
+              <div className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 flex items-center gap-2">
+                <BellIcon className="h-4 w-4 text-gray-600" />
+                <span className="text-gray-800 font-medium text-sm">
                   {stats.pending} pregunta{stats.pending !== 1 ? 's' : ''}{' '}
                   pendiente{stats.pending !== 1 ? 's' : ''}
                 </span>
@@ -423,24 +424,24 @@ const AdminQuestionsPage = () => {
         </div>
 
         {/* Estadísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-blue-50 p-4 rounded-lg text-center">
-            <div className="text-2xl font-nexa-bold text-blue-600">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+          <div className="bg-gray-50 border border-gray-100 p-4 rounded-lg">
+            <div className="text-2xl font-nexa-bold tabular-nums text-gray-950">
               {stats.total}
             </div>
-            <div className="text-sm text-blue-800">Total Preguntas</div>
+            <div className="text-xs text-gray-500 mt-1">Total preguntas</div>
           </div>
-          <div className="bg-orange-50 p-4 rounded-lg text-center">
-            <div className="text-2xl font-nexa-bold text-orange-600">
+          <div className="bg-gray-50 border border-gray-100 p-4 rounded-lg">
+            <div className="text-2xl font-nexa-bold tabular-nums text-gray-950">
               {stats.pending}
             </div>
-            <div className="text-sm text-orange-800">Pendientes Respuesta</div>
+            <div className="text-xs text-gray-500 mt-1">Pendientes de respuesta</div>
           </div>
-          <div className="bg-green-50 p-4 rounded-lg text-center">
-            <div className="text-2xl font-nexa-bold text-green-600">
+          <div className="bg-gray-50 border border-gray-100 p-4 rounded-lg">
+            <div className="text-2xl font-nexa-bold tabular-nums text-gray-950">
               {stats.answered}
             </div>
-            <div className="text-sm text-green-800">Respondidas</div>
+            <div className="text-xs text-gray-500 mt-1">Respondidas</div>
           </div>
         </div>
 
@@ -457,13 +458,13 @@ const AdminQuestionsPage = () => {
               placeholder="Buscar preguntas, usuarios o productos..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:border-transparent"
               onFocus={(e) => {
                 e.target.style.borderColor = '#000000';
                 e.target.style.boxShadow = `0 0 0 3px rgba(0, 0, 0, 0.1)`;
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = '#d1d5db';
+                e.target.style.borderColor = '#e5e7eb';
                 e.target.style.boxShadow = 'none';
               }}
               aria-describedby="search-help"
@@ -485,13 +486,13 @@ const AdminQuestionsPage = () => {
                 setFilter(e.target.value);
                 setCurrentPage(1);
               }}
-              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2"
+              className="px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2"
               onFocus={(e) => {
                 e.target.style.borderColor = '#000000';
                 e.target.style.boxShadow = `0 0 0 3px rgba(0, 0, 0, 0.1)`;
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = '#d1d5db';
+                e.target.style.borderColor = '#e5e7eb';
                 e.target.style.boxShadow = 'none';
               }}
               aria-describedby="filter-help"

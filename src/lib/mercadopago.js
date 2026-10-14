@@ -12,6 +12,10 @@ let cacheExpiry = null;
 
 const getClient = async () => {
   console.log('🚀 Iniciando getClient()...');
+  const isDevelopment =
+    process.env.VERCEL_ENV === 'preview' ||
+    process.env.VERCEL_ENV === 'development' ||
+    process.env.NODE_ENV === 'development';
 
   // Verificar si tenemos un cliente en caché válido
   if (cachedClient && cacheExpiry && new Date() < cacheExpiry) {
@@ -27,7 +31,7 @@ const getClient = async () => {
     console.log('🔍 Buscando configuración activa...');
     const config = await MercadoPagoConfigModel.getActiveConfig();
 
-    if (config && config.accessToken) {
+    if (!isDevelopment && config && config.accessToken) {
       console.log('✅ Configuración encontrada en la base de datos');
 
       // Verificar si el token no ha expirado
@@ -65,7 +69,7 @@ const getClient = async () => {
     }
 
     // EN PRODUCCIÓN: NO hacer fallback, lanzar error
-    if (process.env.NODE_ENV === 'production') {
+    if (!isDevelopment) {
       console.log('🚫 Producción: No hay configuración válida');
       throw new Error(
         'No hay cuenta de MercadoPago vinculada. La tienda debe conectar su cuenta primero.',
@@ -149,6 +153,16 @@ export const createPaymentPreference = async (orderData) => {
       });
     }
 
+    if (orderData.shippingCost > 0) {
+      items.push({
+        id: 'shipping',
+        title: 'Envío',
+        quantity: 1,
+        unit_price: orderData.shippingCost,
+        currency_id: 'ARS',
+      });
+    }
+
     // Calcular total para verificación
     const calculatedTotal = items.reduce(
       (sum, item) => sum + item.unit_price * item.quantity,
@@ -163,13 +177,10 @@ export const createPaymentPreference = async (orderData) => {
       diferencia: Math.abs(calculatedTotal - orderData.totalAmount),
     });
 
-    // Verificar que los totales coincidan (con tolerancia de 1 peso por redondeo)
-    if (Math.abs(calculatedTotal - orderData.totalAmount) > 1) {
-      console.warn('⚠️ Discrepancia en totales:', {
-        esperado: orderData.totalAmount,
-        calculado: calculatedTotal,
-        diferencia: calculatedTotal - orderData.totalAmount,
-      });
+    // Defensa final: Mercado Pago nunca debe recibir una preferencia cuyo
+    // detalle no coincida con el total persistido y calculado por el servidor.
+    if (Math.abs(calculatedTotal - orderData.totalAmount) > 0.01) {
+      throw new Error('La orden tiene importes inconsistentes y no puede pagarse');
     }
 
     // Obtener URL base
@@ -180,6 +191,14 @@ export const createPaymentPreference = async (orderData) => {
       'http://localhost:3000';
 
     const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+    const notificationUrl = new URL('/api/mercadopago/webhook', cleanBaseUrl);
+    // Only protected previews need this server-side secret. Never add it to return URLs.
+    if (process.env.VERCEL_ENV === 'preview' && process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
+      notificationUrl.searchParams.set(
+        'x-vercel-protection-bypass',
+        process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
+      );
+    }
     const backUrls = {
       success: `${cleanBaseUrl}/checkout/success?payment_status=approved&external_reference=${orderData._id}`,
       failure: `${cleanBaseUrl}/checkout/failure?payment_status=rejected&external_reference=${orderData._id}`,
@@ -201,6 +220,7 @@ export const createPaymentPreference = async (orderData) => {
           number: cleanPhone.substring(cleanPhone.length - 8),
         };
       }
+
     }
 
     // Solo agregar dirección si está completa
@@ -216,7 +236,7 @@ export const createPaymentPreference = async (orderData) => {
       items: items,
       back_urls: backUrls,
       external_reference: orderData._id.toString(),
-      notification_url: `${baseUrl}/api/mercadopago/webhook`,
+      notification_url: notificationUrl.toString(),
 
       payer: payerData,
 

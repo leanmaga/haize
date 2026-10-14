@@ -159,7 +159,6 @@ const couponSchema = new mongoose.Schema(
 );
 
 // Índices para optimizar consultas
-couponSchema.index({ code: 1 });
 couponSchema.index({ isActive: 1 });
 couponSchema.index({ expirationDate: 1 });
 
