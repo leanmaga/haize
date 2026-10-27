@@ -2,11 +2,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Newsletter from '@/models/Newsletter';
-import { Resend } from 'resend';
-import { render } from '@react-email/components';
-import NewsletterWelcome from '@/emails/NewsletterWelcome';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { sendWelcomeEmail, WELCOME_CODE } from '@/lib/welcome-email';
 
 export async function GET(request) {
   try {
@@ -32,37 +28,28 @@ export async function GET(request) {
       );
     }
 
-    if (subscriber.status === 'confirmed') {
+    if (subscriber.status === 'unsubscribed') {
       return NextResponse.json(
-        { error: 'Este email ya fue confirmado anteriormente' },
+        { error: 'Volvé a suscribirte para confirmar tu email' },
         { status: 400 },
       );
     }
 
     // Confirmar suscriptor
     subscriber.status = 'confirmed';
-    subscriber.confirmedAt = new Date();
+    subscriber.confirmedAt ||= new Date();
 
     // Generar código de descuento
-    const discountCode = subscriber.generateDiscountCode();
+    const discountCode = WELCOME_CODE;
     subscriber.discountCode = discountCode;
 
     await subscriber.save();
 
     // Enviar email de bienvenida con código
-    const emailHtml = await render(
-      NewsletterWelcome({
-        discountCode,
-        email: subscriber.email,
-      }),
-    );
-
-    await resend.emails.send({
-      from: 'HAIZE <newsletter@haize.com.ar>',
-      to: subscriber.email,
-      subject: '¡Bienvenido a HAIZE! Tu código de descuento',
-      html: emailHtml,
-    });
+    const result = await sendWelcomeEmail(subscriber.email);
+    if (!result.success) {
+      return NextResponse.json({ error: 'Suscripción confirmada. No pudimos enviar tu bienvenida; volvé a abrir este enlace para reintentar.' }, { status: 503 });
+    }
 
     // Redirigir a página de éxito
     return NextResponse.redirect(new URL('/newsletter/success', request.url));

@@ -11,6 +11,7 @@ import bcrypt from 'bcryptjs';
 import User from '@/models/User';
 import connectDB from './db';
 import { sendEmailWithRetry } from './email-config';
+import { sendWelcomeEmail } from './welcome-email';
 
 // Función para obtener la URL base normalizada
 function getBaseUrl() {
@@ -163,6 +164,8 @@ export async function verifyEmailToken(token) {
     await user.save();
 
     console.log('✅ Email verificado exitosamente:', user.email);
+    // Retry a welcome that could not be delivered at registration; otherwise skip it.
+    await sendWelcomeEmail(user.email, user.name);
 
     return { success: true, email: user.email };
   } catch (error) {

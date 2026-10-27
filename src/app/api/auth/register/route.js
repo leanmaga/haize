@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import connectDB from "@/lib/db";
 import User from "@/models/User";
 import { sendVerificationEmail } from "@/lib/email-actions";
+import { sendWelcomeEmail } from '@/lib/welcome-email';
 
 export async function POST(request) {
   try {
@@ -67,6 +68,8 @@ export async function POST(request) {
       role: "user",
       isVerified: false, // Usuario no verificado por defecto
     });
+
+    await sendWelcomeEmail(newUser.email, newUser.name);
 
     // Enviar email de verificación utilizando nuestra función mejorada
     const emailResult = await sendVerificationEmail(email);

@@ -3,6 +3,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import connectDB from '@/lib/db';
 import User from '@/models/User';
+import { sendWelcomeEmail } from '@/lib/welcome-email';
 
 export const authOptions = {
   providers: [
@@ -99,6 +100,7 @@ export const authOptions = {
               role: 'user',
               isVerified: true, // Los usuarios de Google están automáticamente verificados
             });
+            await sendWelcomeEmail(dbUser.email, dbUser.name);
           }
 
           // Guardar el ID del usuario en el objeto user para usarlo en el callback session

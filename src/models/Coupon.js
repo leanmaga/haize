@@ -82,6 +82,9 @@ const couponSchema = new mongoose.Schema(
       },
     },
 
+    oncePerUser: { type: Boolean, default: false },
+    systemCreated: { type: Boolean, default: false },
+
     // Contador de usos actuales
     usedCount: {
       type: Number,
@@ -150,7 +153,7 @@ const couponSchema = new mongoose.Schema(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: function () { return !this.systemCreated; },
     },
   },
   {
@@ -185,7 +188,7 @@ couponSchema.methods.isAvailable = function () {
 // Método para verificar si un usuario puede usar este cupón
 couponSchema.methods.canUserUse = function (userId) {
   // Si es de un solo uso, verificar si el usuario ya lo usó
-  if (this.usageType === 'single') {
+  if (this.usageType === 'single' || this.oncePerUser) {
     const alreadyUsed = this.usedBy.some(
       (use) => use.userId.toString() === userId.toString(),
     );

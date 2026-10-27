@@ -182,7 +182,7 @@ export default function CouponCard({ coupon, onUpdate, onDelete }) {
         <div>
           <p className="text-gray-500">Tipo de uso</p>
           <p className="font-medium">
-            {coupon.usageType === 'single' ? 'Un solo uso' : 'Reutilizable'}
+            {coupon.oncePerUser ? 'Un uso por cuenta' : coupon.usageType === 'single' ? 'Un solo uso' : 'Reutilizable'}
           </p>
         </div>
 

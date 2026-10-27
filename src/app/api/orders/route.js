@@ -10,6 +10,7 @@ import User from '@/models/User';
 import { createPaymentPreference } from '@/lib/mercadopago';
 import { calculateTrustedOrder, OrderPricingError } from '@/lib/order-pricing';
 import { calculateShipping } from '@/lib/shipping-pricing';
+import { saveOrderWithCoupon } from '@/lib/save-order-with-coupon';
 import {
   sendOrderConfirmationToCustomer,
   sendNewOrderNotificationToAdmin,
@@ -179,7 +180,7 @@ export async function POST(request) {
         existingOrder.deliveryZone = existingShipping.deliveryZone;
         existingOrder.totalAmount = existingPricing.totalAmount + existingShipping.shippingCost;
         existingOrder.appliedCoupon = existingPricing.appliedCoupon;
-        await existingOrder.save();
+        await saveOrderWithCoupon(existingOrder, existingPricing.coupon, user._id);
         // A retry uses the same delivery information as the existing order.
         await rememberShipping(user, { ...orderData, shippingInfo: existingOrder.shippingInfo });
         if (orderData.paymentMethod === 'mercadopago') {
@@ -271,7 +272,7 @@ export async function POST(request) {
         recentPendingOrder.whatsappOrder = false;
       }
 
-      await recentPendingOrder.save();
+      await saveOrderWithCoupon(recentPendingOrder, trustedPricing.coupon, user._id);
       await rememberShipping(user, orderData);
 
       if (orderData.paymentMethod === 'mercadopago') {
@@ -376,7 +377,7 @@ export async function POST(request) {
       },
     });
 
-    await order.save();
+    await saveOrderWithCoupon(order, trustedPricing.coupon, user._id);
     await rememberShipping(user, orderData);
     console.log('✅ Orden guardada exitosamente:', order._id);
 
@@ -385,14 +386,14 @@ export async function POST(request) {
       try {
         const coupon = trustedPricing.coupon;
 
-        if (coupon) {
+        if (coupon && !coupon.oncePerUser) {
           await coupon.recordUsage(
             user._id,
             order._id,
             orderData.discountAmount,
           );
           console.log('✅ Uso del cupón registrado:', coupon.code);
-        } else {
+        } else if (!coupon) {
           console.warn(
             '⚠️ Cupón no encontrado para registrar uso:',
             orderData.appliedCoupon.code,

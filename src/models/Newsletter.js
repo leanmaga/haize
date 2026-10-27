@@ -55,9 +55,7 @@ NewsletterSchema.index({ confirmationToken: 1 });
 
 // Método para generar código de descuento
 NewsletterSchema.methods.generateDiscountCode = function () {
-  // Genera un código único como "HAIZE10-XXXX"
-  const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
-  return `HAIZE10-${randomSuffix}`;
+  return 'HAIZE10';
 };
 
 export default mongoose.models.Newsletter ||
