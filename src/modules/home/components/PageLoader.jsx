@@ -16,8 +16,8 @@ export default function PageLoader() {
       'https://res.cloudinary.com/dz7fsiwnu/image/upload/portadaMobil',
 
       // Grid de productos (primeras 2 imágenes visibles)
-      '/assets/clothes.jpg',
-      '/assets/clothes2.jpg',
+      '/assets/clothes.png',
+      '/assets/clothes2.png',
     ];
 
     let loadedCount = 0;
@@ -49,21 +49,19 @@ export default function PageLoader() {
       const img = new Image();
       img.onload = updateProgress;
       img.onerror = () => {
-        console.warn(`Error cargando: ${src}`);
         updateProgress(); // Continuar aunque falle
       };
       img.src = src;
     });
 
-    // Timeout de seguridad (5 segundos)
+    // Timeout de seguridad para no bloquear la página si Cloudinary tarda.
     const timeout = setTimeout(() => {
-      console.warn('Timeout: Mostrando página sin completar precarga');
       setFadeOut(true);
       setTimeout(() => {
         setIsLoading(false);
         document.body.style.overflow = 'unset';
       }, 600);
-    }, 3000);
+    }, 8000);
 
     return () => {
       clearTimeout(timeout);
