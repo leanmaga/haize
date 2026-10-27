@@ -1,3 +1,4 @@
+/** @jest-environment-options {"customExportConditions":["node","node-addons"]} */
 jest.mock('@/models/Product', () => ({ __esModule: true, default: {} }));
 jest.mock('@/models/Coupon', () => ({ __esModule: true, default: {} }));
 
@@ -16,10 +17,30 @@ const product = {
   variants: [{ size: 'M', color: 'Azul', stock: 3 }],
 };
 
-const ProductModel = { find: jest.fn(async () => [product]) };
+const ProductModel = { find: jest.fn(() => ({ lean: async () => [product] })) };
 const noCoupon = { findByCode: jest.fn(async () => null) };
 
 beforeEach(() => jest.clearAllMocks());
+
+test('published legacy product without wizard metadata can sell its last unit', async () => {
+  const legacy = { ...product, variants: [{ size: 'XXL', color: 'Blanco', stock: 1 }], stock: 1 };
+  delete legacy.isComplete;
+  // Model hydration reproduces the production failure; lean returns stored data.
+  const { TextEncoder, TextDecoder } = require('util');
+  global.TextEncoder = TextEncoder;
+  global.TextDecoder = TextDecoder;
+  const RealProduct = jest.requireActual('@/models/Product').default;
+  expect(RealProduct.hydrate({ ...legacy, _id: productId }).isComplete).toBe(false);
+  const model = { find: jest.fn(() => ({ lean: async () => [legacy] })) };
+  const request = { items: [{ product: productId, quantity: 1, size: 'XXL', color: 'Blanco' }], ProductModel: model };
+  await expect(calculateTrustedOrder(request)).resolves.toMatchObject({ totalAmount: 8000 });
+  await expect(calculateTrustedOrder({ ...request, items: [{ ...request.items[0], quantity: 2 }] })).rejects.toThrow('No hay stock suficiente');
+});
+
+test.each([{ ...product, isComplete: false }, { ...product, isActive: false }, null])('blocks explicit drafts, inactive or missing products', async (stored) => {
+  const model = { find: () => ({ lean: async () => stored ? [stored] : [] }) };
+  await expect(calculateTrustedOrder({ items: [{ product: productId, quantity: 1, size: 'M', color: 'Azul' }], ProductModel: model })).rejects.toThrow('Uno de los productos ya no está disponible');
+});
 
 test('ignores browser prices, titles and totals and prices the selected DB variant', async () => {
   const result = await calculateTrustedOrder({

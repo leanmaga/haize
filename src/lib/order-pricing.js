@@ -59,7 +59,9 @@ export async function calculateTrustedOrder({ items, couponCode, userId, current
   });
 
   const ids = [...new Set(requests.map(({ id }) => id))];
-  const products = await ProductModel.find({ _id: { $in: ids } });
+  // Preserve missing legacy fields: hydrated documents apply isComplete=false
+  // even to published products created before the wizard existed.
+  const products = await ProductModel.find({ _id: { $in: ids } }).lean();
   const byId = new Map(products.map((product) => [product._id.toString(), product]));
   const requestedStock = new Map();
 

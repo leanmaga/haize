@@ -17,7 +17,7 @@ export async function GET(request) {
     const limit = Number.parseInt(searchParams.get('limit')) || 10;
     const skip = (page - 1) * limit;
 
-    let query = { isActive: true };
+    let query = { isActive: true, isComplete: { $ne: false } };
 
     if (category && category !== 'all') {
       query.category = category;
