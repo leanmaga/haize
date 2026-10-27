@@ -106,19 +106,6 @@ export default function VariantSelector({ product }) {
       setSelectedColor(color);
     }
   };
-  // Ver qué tiene el producto
-  console.log('Product:', product);
-  console.log('Has variants?', product.variants);
-  console.log('Has sizes?', product.sizes);
-  console.log('Has colors?', product.colors);
-  console.log('🔍 DEBUG - Product data:', {
-    hasVariants: product.variants?.length > 0,
-    variants: product.variants,
-    hasSizes: product.sizes?.length > 0,
-    sizes: product.sizes,
-    hasColors: product.colors?.length > 0,
-    colors: product.colors,
-  });
   // ========== RENDER ==========
 
   return (

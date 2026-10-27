@@ -21,13 +21,10 @@ const MercadoPagoButton = ({
   useEffect(() => {
     const fetchPublicKey = async () => {
       try {
-        console.log("🔍 MercadoPago: Obteniendo public key...");
-
         const response = await fetch("/api/mercadopago/public-key");
         const data = await response.json();
 
         if (response.ok) {
-          console.log("✅ MercadoPago: Public key obtenida:", data.source);
           setPublicKey(data.publicKey);
           onLoad?.(data);
         } else {
@@ -58,12 +55,9 @@ const MercadoPagoButton = ({
     const loadMercadoPagoScript = () => {
       // Verificar si el script ya existe
       if (document.getElementById("mercadopago-sdk")) {
-        console.log("🔄 MercadoPago: Script ya cargado");
         setScriptLoaded(true);
         return;
       }
-
-      console.log("📦 MercadoPago: Cargando SDK...");
 
       const script = document.createElement("script");
       script.id = "mercadopago-sdk";
@@ -71,7 +65,6 @@ const MercadoPagoButton = ({
       script.async = true;
 
       script.onload = () => {
-        console.log("✅ MercadoPago: SDK cargado exitosamente");
         setScriptLoaded(true);
       };
 
@@ -96,8 +89,6 @@ const MercadoPagoButton = ({
     ) {
       return;
     }
-
-    console.log("🚀 MercadoPago: Inicializando wallet...");
 
     try {
       // Limpiar contenedor anterior
@@ -127,7 +118,6 @@ const MercadoPagoButton = ({
       });
 
       walletInitialized.current = true;
-      console.log("✅ MercadoPago: Wallet inicializado exitosamente");
     } catch (error) {
       console.error("❌ MercadoPago: Error al inicializar wallet:", error);
       setError("Error al inicializar el sistema de pagos");

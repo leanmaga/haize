@@ -45,13 +45,6 @@ export default function ProductSizeGuideTable({ sizeGuide, category }) {
     );
   }
 
-  console.log('🔍 [SIZE GUIDE] Analizando guía:', {
-    name: sizeGuide.name,
-    category: sizeGuide.category,
-    sizesCount: sizeGuide.sizes.length,
-    firstSize: sizeGuide.sizes[0],
-  });
-
   // ✅ DETECTAR DINÁMICAMENTE QUÉ CAMPOS EXISTEN
   const detectFields = (measurementType) => {
     const detectedFields = new Set();
@@ -77,11 +70,6 @@ export default function ProductSizeGuideTable({ sizeGuide, category }) {
 
   const garmentFields = detectFields('garment');
   const bodyFields = detectFields('body');
-
-  console.log('📊 [SIZE GUIDE] Campos detectados:', {
-    garment: garmentFields,
-    body: bodyFields,
-  });
 
   const hasAnyGarmentData = garmentFields.length > 0;
   const hasAnyBodyData = bodyFields.length > 0;
